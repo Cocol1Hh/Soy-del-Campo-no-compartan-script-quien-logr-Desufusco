@@ -133,7 +133,7 @@ local Borde1 = Instance.new("UIStroke")
 local Borde2 = Instance.new("UIStroke")
 local lplr = game.Players.LocalPlayer
 local data = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(lplr.UserId)
-local Ex = game.ReplicatedStorage.Package.Events
+local Ex = game:GetService("ReplicatedStorage").Package.Events
 
 Fernando.Name = "fffg"
 Fernando.Parent = game.CoreGui
@@ -361,7 +361,7 @@ local textProperties = {
     {text = "Ɓºrª", position = UDim2.new(0.350, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70)},    
     {text = "Graf", position = UDim2.new(-0.160, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100)},   
     {text = "Plant", position = UDim2.new(0.350, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100)},
-    {text = "Zom", position = UDim2.new(-0.160, 0, 0.570, 0), color = Color3.fromRGB(200, 380, 90)},   
+    {text = "Zom", position = UDim2.new(-0.160, 0, 0.570, 0), color = Color3.fromRGB(200, 380, 90)},  
 }
 
 for _, props in pairs(textProperties) do
@@ -486,9 +486,6 @@ function yo()
     return l
 end
 
-local lplr = game.Players.LocalPlayer
-local data = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(lplr.UserId)
-
 local npcList = {
     {"Vekuta (SSJBUI)", 9.375e9},
     {"Wukong Rose", 9.25e9},
@@ -563,13 +560,15 @@ end)
 task.spawn(function()
     while true do
         pcall(function()
+        task.spawn(function()
         if getIsActive1() then
             local questValue = data.Quest.Value
             local boss = game.Workspace.Living:FindFirstChild(questValue)
             if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
                 lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.5)
-            end
-          end
+                    end
+                end
+            end)
         end)
         task.wait()
     end
@@ -740,16 +739,10 @@ end)
 task.spawn(function()
     while true do
         pcall(function()
+        task.spawn(function()
            game.Workspace.FallenPartsDestroyHeight = 0/0
-        end)
-        task.wait()
-    end
-end)
-
-task.spawn(function()
-    while true do
-        pcall(function()
-            lplr.PlayerGui.Main.MainFrame.Frames.Quest.Visible = false
+           lplr.PlayerGui.Main.MainFrame.Frames.Quest.Visible = false
+           end)
         end)
         task.wait()
     end
@@ -766,14 +759,24 @@ task.spawn(function()
     end
 end)
 
+--Ciclo para ancti afk /V2
+task.spawn(function()
+    while true do
+        pcall(function()
+            game:GetService('Players').LocalPlayer.Idled:Connect(function()
+                local bb = game:GetService('VirtualUser')
+                bb:CaptureController()
+                bb:ClickButton2(Vector2.new())
+            end)
+        end)
+        wait(1)
+    end
+end)
+
 --Ciclo Congelamiento  de movimiento /Puños
 task.spawn(function()
     while true do
         pcall(function()
-            if data.Quest.Value ~= "" and getIsActive4() then
-                Ex.p:FireServer("Blacknwhite27", 1)
-                Ex.p:FireServer("Blacknwhite27", 2)
-            end
             if getIsActive1() or getIsActive2() then
                 lplr.Character.Humanoid:ChangeState(11)
                 lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
@@ -789,13 +792,18 @@ task.spawn(function()
 end)
 
 task.spawn(function()
-    while true do
+    while task.wait() do
         pcall(function()
+        task.spawn(function()
             if getIsActive5() then
                 game:GetService("ReplicatedStorage").Package.Events.reb:InvokeServer()
             end
-        end)
-        wait(.5)
+                     if data.Quest.Value ~= "" and getIsActive4() then
+                Ex.p:FireServer("Blacknwhite27", 1)
+                Ex.p:FireServer("Blacknwhite27", 2)
+                end
+            end)
+        end)        
     end
 end)
 
@@ -829,7 +837,7 @@ task.spawn(function()
     while true do
         pcall(function()
             for _, obj in pairs(game.Workspace:GetDescendants()) do
-            if obj:IsA("Sound") or obj.Name == "Effects" or obj:IsA("ParticleEmitter") then
+            if obj.Name == "Effects" or obj:IsA("ParticleEmitter") then
               obj:Destroy()
                 end
             end          
@@ -890,9 +898,11 @@ end
 task.spawn(function()
     while true do
         pcall(function()
+        task.spawn(function()
             if getIsActive4() and game.PlaceId ~= 5151400895 then
                 game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")
-            end
+                end
+            end)
         end)
         task.wait()
     end
@@ -980,56 +990,27 @@ task.spawn(function()
 end)
 
 
+local Forms = { 'Divine Rose Prominence', 'Astral Instinct', 'Ultra Ego', 'SSJB4', 'True God of Creation', 
+    'True God of Destruction', 'Super Broly', 'LSSJG', 'LSSJ4', 'SSJG4', 'LSSJ3', 'Mystic Kaioken', 
+    'LSSJ Kaioken', 'SSJR3', 'SSJB3', 'God Of Destruction', 'God Of Creation', 'Jiren Ultra Instinct', 
+    'Mastered Ultra Instinct', 'Godly SSJ2', 'Ultra Instinct Omen', 'Evil SSJ', 'Blue Evolution', 
+    'Dark Rose', 'Kefla SSJ2', 'SSJ Berserker', 'True Rose', 'SSJB Kaioken', 'SSJ Rose', 'SSJ Blue', 
+    'Corrupt SSJ', 'SSJ Rage', 'SSJG', 'SSJ4', 'Mystic', 'LSSJ', 'SSJ3', 'Spirit SSJ', 'SSJ2 Majin', 
+    'SSJ2', 'SSJ Kaioken', 'SSJ', 'FSSJ', 'Kaioken' }
+
 task.spawn(function()
-    while true do
+    while task.wait() do
         pcall(function()
-            local Forms = {
-                'Divine Rose Prominence', 'Astral Instinct', 'Ultra Ego', 'SSJB4', 'True God of Creation', 
-                'True God of Destruction', 'Super Broly', 'LSSJG', 'LSSJ4', 'SSJG4', 'LSSJ3', 'Mystic Kaioken', 
-                'LSSJ Kaioken', 'SSJR3', 'SSJB3', 'God Of Destruction', 'God Of Creation', 'Jiren Ultra Instinct', 
-                'Mastered Ultra Instinct', 'Godly SSJ2', 'Ultra Instinct Omen', 'Evil SSJ', 'Blue Evolution', 
-                'Dark Rose', 'Kefla SSJ2', 'SSJ Berserker', 'True Rose', 'SSJB Kaioken', 'SSJ Rose', 
-                'SSJ Blue', 'Corrupt SSJ', 'SSJ Rage', 'SSJG', 'SSJ4', 'Mystic', 'LSSJ', 'SSJ3', 
-                'Spirit SSJ', 'SSJ2 Majin', 'SSJ2', 'SSJ Kaioken', 'SSJ', 'FSSJ', 'Kaioken'
-            }
-            local equipRemote = game:GetService("ReplicatedStorage").Package.Events.equipskill
-            local transformRemote = game:GetService("ReplicatedStorage").Package.Events.ta
-            local player = game.Players.LocalPlayer
-            if getIsActive1() or getIsActive2() then
-                if player.Character and player.Character.Humanoid and player.Character.Humanoid.Health > 0 and player.Character:FindFirstChild("HumanoidRootPart") then
-                    for _, transformation in ipairs(Forms) do
-                        if equipRemote:InvokeServer(transformation) then
-                            break
-                        end
-                    end
-                    if player.Status and player.Status:FindFirstChild("SelectedTransformation") and player.Status:FindFirstChild("Transformation") then
-                        local status = player.Status
-                        if status.SelectedTransformation.Value ~= status.Transformation.Value then
-                            transformRemote:InvokeServer()
-                        end
-                    end
+            if lplr.Character and lplr.Character:FindFirstChild("HumanoidRootPart") and lplr.Character.Humanoid.Health > 0 then
+                for _, form in ipairs(Forms) do if Ex.equipskill:InvokeServer(form) then break end end
+                local status = lplr.Status
+                if status and status.SelectedTransformation.Value ~= status.Transformation.Value then
+                    Ex.ta:InvokeServer()
                 end
             end
         end)
-        task.wait()
     end
 end)
-
-
---Detroy de Ropa Boss
-if getIsActive9() then
-    for _, obj in ipairs(game.Workspace.Living:GetChildren()) do
-        if obj:FindFirstChild("Humanoid") and obj ~= game.Players.LocalPlayer.Character then
-            if obj:FindFirstChild("Shirt") then obj.Shirt:Destroy() end
-            if obj:FindFirstChild("Pants") then obj.Pants:Destroy() end
-        end
-    end
-    for _, obj in ipairs(game.Workspace.Others.NPCs:GetChildren()) do
-        if obj:FindFirstChild("Shirt") then obj.Shirt:Destroy() end
-        if obj:FindFirstChild("Pants") then obj.Pants:Destroy() end
-    end
-end
-
 
 --Ciclo Para Auto = Main y Start
 local gui = lplr.PlayerGui.Main.bruh
@@ -1040,8 +1021,7 @@ if workspace.Others:FindFirstChild("Title") then
 end
 
 
-local player = game.Players.LocalPlayer
-local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+local gui = Instance.new("ScreenGui", lplr:WaitForChild("PlayerGui"))
 
 local activeBar = nil
 local speed = 0
@@ -1138,9 +1118,9 @@ create(Barra1, 0.513, "Ambient", Color3.new(0, 1, 0), 0.37, 700, updateAmbient, 
 task.spawn(function()
     while flying do
         pcall(function()
-            local hum = player.Character:WaitForChild("Humanoid")
+            local hum = lplr.Character:WaitForChild("Humanoid")
             if hum.MoveDirection.Magnitude > 0 then
-                player.Character:TranslateBy(hum.MoveDirection * speed)
+                lplr.Character:TranslateBy(hum.MoveDirection * speed)
             elseif hum.MoveDirection.Y < 0 then
                 speed = speed + 0.1
             end
@@ -1155,15 +1135,6 @@ end)
        end)    
     task.wait()
 end)
-
-
-spawn(function()
-    if not _G.ScriptExecuted then
-        _G.ScriptExecuted = true
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/Koala743/Koala7/refs/heads/main/Main2.lua'))()
-    end
-end)
-
 end
 
 spawn(function()
@@ -1261,8 +1232,7 @@ BotonUrl.MouseButton1Click:Connect(function()
     setclipboard("https://luatt11.github.io/Keysistema/")
 end)
 
-while true do
-    wait(0.5)
+while wait() do
     if not claveEsValida() then
         resetearClave()
         KeyGui.Enabled = true
