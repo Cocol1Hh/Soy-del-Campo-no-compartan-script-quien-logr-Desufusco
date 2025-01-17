@@ -1,4 +1,5 @@
-
+--Hola soy Fernando el q logre Descodificar este codeg fue fácil solo use página gratis para eso bueno les pido que la script no los compartan vivo en Latan y intento ganar dinero por Key otro lo coguen  y lo usan si esfuerzo esto me demore asiendo 6meses IA/Manualmente 
+--Porfa solo no comparta script toy dando gratis no es nada sacar la Key les pido  🙏 
 local ArchivoClaveGuardada = "ClaveGuardada.json"
 local ArchivoHistorial = "HistorialClaves.json"
 local HttpService = game:GetService("HttpService")
@@ -291,7 +292,7 @@ Fps.Parent = Barra1
 
 local VS = Instance.new("TextLabel")
 VS.Parent = Barra1
-VS.Text = "V [0.6]"
+VS.Text = "V [0.7]"
 VS.Size = UDim2.new(0, 100, 0, 10)
 VS.Position = UDim2.new(0.783, 0, 0.009, 0)
 VS.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -314,6 +315,18 @@ TiempoLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 TiempoLabel.BorderSizePixel = 0
 TiempoLabel.Text = "Cargando..."
 
+local afkLabel = Instance.new("TextLabel", Barra1)
+afkLabel.Size = UDim2.new(0, 100, 0, 50)
+afkLabel.Position = UDim2.new(-.03, 0, 0.06, 0)
+afkLabel.Text = "Tiempo AFK: 0s"
+afkLabel.TextColor3 = Color3.new(1, 1, 1)
+afkLabel.Font = Enum.Font.SourceSans
+afkLabel.TextSize = 13
+afkLabel.BackgroundTransparency = 1
+
+local uiStroke = Instance.new("UIStroke", afkLabel)
+uiStroke.Thickness = 3
+uiStroke.Color = Color3.fromRGB(0, 0, 255)
 
 --incio Borde color\/
 Borde1.Parent = Cuadro1
@@ -361,7 +374,7 @@ local textProperties = {
     {text = "Ɓºrª", position = UDim2.new(0.350, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70)},    
     {text = "Graf", position = UDim2.new(-0.160, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100)},   
     {text = "Plant", position = UDim2.new(0.350, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100)},
-    {text = "Zom", position = UDim2.new(-0.160, 0, 0.570, 0), color = Color3.fromRGB(200, 380, 90)},  
+    {text = "¿", position = UDim2.new(-0.160, 0, 0.570, 0), color = Color3.fromRGB(200, 380, 90)},  
 }
 
 for _, props in pairs(textProperties) do
@@ -488,14 +501,14 @@ end
 
 
 local npcList = {
-    {"Vekuta (SSJBUI)", 4.375e9},
-    {"Wukong Rose", 3.25e9},
-    {"Vekuta (LBSSJ4)", 2.25e9},
-    {"Wukong (LBSSJ4)", 1.775e9},
-    {"Vegetable (LBSSJ4)", 950e6},
-    {"Vis (20%)", 650e6},
-    {"Vills (50%)", 375e6},
-    {"Wukong (Omen)", 250e6},
+    {"Vekuta (SSJBUI)", 2.375e9},
+    {"Wukong Rose", 1.65e9},
+    {"Vekuta (LBSSJ4)", 1.05e9},
+    {"Wukong (LBSSJ4)", 950e6},
+    {"Vegetable (LBSSJ4)", 650e6},
+    {"Vis (20%)", 500e6},
+    {"Vills (50%)", 350e6},
+    {"Wukong (Omen)", 200e6},
     {"Vegetable (GoD in-training)", 150e6},
     {"SSJG Kakata", 100e6},
     {"Broccoli", 45.5e6},
@@ -586,22 +599,10 @@ end)
 
 
 task.spawn(function()
-    local clickCount = 0
-    while true do
+    while wait(.1) do
         pcall(function()
-            if getIsActive11() then
-                if data.Quest.Value == "" then
-                    if clickCount < 22 then
-                        keypress(Enum.KeyCode.I)
-                        clickCount = clickCount + 1
-                    end
-                elseif data.Quest.Value ~= "" then
-                    keypress(Enum.KeyCode.O)
-                    clickCount = 0 
-                end
-            end
+            TOD()
         end)
-        task.wait()
     end
 end)
 
@@ -627,39 +628,14 @@ end)
 
 --Ciclo Para Auto = Tierra/Bills
 task.spawn(function()
-    while true do
+    while wait() do
         pcall(function()         
             if getIsActive10() and game.PlaceId == 5151400895 and yo() <= 150e6 then
                 Ex.TP:InvokeServer("Earth")
-                wait()
             elseif getIsActive10() and game.PlaceId ~= 5151400895 and yo() >= 150e6 then
-               Ex.TP:InvokeServer("Vills Planet")
-                wait()                
+               Ex.TP:InvokeServer("Vills Planet")                                
             end
-        end)
-       wait()
-    end
-end)
-
-task.spawn(function()
-    while true do
-        pcall(function()         
-       if getIsActive4() then
-            local kiValue = game.Players.LocalPlayer.Character:WaitForChild("Stats").Ki.Value
-            local maxKi = game.Players.LocalPlayer.Character:WaitForChild("Stats").Ki.MaxValue
-            local kiPercentage = kiValue / maxKi
-            if data.Quest.Value == "" and kiPercentage <= 0.3 then
-                keypress(Enum.KeyCode.C)
-                keyrelease(Enum.KeyCode.R)
-                Ex.block:InvokeServer(false)
-            else
-              keyrelease(Enum.KeyCode.C)
-               keypress(Enum.KeyCode.R)
-                Ex.block:InvokeServer(true)
-                end 
-            end
-        end)
-       wait()
+        end)       
     end
 end)
 
@@ -726,22 +702,13 @@ task.spawn(function()
     while true do
         pcall(function()
           keypress(Enum.KeyCode.L)  
-        end)
-        wait(100)
-    end
-end)
-
---Ciclo para ancti afk /V2
-task.spawn(function()
-    while true do
-        pcall(function()
-            game:GetService('Players').LocalPlayer.Idled:Connect(function()
+          game:GetService('Players').LocalPlayer.Idled:Connect(function()
                 local bb = game:GetService('VirtualUser')
                 bb:CaptureController()
                 bb:ClickButton2(Vector2.new())
             end)
         end)
-        wait(1)
+        wait(100)
     end
 end)
 
@@ -770,7 +737,7 @@ task.spawn(function()
             if getIsActive5() then
                 game:GetService("ReplicatedStorage").Package.Events.reb:InvokeServer()
             end
-                     if data.Quest.Value ~= "" and getIsActive4() then
+           if data.Quest.Value ~= "" and getIsActive4() then
                 Ex.p:FireServer("Blacknwhite27", 1)
                 Ex.p:FireServer("Blacknwhite27", 2)
                 end
@@ -805,32 +772,30 @@ task.spawn(function()
     end
 end)
 
-task.spawn(function()
-    while true do
-        pcall(function()
-            for _, obj in pairs(game.Workspace:GetDescendants()) do
-            if obj.Name == "Effects" or obj:IsA("ParticleEmitter") then
-              obj:Destroy()
-                end
-            end          
-        end)
-        task.wait(0.3)
-    end
-end)
 
 --Ciclo para Auto = Carga en bills/Tierra
 task.spawn(function()
-    while true do
-        pcall(function()         
-            if lplr.Status.Transformation.Value ~= "None" and game.PlaceId == 5151400895 then
-                if getIsActive4() then
-                    game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")
+    while wait(.3) do
+        pcall(function()       
+            if lplr.Status.Transformation.Value ~= "None" and game.PlaceId == 5151400895 and getIsActive4() then
+                    game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")            
                 end
-            end
         end)
-        wait()
     end
 end)
+
+
+task.spawn(function()
+    while task.wait() do
+        pcall(function()   
+     task.spawn(function()  
+        if getIsActive4() and game.PlaceId ~= 5151400895 then
+         game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")
+                end
+            end)
+        end)
+    end
+end)    
 
 local function claveEsValida()
     if isfile(ArchivoClave) then
@@ -843,7 +808,6 @@ end
 
 local function mostrarTiempoRestante(tiempoRestante)
     TiempoGui.Enabled = true
-
     spawn(function()
         while tiempoRestante > 0 do
             tiempoRestante = tiempoRestante - 1
@@ -853,32 +817,14 @@ local function mostrarTiempoRestante(tiempoRestante)
                 tiempoRestante % 60)
             wait(1)
         end
-
-        TiempoGui.Enabled = false
-        print("El tiempo ha expirado. Debes ingresar una nueva clave.")
+        TiempoGui.Enabled = false        
     end)
 end
 
 local esValida, tiempoRestante = claveEsValida()
 if esValida then
     mostrarTiempoRestante(tiempoRestante)
-else
-    print("La clave ha expirado o no existe. Debes ingresar una nueva clave.")
 end
-
-
-task.spawn(function()
-    while true do
-        pcall(function()
-        task.spawn(function()
-            if getIsActive4() and game.PlaceId ~= 5151400895 then
-                game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")
-                end
-            end)
-        end)
-        task.wait()
-    end
-end)
 
 
 task.spawn(function()
@@ -898,9 +844,38 @@ task.spawn(function()
     game:GetService("Lighting").ClockTime = 18
 end)
             
-            
-  task.spawn(function()
-    while true do
+
+--Ciclo de Todo
+function TOD()
+            local playerGui = lplr:WaitForChild("PlayerGui")
+            local maxMastery = 332526
+            local currentMastery = 0
+            local transformation = lplr.Status.Transformation.Value
+            currentMastery = data:FindFirstChild(transformation) and data[transformation].Value or 0
+            if currentMastery > 0 then
+                masteryLabel.Text = currentMastery .. " (" .. string.format("%.1f", (currentMastery / maxMastery) * 100) .. "%)"
+            else
+                masteryLabel.Text = "Mastery"
+            end
+          for _, obj in pairs(game.Workspace:GetDescendants()) do
+            if obj.Name == "Effects" or obj:IsA("ParticleEmitter") then
+              obj:Destroy()
+                end
+            end          
+         if getIsActive4() then
+            local kiValue = game.Players.LocalPlayer.Character:WaitForChild("Stats").Ki.Value
+            local maxKi = game.Players.LocalPlayer.Character:WaitForChild("Stats").Ki.MaxValue
+            local kiPercentage = kiValue / maxKi
+            if data.Quest.Value == "" and kiPercentage <= 0.3 then
+                keypress(Enum.KeyCode.C)
+                keyrelease(Enum.KeyCode.R)
+                Ex.block:InvokeServer(false)
+            else
+              keyrelease(Enum.KeyCode.C)
+               keypress(Enum.KeyCode.R)
+                Ex.block:InvokeServer(true)
+                end 
+            end
         local rebirthValue = data.Rebirth.Value
         local strengthValue = data.Strength.Value
         local nextRebirth = (rebirthValue * 3e6) + 2e6
@@ -911,34 +886,7 @@ end)
             formatNumber(strengthValue),
             formatNumber(additionalStrength),
             formatNumber(rebirthValue)
-        )
-        wait(.2)
-    end
-end)
-
-
---Ciclode maestria
-local playerGui = lplr:WaitForChild("PlayerGui")
-local maxMastery = 332526
-task.spawn(function()
-    while true do
-        pcall(function()
-            local currentMastery = 0
-            local transformation = lplr.Status.Transformation.Value
-            currentMastery = data:FindFirstChild(transformation) and data[transformation].Value or 0
-            if currentMastery > 0 then
-                masteryLabel.Text = currentMastery .. " (" .. string.format("%.1f", (currentMastery / maxMastery) * 100) .. "%)"
-            else
-                masteryLabel.Text = "Mastery"
-            end
-        end)
-        wait(.1)
-    end
-end)
-
-task.spawn(function()
-    while true do
-    pcall(function()
+        )        
         local ping = math.floor(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue())
         pingLabel.Text = "Ping: " .. (ping < 1000 and ping or math.floor(ping / 10) * 10) .. " ms"---PING
 
@@ -955,11 +903,8 @@ task.spawn(function()
         local period = (hour >= 7 and hour < 19) and "Dia" or "Nch"
         local ampm = (hour >= 12) and "PM" or "AM"
         local displayHour = (hour % 12 == 0) and 12 or hour % 12
-        timeLabel.Text = string.format("%s: %02d:%02d %s", period, displayHour, minute, ampm)
-            end)
-        wait(.2)
-    end
-end)
+        timeLabel.Text = string.format("%s: %02d:%02d %s", period, displayHour, minute, ampm)        
+end
 
 
 local Forms = { 'Divine Rose Prominence', 'Astral Instinct', 'Ultra Ego', 'SSJB4', 'True God of Creation', 
@@ -973,13 +918,15 @@ local Forms = { 'Divine Rose Prominence', 'Astral Instinct', 'Ultra Ego', 'SSJB4
 task.spawn(function()
     while task.wait() do
         pcall(function()
+        task.spawn(function()
             if lplr.Character and lplr.Character:FindFirstChild("HumanoidRootPart") and lplr.Character.Humanoid.Health > 0 then
                 for _, form in ipairs(Forms) do if Ex.equipskill:InvokeServer(form) then break end end
                 local status = lplr.Status
                 if status and status.SelectedTransformation.Value ~= status.Transformation.Value then
                     Ex.ta:InvokeServer()
-                end
-            end
+                  end
+              end
+           end)
         end)
     end
 end)
@@ -993,8 +940,26 @@ if workspace.Others:FindFirstChild("Title") then
 end
 
 
-local gui = Instance.new("ScreenGui", lplr:WaitForChild("PlayerGui"))
 
+local afkTime = 0
+local lastActivity = tick()
+game:GetService("UserInputService").InputBegan:Connect(function()
+    lastActivity = tick()
+    afkTime = 0
+    afkLabel.Text = "Tiempo AFK: 0s"
+end)
+
+task.spawn(function()
+    while true do
+        if tick() - lastActivity >= 1 then
+            afkTime = afkTime + 1
+            afkLabel.Text = "Tiempo AFK: " .. afkTime .. "s"
+        end
+        task.wait(1)
+    end
+end)
+
+local gui = Instance.new("ScreenGui", lplr:WaitForChild("PlayerGui"))
 local activeBar = nil
 local speed = 0
 local flying = true
