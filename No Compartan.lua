@@ -486,22 +486,23 @@ function yo()
     return l
 end
 
+
 local npcList = {
-    {"Vekuta (SSJBUI)", 9.375e9},
-    {"Wukong Rose", 9.25e9},
-    {"Vekuta (LBSSJ4)", 5.25e9},
-    {"Wukong (LBSSJ4)", 4.1e9},
-    {"Vegetable (LBSSJ4)", 2.55e9},
-    {"Vis (20%)", 1.95e9},
-    {"Vills (50%)", 875e6},
-    {"Wukong (Omen)", 450e6},
-    {"Vegetable (GoD in-training)", 250e6},
-    {"SSJG Kakata", 250e6},
-    {"Broccoli", 85.5e6},
-    {"SSJB Wukong", 1e7},
-    {"Kai-fist Master", 4225000},
-    {"SSJ2 Wukong", 3250000},
-    {"Perfect Atom", 2275000},
+    {"Vekuta (SSJBUI)", 4.375e9},
+    {"Wukong Rose", 3.25e9},
+    {"Vekuta (LBSSJ4)", 2.25e9},
+    {"Wukong (LBSSJ4)", 1.775e9},
+    {"Vegetable (LBSSJ4)", 950e6},
+    {"Vis (20%)", 650e6},
+    {"Vills (50%)", 375e6},
+    {"Wukong (Omen)", 250e6},
+    {"Vegetable (GoD in-training)", 150e6},
+    {"SSJG Kakata", 100e6},
+    {"Broccoli", 45.5e6},
+    {"SSJB Wukong", 8e6},
+    {"Kai-fist Master", 3625000},
+    {"SSJ2 Wukong", 2250000},
+    {"Perfect Atom", 1275000},
     {"Chilly", 950000},
     {"Super Vegetable", 358000},
     {"Mapa", 105000},
@@ -511,66 +512,37 @@ local npcList = {
 }
 
 spawn(function()
-    while true do
+    while task.wait() do
         pcall(function()
             if data.Quest.Value == "" and getIsActive1() then
                 for _, npc in ipairs(npcList) do
-                    local npcName, requiredStrength = npc[1], npc[2]
+                    local npcName, FZ = npc[1], npc[2]
                     local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
-                    if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and yo() >= requiredStrength then
+                    if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and yo() >= FZ then
                         lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame
+                        game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(npcInstance)
                         break
                     end
                 end
             end
         end)
-        wait()
-    end
-end)
-
-
-spawn(function()
-    while true do
-        pcall(function()
-            if data.Quest.Value == "" and getIsActive1() or getIsActive2() then
-                local closestNpc = nil
-                local shortestDistance = math.huge
-                local humanoidRootPart = lplr.Character:WaitForChild("HumanoidRootPart")
-                for _, npc in pairs(game.Workspace.Others.NPCs:GetChildren()) do
-                    if npc:FindFirstChild("HumanoidRootPart") then
-                        local distance = (humanoidRootPart.Position - npc.HumanoidRootPart.Position).magnitude
-                        if distance < shortestDistance then
-                            closestNpc = npc
-                            shortestDistance = distance
-                        end
-                    end
-                end
-                if closestNpc and shortestDistance <= 50 then
-                    local Event = game:GetService("ReplicatedStorage").Package.Events.Qaction
-                    Event:InvokeServer(closestNpc)
-                end
-            end
-        end)
-        wait()
     end
 end)
 
 
 --Ciclo Para Auto = Tp Boss A Cualquier Tipo De Boss
 task.spawn(function()
-    while true do
+    while task.wait() do
         pcall(function()
         task.spawn(function()
-        if getIsActive1() then
-            local questValue = data.Quest.Value
-            local boss = game.Workspace.Living:FindFirstChild(questValue)
+        if getIsActive1() and data.Quest.Value ~= "" then
+            local boss = game.Workspace.Living:FindFirstChild(data.Quest.Value)
             if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
                 lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.5)
                     end
                 end
             end)
-        end)
-        task.wait()
+        end)        
     end
 end)
 
