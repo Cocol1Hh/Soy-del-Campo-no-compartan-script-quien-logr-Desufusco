@@ -518,7 +518,7 @@ local npcList = {
     {"Perfect Atom", 1275000},
     {"Chilly", 950000},
     {"Super Vegetable", 358000},
-    {"Mapa", 105000},
+    {"Mapa", 0},
     {"Radish", 55000},
     {"Kid Nohag", 40000},
     {"Klirin", 0}
@@ -530,11 +530,13 @@ spawn(function()
             if data.Quest.Value == "" and getIsActive1() then
                 for _, npc in ipairs(npcList) do
                     local npcName, FZ = npc[1], npc[2]
-                    local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
-                    if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and yo() >= FZ then
-                        lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame
-                        game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(npcInstance)
-                        break
+                    if (data.Rebirth.Value > 1000 or npcName ~= "Mapa") and yo() >= FZ then
+                        local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
+                        if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") then
+                            lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame
+                            game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(npcInstance)
+                            break
+                        end
                     end
                 end
             end
@@ -640,7 +642,7 @@ task.spawn(function()
 end)
 
 
-local moves = {"Meteor Crash", "High Power Rush", "Mach Kick", "Spirit Barrage", "God Slicer"}
+local moves = {"Wolf Fang Fist", "Meteor Crash", "High Power Rush", "Mach Kick", "Spirit Barrage", "God Slicer"}
 task.spawn(function()
     while true do
         pcall(function()
@@ -648,13 +650,14 @@ task.spawn(function()
             local Ki = lplr.Character.Stats.Ki
             if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 and 
                 data.Strength.Value >= 6e5 and data.Quest.Value ~= "" and 
-                getIsActive3() and lplr.Character.Humanoid.Health > 0 and 
-                Ki.Value > Ki.MaxValue * 0.15 then
+                getIsActive3() and lplr.Character.Humanoid.Health > 0 then
                 for _, move in pairs(moves) do
                     if not lplr.Status:FindFirstChild(move) then
                         task.spawn(function()
+                        if Ki.Value > Ki.MaxValue * 0.20 then
                             game.ReplicatedStorage.Package.Events.mel:InvokeServer(move, "Blacknwhite27")
                             game.ReplicatedStorage.Package.Events.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, "Blacknwhite27")
+                            end 
                         end)
                     end
                 end
