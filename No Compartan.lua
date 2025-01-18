@@ -642,28 +642,33 @@ task.spawn(function()
 end)
 
 
-local moves = {"Wolf Fang Fist", "Meteor Crash", "High Power Rush", "Mach Kick", "Spirit Barrage", "God Slicer"}
+local moves = {
+    {name = "Wolf Fang Fist", condition = 5000},
+    {name = "Meteor Crash", condition = 40000},
+    {name = "High Power Rush", condition = 100000},
+    {name = "Mach Kick", condition = 125000},
+    {name = "Spirit Barrage", condition = 60e6},
+    {name = "God Slicer", condition = 60e6}
+}
+
 task.spawn(function()
     while true do
         pcall(function()
             local boss = game.Workspace.Living:FindFirstChild(data.Quest.Value)
             local Ki = lplr.Character.Stats.Ki
-            if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 and 
-                data.Strength.Value >= 6e5 and data.Quest.Value ~= "" and 
+            if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 and data.Quest.Value ~= "" and 
                 getIsActive3() and lplr.Character.Humanoid.Health > 0 then
                 for _, move in pairs(moves) do
-                    if not lplr.Status:FindFirstChild(move) then
+                    if not lplr.Status:FindFirstChild(move.name) and yo() >= move.condition and Ki.Value > Ki.MaxValue * 0.20 then
                         task.spawn(function()
-                        if Ki.Value > Ki.MaxValue * 0.20 then
-                            game.ReplicatedStorage.Package.Events.mel:InvokeServer(move, "Blacknwhite27")
+                            game.ReplicatedStorage.Package.Events.mel:InvokeServer(move.name, "Blacknwhite27")
                             game.ReplicatedStorage.Package.Events.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, "Blacknwhite27")
-                            end 
                         end)
                     end
                 end
             end
         end)
-        task.wait()
+        wait(.01)
     end
 end)
 
@@ -860,11 +865,6 @@ function TOD()
             else
                 masteryLabel.Text = "Mastery"
             end
-          for _, obj in pairs(game.Workspace:GetDescendants()) do
-            if obj.Name == "Effects" or obj:IsA("ParticleEmitter") then
-              obj:Destroy()
-                end
-            end          
          if getIsActive4() then
             local kiValue = game.Players.LocalPlayer.Character:WaitForChild("Stats").Ki.Value
             local maxKi = game.Players.LocalPlayer.Character:WaitForChild("Stats").Ki.MaxValue
