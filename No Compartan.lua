@@ -322,7 +322,7 @@ end)
 
 
 task.spawn(function()
-    while wait(.1) do
+    while wait(2) do
         pcall(function()
             TOD()
         end)
@@ -368,28 +368,15 @@ task.spawn(function()
                     end
                 end
             end
+                  for _, obj in pairs(game.Workspace:GetDescendants()) do
+            if obj:IsA("") or obj.Name == "Effects" or obj:IsA("ParticleEmitter") then
+              obj:Destroy()
+              wait(1)
+                end
+            end          
         end)
         wait()
     end
-end)
-
-local Q = data:WaitForChild("Quest")
-local notified = false
-local function NotyQ()
-    if Q.Value ~= "" and not notified then
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Misión Iniciada",
-            Text = tostring(Q.Value),
-            Duration = 2
-        })
-        notified = true
-    elseif Q.Value == "" then
-        notified = false
-    end
-end
-NotyQ()
-game.ReplicatedStorage.Datas[lplr.UserId].Quest.Changed:Connect(function()
-    NotyQ()
 end)
 
 
@@ -402,22 +389,6 @@ task.spawn(function()
            end)
         end)
         task.wait()
-    end
-end)
-
-
---Ciclo para ancti afk
-task.spawn(function()
-    while true do
-        pcall(function()
-          keypress(Enum.KeyCode.L)  
-          game:GetService('Players').LocalPlayer.Idled:Connect(function()
-                local bb = game:GetService('VirtualUser')
-                bb:CaptureController()
-                bb:ClickButton2(Vector2.new())
-            end)
-        end)
-        wait(100)
     end
 end)
 
@@ -442,7 +413,7 @@ end)
 
 --Ciclo para Auto = Carga en bills/Tierra
 task.spawn(function()
-    while wait(.3) do
+    while wait(.8) do
         pcall(function()       
             if lplr.Status.Transformation.Value ~= "None" and game.PlaceId == 5151400895 then
                     game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")            
@@ -479,6 +450,13 @@ function TOD()
                keypress(Enum.KeyCode.R)
                 Ex.block:InvokeServer(true) 
             end
+           keypress(Enum.KeyCode.L)  
+          game:GetService('Players').LocalPlayer.Idled:Connect(function()
+                local bb = game:GetService('VirtualUser')
+                bb:CaptureController()
+                bb:ClickButton2(Vector2.new())
+                wait(20)
+            end)
 end
 
 
