@@ -168,7 +168,7 @@ local function createSwitch(parent, position, switchName, initialState)
     return function() return isActive end
 end
 
-local getIsActive1 = createSwitch(screenGui, UDim2.new(0.2, 0, 0.120, 0), "Switch1", LoadSwitchState("Switch1"))--Farm
+local getIsActive5 = createSwitch(screenGui, UDim2.new(0.2, 0, 0.120, 0), "Switch1", LoadSwitchState("Switch1"))--Farm
 
 task.spawn(function()
         pcall(function()
@@ -402,7 +402,7 @@ task.spawn(function()
     while task.wait() do
         pcall(function()
         task.spawn(function()
-        if getIsActive1() then 
+        if getIsActive5() then 
 game:GetService("ReplicatedStorage").Package.Events.reb:InvokeServer()
              end
            if data.Quest.Value ~= "" then
