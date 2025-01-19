@@ -530,13 +530,13 @@ end)
 
 CopyURLButton.MouseButton1Click:Connect(function()
     animateButton(CopyURLButton)
-    setclipboard("https://example.com/get-key")
+    setclipboard("https://discord.com/invite/P6b85GfDdF")
     mostrarMensaje("URL copied to clipboard", Color3.fromRGB(0, 255, 0))
 end)
 
 DiscordButton.MouseButton1Click:Connect(function()
     animateButton(DiscordButton)
-    setclipboard("https://discord.gg/YourInviteCode")
+    setclipboard("https://luatt11.github.io/Keysistema/")
     mostrarMensaje("Discord invite copied", Color3.fromRGB(0, 255, 0))
 end)
 
