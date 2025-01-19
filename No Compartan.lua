@@ -116,9 +116,6 @@ local function resetearClave()
 end
 
 local function lopoi()
-
-
-
 local lplr = game.Players.LocalPlayer
 local data = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(lplr.UserId)
 local Ex = game:GetService("ReplicatedStorage").Package.Events
@@ -126,6 +123,16 @@ local Ex = game:GetService("ReplicatedStorage").Package.Events
 local screenGui = Instance.new("ScreenGui")
 screenGui.Parent = game.CoreGui
 
+local t = 24 * 60 * 60
+local d = isfile("ClaveGuardada.json") and t - (os.time() - game:GetService("HttpService"):JSONDecode(readfile("ClaveGuardada.json")).fecha) or 0
+
+
+local l = Instance.new("TextLabel", screenGui)
+l.Size = UDim2.new(0.3, 0, 0.1, 0)
+l.Position = UDim2.new(0.35, 0, -0.1, 0)
+l.TextColor3 = Color3.new(1, 1, 1)
+l.TextScaled = true
+l.BackgroundTransparency = 1
 
 local function SaveSwitchState(isActive, switchName)
     writefile(switchName.."_SwitchState.json", game:GetService("HttpService"):JSONEncode({SwitchOn = isActive, LastModified = os.time()}))
@@ -140,8 +147,8 @@ local function createSwitch(parent, position, switchName, initialState)
     switchButton.BackgroundColor3 = Color3.fromRGB(190, 190, 190)
     switchButton.BorderSizePixel = 0
     switchButton.Position = position
-    switchButton.Size = UDim2.new(0, 84, 0, 30)
-    switchButton.Text = ""
+    switchButton.Size = UDim2.new(0, 88, 0, 30)
+    switchButton.Text = "Reb"
     Instance.new("UICorner", switchButton).CornerRadius = UDim.new(0.4, 0)
 
     local switchBall = Instance.new("Frame")
@@ -199,6 +206,7 @@ if workspace.Others:FindFirstChild("Title") then
  end)
 
 
+
 local npcList = {
     {"Vekuta (SSJBUI)", 2.375e9},
     {"Wukong Rose", 1.65e9},
@@ -243,6 +251,20 @@ spawn(function()
     end
 end)
 
+task.spawn(function()
+    while d > 0  do
+        pcall(function()
+        if d > 0 then
+        l.Text = string.format("%02d:%02d:%02d", math.floor(d / 3600), math.floor((d % 3600) / 60), d % 60)
+        d -= 1
+        wait(1)
+    l.Text = "00:00:00"
+else
+    l.Text = "Clave no válida"
+end
+ end)
+     end
+ end)
 
 --Ciclo Para Auto = Tp Boss A Cualquier Tipo De Boss
 task.spawn(function()
