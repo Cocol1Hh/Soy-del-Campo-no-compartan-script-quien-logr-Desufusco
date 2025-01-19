@@ -275,6 +275,7 @@ task.spawn(function()
             local boss = game.Workspace.Living:FindFirstChild(data.Quest.Value)
             if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
                 lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.5)
+                Ex.p:FireServer("Blacknwhite27", 1)
                     end
                 end
             end)
@@ -311,6 +312,7 @@ task.spawn(function()
                         local boss = game.Workspace.Living:FindFirstChild("Halloween Boss")
                         if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
                             lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)
+                            Ex.p:FireServer("Blacknwhite27", 1)
                     end
                 end
             end
@@ -322,24 +324,10 @@ end)
 
 
 task.spawn(function()
-    while wait(2) do
+    while wait(1) do
         pcall(function()
-            TOD()
+            TOD() Detry()
         end)
-    end
-end)
-
-
---Ciclo Para Auto = Tierra/Bills
-task.spawn(function()
-    while wait() do
-        pcall(function()         
-            if game.PlaceId == 5151400895 and yo() <= 150e6 then
-                Ex.TP:InvokeServer("Earth")
-            elseif game.PlaceId ~= 5151400895 and yo() >= 150e6 then
-               Ex.TP:InvokeServer("Vills Planet")                                
-            end
-        end)       
     end
 end)
 
@@ -362,54 +350,43 @@ task.spawn(function()
                 for _, move in pairs(moves) do
                     if not lplr.Status:FindFirstChild(move.name) and yo() >= move.condition and Ki.Value > Ki.MaxValue * 0.20 then
                         task.spawn(function()
-                            game.ReplicatedStorage.Package.Events.mel:InvokeServer(move.name, "Blacknwhite27")
-                            game.ReplicatedStorage.Package.Events.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, "Blacknwhite27")
+                            Ex.mel:InvokeServer(move.name, "Blacknwhite27")
+                            Ex.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, "Blacknwhite27")                          
                         end)
                     end
                 end
             end
-                  for _, obj in pairs(game.Workspace:GetDescendants()) do
-            if obj:IsA("") or obj.Name == "Effects" or obj:IsA("ParticleEmitter") then
-              obj:Destroy()
-              wait(1)
-                end
-            end          
         end)
         wait()
     end
 end)
 
+function Detry()
+                    for _, obj in pairs(game.Workspace:GetDescendants()) do
+            if obj:IsA("") or obj.Name == "Effects" or obj:IsA("ParticleEmitter") then
+              obj:Destroy()
+                end
+            end          
+            if getIsActive5() then 
+game:GetService("ReplicatedStorage").Package.Events.reb:InvokeServer()
+             end
+                      if game.PlaceId == 5151400895 and yo() <= 150e6 then
+                Ex.TP:InvokeServer("Earth")
+            elseif game.PlaceId ~= 5151400895 and yo() >= 150e6 then
+               Ex.TP:InvokeServer("Vills Planet")                                
+            end
+  end
+
 
 task.spawn(function()
     while true do
         pcall(function()
-        task.spawn(function()
            game.Workspace.FallenPartsDestroyHeight = 0/0
            lplr.PlayerGui.Main.MainFrame.Frames.Quest.Visible = false
-           end)
         end)
-        task.wait()
+        wait()
     end
 end)
-
-
-task.spawn(function()
-    while task.wait() do
-        pcall(function()
-        task.spawn(function()
-        if getIsActive5() then 
-game:GetService("ReplicatedStorage").Package.Events.reb:InvokeServer()
-             end
-           if data.Quest.Value ~= "" then
-                Ex.p:FireServer("Blacknwhite27", 1)
-                Ex.p:FireServer("Blacknwhite27", 2)
-                end
-            end)
-        end)        
-    end
-end)
-
-
 
 --Ciclo para Auto = Carga en bills/Tierra
 task.spawn(function()
