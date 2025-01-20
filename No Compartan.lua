@@ -195,6 +195,14 @@ if workspace.Others:FindFirstChild("Title") then
     gui.Disabled = false
       end
  end)
+ 
+ function characterInvisible()
+	return lplr.Character
+end
+
+function player()
+	return lplr.Character and lplr.Character.Humanoid and lplr.Character.Humanoid.Health > 0 and lplr.Character:FindFirstChild("HumanoidRootPart")
+end
 
 
 local npcList = {
@@ -258,7 +266,6 @@ end)
 task.spawn(function()
     while task.wait() do
         pcall(function()
-         end)                   
             if data.Quest.Value == "" then
                 for _, npc in ipairs(npcList) do
                     local npcName, FZ = npc[1], npc[2]
@@ -276,6 +283,7 @@ task.spawn(function()
             end            
             TOD() Detry()  
             wait()
+             end)                   
     end
 end)
 
@@ -316,6 +324,7 @@ task.spawn(function()
 end)
 
 function Detry()
+pcall(function()
                     for _, obj in pairs(game.Workspace:GetDescendants()) do
             if obj:IsA("") or obj.Name == "Effects" or obj:IsA("ParticleEmitter") then
               obj:Destroy()
@@ -338,6 +347,7 @@ game:GetService("ReplicatedStorage").Package.Events.reb:InvokeServer()
                 end
             end
         end
+        end)
   end
 
 
@@ -356,6 +366,7 @@ end)
 
 --Ciclo de Todo
 function TOD()
+pcall(function()
             local kiValue = game.Players.LocalPlayer.Character:WaitForChild("Stats").Ki.Value
             local maxKi = game.Players.LocalPlayer.Character:WaitForChild("Stats").Ki.MaxValue
             local kiPercentage = kiValue / maxKi
@@ -378,6 +389,7 @@ function TOD()
         if lplr.Status.Transformation.Value ~= "None" and game.PlaceId == 5151400895 then
                     game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")            
                 end
+                end)
 end
 
 task.spawn(function()
@@ -385,7 +397,7 @@ task.spawn(function()
         pcall(function()
         task.spawn(function()
         local status = lplr.Status
-    if status.Transformation.Value == "None" then
+    if player() and characterInvisible() and status.Transformation.Value == "None" then
         for _, form in ipairs(Forms) do 
             if Ex.equipskill:InvokeServer(form) then break end 
         end
