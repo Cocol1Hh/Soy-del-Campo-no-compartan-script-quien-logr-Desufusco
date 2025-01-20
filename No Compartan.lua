@@ -303,22 +303,21 @@ end)
 
 
 task.spawn(function()
-    while true do
+    while task.wait() do
         pcall(function()
-            local boss = game.Workspace.Living:FindFirstChild(data.Quest.Value)
-            local Ki = lplr.Character.Stats.Ki
+ local boss = game.Workspace.Living:FindFirstChild(data.Quest.Value)
+ local Ki = lplr.Character.Stats.Ki
+            task.spawn(function()
             if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 and data.Quest.Value ~= "" and lplr.Character.Humanoid.Health > 0 then
                 for _, move in pairs(moves) do
                     if not lplr.Status:FindFirstChild(move.name) and yo() >= move.condition and Ki.Value > Ki.MaxValue * 0.20 then
-                        task.spawn(function()
                             Ex.mel:InvokeServer(move.name, "Blacknwhite27")
                             Ex.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, "Blacknwhite27")                          
-                        end)
+                        end
                     end
                 end
-            end
+            end)
         end)
-        wait()
     end
 end)
 
