@@ -1,136 +1,87 @@
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-local HttpService = game:GetService("HttpService")
-
+--Hola soy Fernando el q logre Descodificar este codeg fue fácil solo use página gratis para eso bueno les pido que la script no los compartan vivo en Latan y intento ganar dinero por Key otro lo coguen  y lo usan si esfuerzo esto me demore asiendo 6meses IA/Manualmente 
+--Porfa solo no comparta script toy dando gratis no es nada sacar la Key les pido  🙏 
 local ArchivoClaveGuardada = "ClaveGuardada.json"
 local ArchivoHistorial = "HistorialClaves.json"
+local HttpService = game:GetService("HttpService")
 
-local function crearGUI()
-    local KeyGui = Instance.new("ScreenGui")
-    KeyGui.Name = "KeySystemGUI"
-    KeyGui.ResetOnSpawn = false
-    KeyGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    KeyGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+local KeyGui = Instance.new("ScreenGui")
+KeyGui.Parent = game.CoreGui
 
-    local MainFrame = Instance.new("Frame")
-    MainFrame.Name = "MainFrame"
-    MainFrame.Size = UDim2.new(0, 350, 0, 400)
-    MainFrame.Position = UDim2.new(0.5, -175, 0.5, -200)
-    MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
-    MainFrame.BorderSizePixel = 0
-    MainFrame.Parent = KeyGui
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0.318272662, 0, 0.318272662, 0)
+Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+Frame.BorderSizePixel = 0
+Frame.Parent = KeyGui
 
-    local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0, 20)
-    UICorner.Parent = MainFrame
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0.05, 0)
+UICorner.Parent = Frame
 
-    local Gradient = Instance.new("UIGradient")
-    Gradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(60, 60, 70)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(40, 40, 50))
-    }
-    Gradient.Rotation = 45
-    Gradient.Parent = MainFrame
+local Gradient = Instance.new("UIGradient")
+Gradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 45, 50)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 15, 20))
+}
+Gradient.Rotation = 45
+Gradient.Parent = Frame
 
-    local Shadow = Instance.new("ImageLabel")
-    Shadow.Name = "Shadow"
-    Shadow.AnchorPoint = Vector2.new(0.5, 0.5)
-    Shadow.BackgroundTransparency = 1
-    Shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-    Shadow.Size = UDim2.new(1, 47, 1, 47)
-    Shadow.ZIndex = 0
-    Shadow.Image = "rbxassetid://6015897843"
-    Shadow.ImageColor3 = Color3.new(0, 0, 0)
-    Shadow.ImageTransparency = 0.5
-    Shadow.SliceCenter = Rect.new(49, 49, 450, 450)
-    Shadow.ScaleType = Enum.ScaleType.Slice
-    Shadow.SliceScale = 1
-    Shadow.Parent = MainFrame
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(0.950000000, 0, 0.150000000, 0)
+Title.Position = UDim2.new(0.025000000, 0, 0.050000000, 0)
+Title.BackgroundTransparency = 1
+Title.TextColor3 = Color3.fromRGB(220, 220, 220)
+Title.TextScaled = true
+Title.Font = Enum.Font.GothamBold
+Title.Text = "🔐 Sistema de Claves"
+Title.Parent = Frame
 
-    local Title = Instance.new("TextLabel")
-    Title.Name = "Title"
-    Title.Size = UDim2.new(1, 0, 0, 60)
-    Title.BackgroundTransparency = 1
-    Title.Font = Enum.Font.GothamBold
-    Title.Text = "🔐 Secure Key System"
-    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Title.TextSize = 28
-    Title.Parent = MainFrame
+local TextBox = Instance.new("TextBox")
+TextBox.Size = UDim2.new(0.900635200, 0, 0.126137561, 0)
+TextBox.Position = UDim2.new(0.049682240, 0, 0.278634136, 0)
+TextBox.PlaceholderText = "Introduce tu clave aquí"
+TextBox.Font = Enum.Font.Gotham
+TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextBox.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+TextBox.BorderSizePixel = 0
+TextBox.TextScaled = true
+TextBox.ClearTextOnFocus = false
+TextBox.Parent = Frame
 
-    local KeyInput = Instance.new("TextBox")
-    KeyInput.Name = "KeyInput"
-    KeyInput.Size = UDim2.new(0.9, 0, 0, 50)
-    KeyInput.Position = UDim2.new(0.05, 0, 0.2, 0)
-    KeyInput.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-    KeyInput.Font = Enum.Font.Gotham
-    KeyInput.PlaceholderText = "Enter your key here..."
-    KeyInput.Text = ""
-    KeyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-    KeyInput.TextSize = 16
-    KeyInput.Parent = MainFrame
+local UICornerTextBox = Instance.new("UICorner")
+UICornerTextBox.CornerRadius = UDim.new(0.05, 0)
+UICornerTextBox.Parent = TextBox
 
-    local UICornerInput = Instance.new("UICorner")
-    UICornerInput.CornerRadius = UDim.new(0, 10)
-    UICornerInput.Parent = KeyInput
+local BotonUrl = Instance.new("TextButton")
+BotonUrl.Size = UDim2.new(0.715488320, 0, 0.147448120, 0)
+BotonUrl.Position = UDim2.new(0.142255450, 0, 0.550486350, 0)
+BotonUrl.Text = "Copiar URL de Clave"
+BotonUrl.Font = Enum.Font.GothamBold
+BotonUrl.TextScaled = true
+BotonUrl.TextColor3 = Color3.fromRGB(255, 255, 255)
+BotonUrl.BackgroundColor3 = Color3.fromRGB(0, 122, 204)
+BotonUrl.BorderSizePixel = 0
+BotonUrl.Parent = Frame
 
-    local SubmitButton = Instance.new("TextButton")
-    SubmitButton.Name = "SubmitButton"
-    SubmitButton.Size = UDim2.new(0.9, 0, 0, 50)
-    SubmitButton.Position = UDim2.new(0.05, 0, 0.4, 0)
-    SubmitButton.BackgroundColor3 = Color3.fromRGB(0, 122, 204)
-    SubmitButton.Font = Enum.Font.GothamBold
-    SubmitButton.Text = "Submit Key"
-    SubmitButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    SubmitButton.TextSize = 18
-    SubmitButton.Parent = MainFrame
+local UICornerBotonUrl = Instance.new("UICorner")
+UICornerBotonUrl.CornerRadius = UDim.new(0.05, 0)
+UICornerBotonUrl.Parent = BotonUrl
 
-    local UICornerSubmit = Instance.new("UICorner")
-    UICornerSubmit.CornerRadius = UDim.new(0, 10)
-    UICornerSubmit.Parent = SubmitButton
+local BotonInvitacion = Instance.new("ImageButton")
+BotonInvitacion.Size = UDim2.new(0.097682243, 0, 0.116241136, 0)
+BotonInvitacion.Position = UDim2.new(0.870682243, 0, 0.562241136, 0)
+BotonInvitacion.Image = "rbxassetid://17085964685"
+BotonInvitacion.BackgroundTransparency = 1
+BotonInvitacion.BorderSizePixel = 0
+BotonInvitacion.Parent = Frame
 
-    local CopyURLButton = Instance.new("TextButton")
-    CopyURLButton.Name = "CopyURLButton"
-    CopyURLButton.Size = UDim2.new(0.425, 0, 0, 50)
-    CopyURLButton.Position = UDim2.new(0.05, 0, 0.6, 0)
-    CopyURLButton.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-    CopyURLButton.Font = Enum.Font.Gotham
-    CopyURLButton.Text = "Copy Key URL"
-    CopyURLButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    CopyURLButton.TextSize = 16
-    CopyURLButton.Parent = MainFrame
 
-    local UICornerCopyURL = Instance.new("UICorner")
-    UICornerCopyURL.CornerRadius = UDim.new(0, 10)
-    UICornerCopyURL.Parent = CopyURLButton
+local UICornerBotonUrl = Instance.new("UICorner")
+UICornerBotonUrl.CornerRadius = UDim.new(0.1, 0)
+UICornerBotonUrl.Parent = BotonUrl
 
-    local DiscordButton = Instance.new("TextButton")
-    DiscordButton.Name = "DiscordButton"
-    DiscordButton.Size = UDim2.new(0.425, 0, 0, 50)
-    DiscordButton.Position = UDim2.new(0.525, 0, 0.6, 0)
-    DiscordButton.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-    DiscordButton.Font = Enum.Font.Gotham
-    DiscordButton.Text = "Join Discord"
-    DiscordButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    DiscordButton.TextSize = 16
-    DiscordButton.Parent = MainFrame
-
-    local UICornerDiscord = Instance.new("UICorner")
-    UICornerDiscord.CornerRadius = UDim.new(0, 10)
-    UICornerDiscord.Parent = DiscordButton
-
-    local StatusLabel = Instance.new("TextLabel")
-    StatusLabel.Name = "StatusLabel"
-    StatusLabel.Size = UDim2.new(0.9, 0, 0, 40)
-    StatusLabel.Position = UDim2.new(0.05, 0, 0.8, 0)
-    StatusLabel.BackgroundTransparency = 1
-    StatusLabel.Font = Enum.Font.Gotham
-    StatusLabel.Text = ""
-    StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    StatusLabel.TextSize = 16
-    StatusLabel.Parent = MainFrame
-
-    return KeyGui, KeyInput, SubmitButton, CopyURLButton, DiscordButton, StatusLabel
-end
+local claveValida = false
 
 local function guardarClaveGuardada(clave)
     writefile(ArchivoClaveGuardada, HttpService:JSONEncode({clave = clave, fecha = os.time()}))
@@ -154,6 +105,7 @@ end
 local function resetearClave()
     if isfile(ArchivoClaveGuardada) then delfile(ArchivoClaveGuardada) end
 end
+
 
 local function lopoi()
 local lplr = game.Players.LocalPlayer
@@ -217,6 +169,7 @@ local function createSwitch(parent, position, switchName, initialState)
 end
 
 local getIsActive5 = createSwitch(screenGui, UDim2.new(0.2, 0, 0.120, 0), "Switch1", LoadSwitchState("Switch1"))--Farm
+
 
 task.spawn(function()
         pcall(function()
@@ -454,15 +407,21 @@ task.spawn(function()
  end)
 end
 
-local function verificarClave()
+spawn(function()
     if claveEsValida() then
         lopoi()
-    else
-        task.delay(1, verificarClave)
     end
-end
-verificarClave()
+end)
 
+spawn(function()
+    if claveEsValida() then
+        KeyGui.Enabled = false
+    else
+        KeyGui.Enabled = true
+    end
+end)
+
+-- Función para calcular la distancia de Levenshtein
 local function calcularDistanciaLevenshtein(a, b)
     local m, n = #a, #b
     local dp = {}
@@ -476,82 +435,45 @@ local function calcularDistanciaLevenshtein(a, b)
     return dp[m][n]
 end
 
-local KeyGui, KeyInput, SubmitButton, CopyURLButton, DiscordButton, StatusLabel = crearGUI()
-
-local function mostrarMensaje(mensaje, color)
-    StatusLabel.Text = mensaje
-    StatusLabel.TextColor3 = color
-    StatusLabel.TextTransparency = 1
-    local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-    local tween = TweenService:Create(StatusLabel, tweenInfo, {TextTransparency = 0})
-    tween:Play()
-    wait(2)
-    tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-    tween = TweenService:Create(StatusLabel, tweenInfo, {TextTransparency = 1})
-    tween:Play()
-end
-
-local function animateButton(button)
-    local originalColor = button.BackgroundColor3
-    local tweenInfo = TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-    local tween = TweenService:Create(button, tweenInfo, {BackgroundColor3 = Color3.fromRGB(100, 100, 110)})
-    tween:Play()
-    wait(0.1)
-    tween = TweenService:Create(button, tweenInfo, {BackgroundColor3 = originalColor})
-    tween:Play()
-end
-
-SubmitButton.MouseButton1Click:Connect(function()
-    animateButton(SubmitButton)
-    local clave = KeyInput.Text:match("KEY:%[(.-)%]$")
-    if clave and #clave == 64 and clave:match("%u") and clave:match("%l") and clave:match("%d") then
-        local historial = HttpService:JSONDecode(isfile(ArchivoHistorial) and readfile(ArchivoHistorial) or "[]")
-        local claveExistente = false
-        for _, v in pairs(historial) do
-            if calcularDistanciaLevenshtein(v, clave) <= 14 then 
-                claveExistente = true
-                break
+TextBox.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        local clave = TextBox.Text:match("KEY:%[(.-)%]$")
+        if clave and #clave == 64 and clave:match("%u") and clave:match("%l") and clave:match("%d") then
+            local historial = HttpService:JSONDecode(isfile(ArchivoHistorial) and readfile(ArchivoHistorial) or "[]")
+            local claveExistente = false
+            for _, v in pairs(historial) do
+                if calcularDistanciaLevenshtein(v, clave) <= 14 then 
+                    claveExistente = true
+                    break
+                end
             end
-        end
-        if not claveExistente then
-            guardarClaveGuardada(clave)
-            actualizarHistorial(clave)
-            KeyGui.Enabled = false
-            mostrarMensaje("Key accepted!", Color3.fromRGB(0, 255, 0))
-            -- Aquí iría la función para iniciar el script principal
+            if not claveExistente then
+                guardarClaveGuardada(clave)
+                actualizarHistorial(clave)
+                KeyGui.Enabled = false
+                lopoi()
+            else
+                TextBox.Text, TextBox.TextColor3 = "Clave Igual", Color3.fromRGB(255, 0, 0)
+            end
         else
-            mostrarMensaje("Similar key already used", Color3.fromRGB(255, 0, 0))
+            TextBox.Text, TextBox.TextColor3 = "Clave inválida", Color3.fromRGB(255, 0, 0)
         end
-    else
-        mostrarMensaje("Invalid key format", Color3.fromRGB(255, 0, 0))
+        wait(1)
+        TextBox.TextColor3, TextBox.Text = Color3.fromRGB(255, 255, 255), ""
     end
-    KeyInput.Text = ""
 end)
 
-CopyURLButton.MouseButton1Click:Connect(function()
-    animateButton(CopyURLButton)
+BotonInvitacion.MouseButton1Click:Connect(function()
     setclipboard("https://discord.com/invite/P6b85GfDdF")
-    mostrarMensaje("URL copied to clipboard", Color3.fromRGB(0, 255, 0))
 end)
 
-DiscordButton.MouseButton1Click:Connect(function()
-    animateButton(DiscordButton)
+BotonUrl.MouseButton1Click:Connect(function()
     setclipboard("https://luatt11.github.io/Keysistema/")
-    mostrarMensaje("Discord invite copied", Color3.fromRGB(0, 255, 0))
 end)
 
-spawn(function()
-    while wait() do
-        if not claveEsValida() then
-            resetearClave()
-            KeyGui.Enabled = true
-        end
+while wait() do
+    if not claveEsValida() then
+        resetearClave()
+        KeyGui.Enabled = true
     end
-end)
-
-
-if claveEsValida() then
-    KeyGui.Enabled = false
-else
-    KeyGui.Enabled = true
 end
