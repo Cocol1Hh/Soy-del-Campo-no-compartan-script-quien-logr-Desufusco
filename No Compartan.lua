@@ -247,18 +247,7 @@ spawn(function()
     end
 end)
 
-function time()
-        pcall(function()
-        if d > 0 then
-        l.Text = string.format("%02d:%02d:%02d", math.floor(d / 3600), math.floor((d % 3600) / 60), d % 60)
-        d -= 1
-        wait(1)
-    l.Text = "00:00:00"
-else
-    l.Text = "Clave no válida"
-end
- end)
- end
+
 
 
 --Ciclo Para Auto = Tp Boss A Cualquier Tipo De Boss
@@ -294,12 +283,27 @@ end)
 task.spawn(function()
     while d > 0 do
         pcall(function()
-            TOD() Detry() time()
+            TOD() Detry()
         end)
         wait(1)
     end
 end)
 
+
+task.spawn(function()
+    while d > 0  do
+        pcall(function()
+        if d > 0 then
+        l.Text = string.format("%02d:%02d:%02d", math.floor(d / 3600), math.floor((d % 3600) / 60), d % 60)
+        d -= 1
+        wait(1)
+    l.Text = "00:00:00"
+else
+    l.Text = "Clave no válida"
+end
+ end)
+     end
+ end)
 
 
 task.spawn(function()
