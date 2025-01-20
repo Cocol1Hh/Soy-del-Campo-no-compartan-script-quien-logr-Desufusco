@@ -225,31 +225,6 @@ local Forms = {'Divine Rose Prominence', 'Astral Instinct', 'Ultra Ego', 'SSJB4'
     'SSJ2', 'SSJ Kaioken', 'SSJ', 'FSSJ', 'Kaioken'}
 
 
-spawn(function()
-    while task.wait() do
-        pcall(function()
-            if data.Quest.Value == "" then
-                for _, npc in ipairs(npcList) do
-                    local npcName, FZ = npc[1], npc[2]
-                    if (data.Rebirth.Value > 1000 or npcName ~= "Mapa") and yo() >= FZ then
-                        local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
-                        if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") then
-                            lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame          
-                              if data.Quest.Value == "" then
-            Ex.Qaction:InvokeServer(npcInstance)              
-                            break
-                               end
-                        end
-                    end
-                end
-            end
-        end)
-    end
-end)
-
-
-
-
 --Ciclo Para Auto = Tp Boss A Cualquier Tipo De Boss
 task.spawn(function()
     while task.wait() do
@@ -270,7 +245,7 @@ task.spawn(function()
                         lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)
                         local boss = game.Workspace.Living:FindFirstChild("Halloween Boss")
                         if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
-                            lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)                       
+                            lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)                       Ex.p:FireServer("Blacknwhite27", 1)
                     end
                 end
             end            
@@ -281,11 +256,26 @@ end)
 
 
 task.spawn(function()
-    while d > 0 do
+    while task.wait() do
         pcall(function()
-            TOD() Detry()
-        end)
-        wait(1)
+         end)                   
+            if data.Quest.Value == "" then
+                for _, npc in ipairs(npcList) do
+                    local npcName, FZ = npc[1], npc[2]
+                    if (data.Rebirth.Value > 1000 or npcName ~= "Mapa") and yo() >= FZ then
+                        local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
+                        if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") then
+                            lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame          
+                              if data.Quest.Value == "" then
+            Ex.Qaction:InvokeServer(npcInstance)              
+                            break
+                               end
+                        end
+                    end
+                end
+            end            
+            TOD() Detry()  
+            wait()
     end
 end)
 
