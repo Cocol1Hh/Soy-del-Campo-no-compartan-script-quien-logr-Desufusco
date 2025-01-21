@@ -205,15 +205,63 @@ function player()
 end
 
 
-local npcList = {
-    {"Vekuta (SSJBUI)", 2.375e9}, {"Wukong Rose", 1.65e9}, {"Vekuta (LBSSJ4)", 1.05e9},
-    {"Wukong (LBSSJ4)", 950e6}, {"Vegetable (LBSSJ4)", 650e6}, {"Vis (20%)", 500e6},
-    {"Vills (50%)", 350e6}, {"Wukong (Omen)", 200e6}, {"Vegetable (GoD in-training)", 150e6},
-    {"SSJG Kakata", 100e6}, {"Broccoli", 38.5e6}, {"SSJB Wukong", 8e6},
-    {"Kai-fist Master", 3625000}, {"SSJ2 Wukong", 2250000}, {"Perfect Atom", 1275000},
-    {"Chilly", 950000}, {"Super Vegetable", 358000}, {"Mapa", 0}, {"Radish", 55000},
-    {"Kid Nohag", 40000}, {"Klirin", 0}
+local SelectedQuest, SelectedMob
+local questDataOutsideID = {
+    {range = {0, 200000}, options = {"Klirin", "Kid Nohag"}},
+    {range = {200001, 850000}, options = {"Mapa", "Radish"}},
+    {range = {850001, 4500000}, options = {"Super Vegetable", "Chilly"}},
+    {range = {4500001, 5000000}, options = {"Perfect Atom", "SSJ2 Wukong"}},
+    {range = {5000001, 25000000}, options = {"SSJB Wukong", "Kai-fist Master"}},
+    {range = {25000001, 50000000}, options = {"SSJB Wukong", "Broccoli"}},
+    {range = {50000001, math.huge}, options = {"SSJG Kakata", "Broccoli"}}
 }
+local questDataInsideID = {
+    {range = {100000000, 300000000}, options = {"Vegetable (GoD in-training)", "Wukong (Omen)"}},
+    {range = {300000000, 900000000}, options = {"Vills (50%)", "Vis (20%)"}},
+    {range = {900000000, 1500000000}, options = {"Vis (20%)", "Vegetable (LBSSJ4)"}},
+    {range = {1500000000, 2500000000}, options = {"Wukong (LBSSJ4)", "Vegetable (LBSSJ4)"}},
+    {range = {2500000000, math.huge}, options = {"Vekuta (SSJBUI)", "Wukong Rose"}}
+}
+
+local questData = game.PlaceId ~= 5151400895 and questDataOutsideID or questDataInsideID
+task.spawn(function()
+    while true do
+        pcall(function()
+            local lowestStat = data.Defense.Value
+            for _, quest in pairs(questData) do
+                local minRange, maxRange = quest.range[1], quest.range[2]
+                if lowestStat >= minRange and lowestStat < maxRange then
+                    for _, mob in pairs(quest.options) do
+                        local boss = game:GetService("Workspace").Living:FindFirstChild(mob)
+                        if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
+                            SelectedQuest, SelectedMob = mob, mob
+                            break
+                        end
+                    end
+                    break
+                end
+            end
+            if data.Quest.Value == "" then
+                local npc = game:GetService("Workspace").Others.NPCs:FindFirstChild(SelectedQuest)
+                if npc and npc:FindFirstChild("HumanoidRootPart") then
+                    lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
+                    game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(npc)
+                end
+            end
+            local boss = game:GetService("Workspace").Living:FindFirstChild(SelectedMob)
+            if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health <= 0 then
+                if data.Quest.Value == "" then
+                    local npc = game:GetService("Workspace").Others.NPCs:FindFirstChild(SelectedQuest)
+                    if npc and npc:FindFirstChild("HumanoidRootPart") then
+                        lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
+                        game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(npc)
+                    end
+                end
+            end
+        end)
+        wait(1)
+    end
+end)
 
 local moves = {
     {name = "Wolf Fang Fist", condition = 5000},
@@ -265,24 +313,8 @@ end)
 
 task.spawn(function()
     while task.wait() do
-        pcall(function()
-            if data.Quest.Value == "" then
-                for _, npc in ipairs(npcList) do
-                    local npcName, FZ = npc[1], npc[2]
-                    if (data.Rebirth.Value > 1000 or npcName ~= "Mapa") and yo() >= FZ then
-                        local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
-                        if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") then
-                            lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame          
-                              if data.Quest.Value == "" then
-            Ex.Qaction:InvokeServer(npcInstance)              
-                            break
-                               end
-                        end
-                    end
-                end
-            end            
+        pcall(function()          
             TOD() Detry()  
-            wait()
              end)                   
     end
 end)
@@ -325,11 +357,6 @@ end)
 
 function Detry()
 pcall(function()
-                    for _, obj in pairs(game.Workspace:GetDescendants()) do
-            if obj:IsA("") or obj.Name == "Effects" or obj:IsA("ParticleEmitter") then
-              obj:Destroy()
-                end
-            end          
             if getIsActive5() then 
 game:GetService("ReplicatedStorage").Package.Events.reb:InvokeServer()
              end
