@@ -108,6 +108,8 @@ end
 
 
 local function lopoi()
+
+
 local lplr = game.Players.LocalPlayer
 local data = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(lplr.UserId)
 task.spawn(function()
@@ -115,6 +117,29 @@ task.spawn(function()
     -- Inicio 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
+function characterInvisible()
+	return lplr.Character
+end
+
+function player()
+	return lplr.Character and lplr.Character.Humanoid and lplr.Character.Humanoid.Health > 0 and lplr.Character:FindFirstChild("HumanoidRootPart")
+end
+
+
+local sts = {"Strength", "Speed", "Defense", "Energy"}
+function yo()
+    local l = math.huge
+    for _, v in pairs(sts) do
+        local stat = data:FindFirstChild(v)
+        if not stat then return end
+        local st = stat.Value
+        if st < l then
+            l = st
+        end
+    end
+    return l
+end
+
 
 spawn(function()
     if lplr.PlayerGui:FindFirstChild("Start") then
@@ -143,37 +168,29 @@ end)
 
 
 task.spawn(function()
-    task.wait(3.5)
-    while true do
+    while task.wait() do
         pcall(function()
-            local Forms = {
-                'Divine Rose Prominence', 'Astral Instinct', 'Ultra Ego', 'SSJB4', 'True God of Creation', 
-                'True God of Destruction', 'Super Broly', 'LSSJG', 'LSSJ4', 'SSJG4', 'LSSJ3', 'Mystic Kaioken', 
-                'LSSJ Kaioken', 'SSJR3', 'SSJB3', 'God Of Destruction', 'God Of Creation', 'Jiren Ultra Instinct', 
-                'Mastered Ultra Instinct', 'Godly SSJ2', 'Ultra Instinct Omen', 'Evil SSJ', 'Blue Evolution', 
-                'Dark Rose', 'Kefla SSJ2', 'SSJ Berserker', 'True Rose', 'SSJB Kaioken', 'SSJ Rose', 
-                'SSJ Blue', 'Corrupt SSJ', 'SSJ Rage', 'SSJG', 'SSJ4', 'Mystic', 'LSSJ', 'SSJ3', 
-                'Spirit SSJ', 'SSJ2 Majin', 'SSJ2', 'SSJ Kaioken', 'SSJ', 'FSSJ', 'Kaioken'
-            }
-            local equipRemote = game:GetService("ReplicatedStorage").Package.Events.equipskill
-            local transformRemote = game:GetService("ReplicatedStorage").Package.Events.ta
-            if lplr.Character and lplr.Character.Humanoid and lplr.Character.Humanoid.Health > 0 and lplr.Character:FindFirstChild("HumanoidRootPart") then
-                for _, transformation in ipairs(Forms) do
-                    if equipRemote:InvokeServer(transformation) then
-                        break                        
-                    end
-                end
-                if lplr.Status and lplr.Status:FindFirstChild("SelectedTransformation") and lplr.Status:FindFirstChild("Transformation") then
-                    local status = lplr.Status
-                    if status.SelectedTransformation.Value ~= status.Transformation.Value then
-                        transformRemote:InvokeServer()
-                    end
-                end
-            end
-        end)
-        task.wait()
-    end
-end)
+        task.spawn(function()
+        local Forms = {'Divine Rose Prominence', 'Astral Instinct', 'Ultra Ego', 'SSJB4', 'True God of Creation', 
+    'True God of Destruction', 'Super Broly', 'LSSJG', 'LSSJ4', 'SSJG4', 'LSSJ3', 'Mystic Kaioken', 
+    'LSSJ Kaioken', 'SSJR3', 'SSJB3', 'God Of Destruction', 'God Of Creation', 'Jiren Ultra Instinct', 
+    'Mastered Ultra Instinct', 'Godly SSJ2', 'Ultra Instinct Omen', 'Evil SSJ', 'Blue Evolution', 
+    'Dark Rose', 'Kefla SSJ2', 'SSJ Berserker', 'True Rose', 'SSJB Kaioken', 'SSJ Rose', 'SSJ Blue', 
+    'Corrupt SSJ', 'SSJ Rage', 'SSJG', 'SSJ4', 'Mystic', 'LSSJ', 'SSJ3', 'Spirit SSJ', 'SSJ2 Majin', 
+    'SSJ2', 'SSJ Kaioken', 'SSJ', 'FSSJ', 'Kaioken'}
+        local status = lplr.Status
+    if player() and characterInvisible() and status.Transformation.Value == "None" then
+        for _, form in ipairs(Forms) do 
+            if game:GetService("ReplicatedStorage").Package.Events.equipskill:InvokeServer(form) then break end 
+        end
+        if status and status.SelectedTransformation.Value ~= status.Transformation.Value then
+            game:GetService("ReplicatedStorage").Package.Events.ta:InvokeServer()
+                       end
+                   end
+               end)
+           end)
+        end
+     end)
 
 
 local moves = {
@@ -201,7 +218,7 @@ task.spawn(function()
                 end
             end
         end)
-        task.wait()
+        wait()
     end
 end)
 
@@ -211,13 +228,13 @@ task.spawn(function()
         pcall(function()         
             if game.PlaceId == 5151400895 and data.Strength.Value <= 200000000 then
                 game:GetService("ReplicatedStorage").Package.Events.TP:InvokeServer("Earth")
-                task.wait(4)
+                task.wait()
             elseif game.PlaceId ~= 5151400895 and data.Strength.Value >= 200000000 then
                 game:GetService("ReplicatedStorage").Package.Events.TP:InvokeServer("Vills Planet")
-                task.wait(4)                
+                task.wait()                
             end
         end)
-        wait(1)
+        wait()
     end
 end)
 
@@ -233,6 +250,7 @@ task.spawn(function()
                         wait(1)
                     end
                     lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)
+                    game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
                 end
             end
         end)
@@ -243,15 +261,25 @@ end)
 task.spawn(function()
     while true do
         pcall(function()
-        task.spawn(function()
-             game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")
              game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
              game:GetService("ReplicatedStorage").Package.Events.reb:InvokeServer()
-            end)
+             game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")
         end)
-        task.wait()
+        wait(1)
     end
 end)
+
+task.spawn(function()
+    while task.wait() do
+        pcall(function()   
+     task.spawn(function()  
+        if game.PlaceId ~= 5151400895 then
+         game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")
+                end
+            end)
+        end)
+    end
+end)    
 
 
 local SelectedQuest, SelectedMob
