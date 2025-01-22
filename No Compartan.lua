@@ -109,7 +109,6 @@ end
 
 local function lopoi()
 
-
 local lplr = game.Players.LocalPlayer
 local data = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(lplr.UserId)
 task.spawn(function()
@@ -265,7 +264,7 @@ task.spawn(function()
              game:GetService("ReplicatedStorage").Package.Events.reb:InvokeServer()
              game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")
         end)
-        wait(1)
+        wait(.4)
     end
 end)
 
@@ -344,6 +343,7 @@ end)
 end)    
     wait(.5)
         end)
+
 end
 
 spawn(function()
