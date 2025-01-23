@@ -268,6 +268,7 @@ task.spawn(function()
     end
 end)
 
+
 task.spawn(function()
     while task.wait() do
         pcall(function()   
@@ -275,6 +276,9 @@ task.spawn(function()
         if game.PlaceId ~= 5151400895 then
          game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")
                 end
+               if data.Quest.Value ~= "" then
+               game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
+               end
             end)
         end)
     end
