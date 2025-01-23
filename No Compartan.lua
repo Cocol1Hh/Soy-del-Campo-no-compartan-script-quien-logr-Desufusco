@@ -169,7 +169,6 @@ end)
 task.spawn(function()
     while task.wait() do
         pcall(function()
-        task.spawn(function()
         local Forms = {'Divine Rose Prominence', 'Astral Instinct', 'Ultra Ego', 'SSJB4', 'True God of Creation', 
     'True God of Destruction', 'Super Broly', 'LSSJG', 'LSSJ4', 'SSJG4', 'LSSJ3', 'Mystic Kaioken', 
     'LSSJ Kaioken', 'SSJR3', 'SSJB3', 'God Of Destruction', 'God Of Creation', 'Jiren Ultra Instinct', 
@@ -185,8 +184,7 @@ task.spawn(function()
         if status and status.SelectedTransformation.Value ~= status.Transformation.Value then
             game:GetService("ReplicatedStorage").Package.Events.ta:InvokeServer()
                        end
-                   end
-               end)
+                end
            end)
         end
      end)
@@ -206,7 +204,7 @@ task.spawn(function()
         pcall(function()
             local boss = game.Workspace.Living:FindFirstChild(data.Quest.Value)
             local Ki = lplr.Character.Stats.Ki
-            if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 and data.Quest.Value ~= "" and lplr.Character.Humanoid.Health > 0 then
+            if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 and data.Quest.Value ~= "" and player() and characterInvisible() then
                 for _, move in pairs(moves) do
                     if not lplr.Status:FindFirstChild(move.name) and yo() >= move.condition and Ki.Value > Ki.MaxValue * 0.20 then
                         task.spawn(function()
@@ -233,7 +231,7 @@ task.spawn(function()
                 task.wait()                
             end
         end)
-        wait()
+        wait(.5)
     end
 end)
 
@@ -272,74 +270,52 @@ end)
 task.spawn(function()
     while task.wait() do
         pcall(function()   
-     task.spawn(function()  
-        if game.PlaceId ~= 5151400895 then
+        if game.PlaceId ~= 5151400895 and player() and characterInvisible() then
          game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")
                 end
-               if data.Quest.Value ~= "" then
+               if data.Quest.Value ~= "" and player() and characterInvisible() then
                game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
                end
-            end)
         end)
     end
 end)    
 
 
-local SelectedQuest, SelectedMob
-local questDataOutsideID = {
-    {range = {0, 200000}, options = {"Klirin", "Kid Nohag"}},
-    {range = {200001, 850000}, options = {"Mapa", "Radish"}},
-    {range = {850001, 4500000}, options = {"Super Vegetable", "Chilly"}},
-    {range = {4500001, 5000000}, options = {"Perfect Atom", "SSJ2 Wukong"}},
-    {range = {5000001, 25000000}, options = {"SSJB Wukong", "Kai-fist Master"}},
-    {range = {25000001, 50000000}, options = {"SSJB Wukong", "Broccoli"}},
-    {range = {50000001, math.huge}, options = {"SSJG Kakata", "Broccoli"}}
-}
-local questDataInsideID = {
-    {range = {100000000, 300000000}, options = {"Vegetable (GoD in-training)", "Wukong (Omen)"}},
-    {range = {300000000, 900000000}, options = {"Vills (50%)", "Vis (20%)"}},
-    {range = {900000000, 1500000000}, options = {"Vis (20%)", "Vegetable (LBSSJ4)"}},
-    {range = {1500000000, 2500000000}, options = {"Wukong (LBSSJ4)", "Vegetable (LBSSJ4)"}},
-    {range = {2500000000, math.huge}, options = {"Vekuta (SSJBUI)", "Wukong Rose"}}
+local questData = game.PlaceId ~= 5151400895 and {
+    {0, 2e5, {"Klirin", "Kid Nohag"}}, {2e5, 8.5e5, {"Mapa", "Radish"}}, {8.5e5, 4.5e6, {"Super Vegetable", "Chilly"}},
+    {4.5e6, 5e6, {"Perfect Atom", "SSJ2 Wukong"}}, {5e6, 2.5e7, {"SSJB Wukong", "Kai-fist Master"}},
+    {2.5e7, 5e7, {"SSJB Wukong", "Broccoli"}}, {5e7, math.huge, {"SSJG Kakata", "Broccoli"}}
+} or {
+    {1e8, 3e8, {"Vegetable (GoD in-training)", "Wukong (Omen)"}}, {3e8, 9e8, {"Vills (50%)", "Vis (20%)"}},
+    {9e8, 1.5e9, {"Vis (20%)", "Vegetable (LBSSJ4)"}}, {1.5e9, 2.5e9, {"Wukong (LBSSJ4)", "Vegetable (LBSSJ4)"}},
+    {2.5e9, math.huge, {"Vekuta (SSJBUI)", "Wukong Rose"}}
 }
 
-local questData = game.PlaceId ~= 5151400895 and questDataOutsideID or questDataInsideID
 task.spawn(function()
-    while true do
+    while task.wait() do
         pcall(function()
-            local lowestStat = data.Defense.Value
-            for _, quest in pairs(questData) do
-                local minRange, maxRange = quest.range[1], quest.range[2]
-                if lowestStat >= minRange and lowestStat < maxRange then
-                    for _, mob in pairs(quest.options) do
-                        local boss = game:GetService("Workspace").Living:FindFirstChild(mob)
-                        if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
-                            SelectedQuest, SelectedMob = mob, mob
-                            break
+            if player() and characterInvisible() then
+                for _, quest in ipairs(questData) do
+                    if data.Defense.Value >= quest[1] and data.Defense.Value < quest[2] then
+                        local currentQuestMob = game.Workspace.Living:FindFirstChild(data.Quest.Value)
+                        if data.Quest.Value ~= "" and (not currentQuestMob or not currentQuestMob:FindFirstChild("Humanoid")) then
+                            data.Quest.Value = ""
                         end
-                    end
-                    break
-                end
-            end
-            if data.Quest.Value == "" then
-                local npc = game:GetService("Workspace").Others.NPCs:FindFirstChild(SelectedQuest)
-                if npc and npc:FindFirstChild("HumanoidRootPart") then
-                    lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
-                    game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(npc)
-                end
-            end
-            local boss = game:GetService("Workspace").Living:FindFirstChild(SelectedMob)
-            if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health <= 0 then
-                if data.Quest.Value == "" then
-                    local npc = game:GetService("Workspace").Others.NPCs:FindFirstChild(SelectedQuest)
-                    if npc and npc:FindFirstChild("HumanoidRootPart") then
-                        lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
-                        game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(npc)
+                        if data.Quest.Value == "" then
+                            for _, mob in ipairs(quest[3]) do
+                                local npc = game.Workspace.Others.NPCs:FindFirstChild(mob)
+                                local boss = game.Workspace.Living:FindFirstChild(mob)
+                                if npc and boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
+                                    lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
+                                    game.ReplicatedStorage.Package.Events.Qaction:InvokeServer(npc)
+                                    return
+                                end
+                            end
+                        end
                     end
                 end
             end
         end)
-        wait()
     end
 end)
 
