@@ -921,7 +921,9 @@ task.spawn(function()
              game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
                    end)
                  end
-             game:GetService("ReplicatedStorage").Package.Events.reb:InvokeServer()             
+                 if getIsActive5() then
+             game:GetService("ReplicatedStorage").Package.Events.reb:InvokeServer()           
+                     end  
                   if game.PlaceId == 5151400895 and yo() <= 200000000 and getIsActive10() then
                 game:GetService("ReplicatedStorage").Package.Events.TP:InvokeServer("Earth")
                 wait()
