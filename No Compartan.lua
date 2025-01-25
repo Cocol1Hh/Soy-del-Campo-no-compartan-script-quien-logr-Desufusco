@@ -873,14 +873,8 @@ end)
 task.spawn(function()
     while task.wait() do
         pcall(function()
-        if player() and characterInvisible() then
-        local Ki = lplr.Character.Stats.Ki
-        if Ki.Value < Ki.MaxValue * 0.32 and getIsActive4() then
-        game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")        
-            end    
-             pcall(function()
-            local questValue = data.Quest.Value
-            if questValue ~= "" and getIsActive1() then
+        local questValue = data.Quest.Value
+            if questValue ~= "" and getIsActive1() and player() and characterInvisible() then
                 local boss = game.Workspace.Living:FindFirstChild(questValue)
                 if boss and boss:FindFirstChild("HumanoidRootPart") then
                     if boss:FindFirstChild("Humanoid") and boss.Humanoid.Health <= 0 then
@@ -888,9 +882,18 @@ task.spawn(function()
                     lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)      
                      game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)              
                     end                 
-                  end
-               end)
-             end
+               end
+         end)
+      end
+  end)
+
+task.spawn(function()
+    while task.wait() do
+        pcall(function()
+        local Ki = lplr.Character.Stats.Ki
+        if Ki.Value < Ki.MaxValue * 0.32 and player() and characterInvisible() and getIsActive4() then
+        game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")        
+               end    
          end)
       end
   end)
@@ -1148,7 +1151,7 @@ BotonUrl.MouseButton1Click:Connect(function()
     setclipboard("https://luatt11.github.io/Keysistema/")
 end)
 
-while task.wait() do
+while wait() do
     if not claveEsValida() then
         resetearClave()
         KeyGui.Enabled = true
