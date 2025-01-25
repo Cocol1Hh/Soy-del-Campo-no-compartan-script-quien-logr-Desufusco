@@ -848,6 +848,7 @@ local moves = {
 }
 
 task.spawn(function()
+  data.Quest.Value = ""
     while wait() do
         pcall(function()
         if getIsActive3() and player() and characterInvisible() then
@@ -872,34 +873,32 @@ end)
 task.spawn(function()
     while task.wait() do
         pcall(function()
+        if player() and characterInvisible() then
         local Ki = lplr.Character.Stats.Ki
-        if Ki.Value < Ki.MaxValue * 0.32 and player() and characterInvisible() and getIsActive4() then
+        if Ki.Value < Ki.MaxValue * 0.32 and getIsActive4() then
         game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")        
             end    
-         end)
-      end
-  end)
-
-task.spawn(function()
-    while task.wait() do
-        pcall(function()
+             pcall(function()
             local questValue = data.Quest.Value
-            if questValue ~= "" and player() and characterInvisible() and getIsActive1() then
+            if questValue ~= "" and getIsActive1() then
                 local boss = game.Workspace.Living:FindFirstChild(questValue)
                 if boss and boss:FindFirstChild("HumanoidRootPart") then
                     if boss:FindFirstChild("Humanoid") and boss.Humanoid.Health <= 0 then
                     end
                     lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)      
-                    game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)              
-                end                 
-            end
-        end)
-    end
-end)
+                     game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)              
+                    end                 
+                  end
+               end)
+             end
+         end)
+      end
+  end)
+
 
 task.spawn(function()
     while true do
-        if data.Quest.Value ~= "" then
+        if data.Quest.Value ~= "" and player() and characterInvisible() then
             wait(2)
             for _, npc in ipairs(game.Workspace.Others.NPCs:GetChildren()) do
                 if npc:FindFirstChild("HumanoidRootPart") and (npc.HumanoidRootPart.Position - lplr.Character.HumanoidRootPart.Position).Magnitude <= 500 and npc.Name ~= "Halloween NPC" then
@@ -911,29 +910,6 @@ task.spawn(function()
         wait()
     end
 end)
-
-
-task.spawn(function()
-    while wait() do
-        pcall(function()        
-           if lplr.Status.Blocking.Value ~= true and getIsActive4() then
-           pcall(function()
-             game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
-                   end)
-                 end
-                 if getIsActive5() then
-             game:GetService("ReplicatedStorage").Package.Events.reb:InvokeServer()           
-                     end  
-                  if game.PlaceId == 5151400895 and yo() <= 200000000 and getIsActive10() then
-                game:GetService("ReplicatedStorage").Package.Events.TP:InvokeServer("Earth")
-                wait()
-            elseif game.PlaceId ~= 5151400895 and yo() >= 200000000 and getIsActive10() then
-                game:GetService("ReplicatedStorage").Package.Events.TP:InvokeServer("Vills Planet")
-                end
-        end)       
-    end
-end)
-
 
 local questData = game.PlaceId ~= 5151400895 and {
     {0, 2e5, {"Klirin", "Kid Nohag"}}, {2e5, 8.5e5, {"Mapa", "Radish"}}, {8.5e5, 4.5e6, {"Super Vegetable", "Chilly"}},
@@ -947,8 +923,23 @@ local questData = game.PlaceId ~= 5151400895 and {
 
 task.spawn(function()
     while wait(.5) do
-        pcall(function()
-            if player() and characterInvisible() and getIsActive1() then
+        pcall(function()        
+        if player() and characterInvisible() then
+           if lplr.Status.Blocking.Value ~= true and getIsActive4() then
+           pcall(function()
+             game:GetService("ReplicatedStorage").Package.Events.block:InvokeServer(true)
+                   end)
+                 end
+                 if getIsActive5() then
+             game:GetService("ReplicatedStorage").Package.Events.reb:InvokeServer()           
+                     end  
+                  if game.PlaceId == 5151400895 and yo() <= 200000000 and getIsActive10() then
+                game:GetService("ReplicatedStorage").Package.Events.TP:InvokeServer("Earth")
+            elseif game.PlaceId ~= 5151400895 and yo() >= 200000000 and getIsActive10() then
+                game:GetService("ReplicatedStorage").Package.Events.TP:InvokeServer("Vills Planet")
+                end
+                pcall(function()
+               if getIsActive1() then
                 for _, quest in ipairs(questData) do
                     if yo() >= quest[1] and yo() < quest[2] then
                         local currentQuestMob = game.Workspace.Living:FindFirstChild(data.Quest.Value)
@@ -965,18 +956,20 @@ task.spawn(function()
                                     return
                                 end
                             end
-                        end
-                    end
-                end
+                         end
+                     end
+                  end
+              end
+          end)
             end
-        end)
+        end)       
     end
 end)
 
 spawn(function()
 while wait(100) do
    pcall(function()
-        game:GetService('Players').LocalPlayer.Idled:Connect(function()
+        lplr.Idled:Connect(function()
          local bb = game:GetService('VirtualUser')
          bb:CaptureController()
           bb:ClickButton2(Vector2.new())          
