@@ -9,7 +9,7 @@ local personalizedUsers = {
 }
 
 local personalizedKeyDuration = 30 * 86400 
-local regularKeyDuration = 18 * 3600  
+local regularKeyDuration = 24 * 3600  
 
 local function readJsonFile(filename)
     if isfile(filename) then
@@ -1194,4 +1194,3 @@ else
 end
 
 gui.Enabled = not isKeyValid()
-
