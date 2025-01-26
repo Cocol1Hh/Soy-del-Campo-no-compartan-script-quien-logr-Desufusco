@@ -797,7 +797,6 @@ spawn(function()
         Ex.Start:InvokeServer()
         if game:GetService("Workspace").Others:FindFirstChild("Title") then
             game:GetService("Workspace").Others.Title:Destroy()
-            game.Workspace.FallenPartsDestroyHeight = 0/0
         end
         local cam = Workspace.CurrentCamera
         cam.CameraType = Enum.CameraType.Custom
@@ -937,15 +936,30 @@ task.spawn(function()
    end)             
   
 
-local questData = (game.PlaceId ~= 5151400895) and {
-    {0, 2e5, {"Klirin", "Kid Nohag"}}, {2e5, 8.5e5, {"Mapa", "Radish"}}, {8.5e5, 4.5e6, {"Super Vegetable", "Chilly"}},
-    {4.5e6, 5e6, {"Perfect Atom", "SSJ2 Wukong"}}, {5e6, 2.5e7, {"SSJB Wukong", "Kai-fist Master"}},
-    {2.5e7, 5e7, {"SSJB Wukong", "Broccoli"}}, {5e7, math.huge, {"SSJG Kakata", "Broccoli"}}
-} or {
-    {1e8, 3e8, {"Vegetable (GoD in-training)", "Wukong (Omen)"}}, {3e8, 9e8, {"Vills (50%)", "Vis (20%)"}},
-    {9e8, 1.5e9, {"Vis (20%)", "Vegetable (LBSSJ4)"}}, {1.5e9, 2.5e9, {"Wukong (LBSSJ4)", "Vegetable (LBSSJ4)"}},
-    {2.5e9, math.huge, {"Vekuta (SSJBUI)", "Wukong Rose"}}
+local npcList = {
+    {"Vekuta (SSJBUI)", 2.375e9},
+    {"Wukong Rose", 1.65e9},
+    {"Vekuta (LBSSJ4)", 1.05e9},
+    {"Wukong (LBSSJ4)", 950e6},
+    {"Vegetable (LBSSJ4)", 650e6},
+    {"Vis (20%)", 500e6},
+    {"Vills (50%)", 350e6},
+    {"Wukong (Omen)", 200e6},
+    {"Vegetable (GoD in-training)", 150e6},
+    {"SSJG Kakata", 100e6},
+    {"Broccoli", 45.5e6},
+    {"SSJB Wukong", 8e6},
+    {"Kai-fist Master", 3625000},
+    {"SSJ2 Wukong", 2250000},
+    {"Perfect Atom", 1275000},
+    {"Chilly", 950000},
+    {"Super Vegetable", 358000},
+    {"Mapa", 0},
+    {"Radish", 55000},
+    {"Kid Nohag", 40000},
+    {"Klirin", 0}
 }
+
 
 
 task.spawn(function()
@@ -965,20 +979,30 @@ task.spawn(function()
                 Ex.TP:InvokeServer("Earth")
             elseif game.PlaceId ~= 5151400895 and yo() >= 200000000 and getIsActive10() then
                 Ex.TP:InvokeServer("Vills Planet")
-                end
-      if data.Quest.Value ~= "" then return end
-            for _, quest in ipairs(questData) do
-                if data.Defense.Value >= quest[1] and data.Defense.Value < quest[2] then
-                    for _, mob in ipairs(quest[3]) do
-                        local npc, boss = game.Workspace.Others.NPCs:FindFirstChild(mob), game.Workspace.Living:FindFirstChild(mob)
-                        if npc and boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
-                            lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
-                            game.ReplicatedStorage.Package.Events.Qaction:InvokeServer(npc)
-                            return
+                end    
+              if data.Quest.Value == "" and getIsActive1() then
+            for i, npc in ipairs(npcList) do
+                local npcName, requisito = npc[1], npc[2]
+                if (data.Rebirth.Value > 1000 or npcName ~= "Mapa") and yo() >= requisito then
+                    local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
+                    local bossInstance = game.Workspace.Living:FindFirstChild(npcName)                    
+                    if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
+                       (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
+                        lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame
+                        game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(npcInstance)
+                        break
+                    elseif i > 1 then
+                        local prevNpc = npcList[i-1][1]
+                        local prevNpcInstance = game.Workspace.Others.NPCs:FindFirstChild(prevNpc)
+                        if prevNpcInstance and prevNpcInstance:FindFirstChild("HumanoidRootPart") then
+                            lplr.Character.HumanoidRootPart.CFrame = prevNpcInstance.HumanoidRootPart.CFrame
+                            game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(prevNpcInstance)
+                            break
+                         end
                         end
                     end
                 end
-            end
+           end
             end
         end)       
     end
