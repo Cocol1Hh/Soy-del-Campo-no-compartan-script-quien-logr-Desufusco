@@ -861,24 +861,6 @@ task.spawn(function()
      
     
      
- task.spawn(function()
- game.Workspace.FallenPartsDestroyHeight = 0/0
- lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)                        
-    while true do
-        pcall(function()
-        local boss = game.Workspace.Living:FindFirstChild("Halloween Boss")
-            if game.PlaceId ~= 5151400895 and data.Quest.Value == "" and getIsActive12() and boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0  and yo() >= 9e7 then
-                        lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)                        
-                        if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
-                            lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)                                          
-                           Ex.p:FireServer("Blacknwhite27",1)    
-                    end
-            end
-        end)
-        task.wait()
-    end
-end)
-
 
 local moves = {
     {name = "Wolf Fang Fist", condition = 5000},
