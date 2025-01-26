@@ -871,12 +871,10 @@ task.spawn(function()
                         lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)                        
                         if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
                             lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)                 
-                          spawn(function()                  
-                          if lplr.Status.Transformation.Value ~= "None" then 
+                          spawn(function()                                      
                            Ex.p:FireServer("Blacknwhite27",1)    
                            Ex.mel:InvokeServer("Mach Kick", "Blacknwhite27")  
-                           Ex.mel:InvokeServer("High Power Rush", "Blacknwhite27")  
-                           end                                
+                           Ex.mel:InvokeServer("High Power Rush", "Blacknwhite27")                                                       
                        end)                
                     end
             end
