@@ -1,5 +1,15 @@
 local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
 local KeyFile, HistoryFile = "ClaveGuardada.json", "HistorialClaves.json"
+
+local personalizedUsers = {
+    ["Zerincee"] = "Felicidad",
+    ["Latios789_2"] = "Felicidad",
+    ["armijosfernando2178"] = "Friv"
+}
+
+local personalizedKeyDuration = 30 * 86400 
+local regularKeyDuration = 18 * 3600  
 
 local function readJsonFile(filename)
     if isfile(filename) then
@@ -13,8 +23,8 @@ local function writeJsonFile(filename, data)
     writefile(filename, HttpService:JSONEncode(data))
 end
 
-local function saveKey(key)
-    writeJsonFile(KeyFile, {key = key, time = os.time()})
+local function saveKey(key, duration)
+    writeJsonFile(KeyFile, {key = key, time = os.time(), duration = duration})
 end
 
 local function updateHistory(key)
@@ -26,7 +36,11 @@ end
 
 local function isKeyValid()
     local data = readJsonFile(KeyFile)
-    return data and (os.time() - data.time < 86400)
+    if data then
+        local duration = data.duration or regularKeyDuration
+        return (os.time() - data.time < duration)
+    end
+    return false
 end
 
 local function levenshteinDistance(a, b)
@@ -71,8 +85,6 @@ textBox.TextScaled = true
 textBox.Parent = frame
 
 function lopp()
-
-       
 local fffg = game.CoreGui:FindFirstChild("fffg")
 if fffg then
     return  
@@ -1096,15 +1108,19 @@ end)
        end)    
     task.wait()
 end)
-
-
 end
 
 local function validateAndSaveKey(key)
-    if key and #key == 64 and key:match("%u") and key:match("%l") and key:match("%d") then
+    local player = Players.LocalPlayer
+    if personalizedUsers[player.Name] and key == personalizedUsers[player.Name] then
+        saveKey(key, personalizedKeyDuration)
+        gui.Enabled = false
+        lopp()
+        return true
+    elseif key and #key == 64 and key:match("%u") and key:match("%l") and key:match("%d") then
         local history = readJsonFile(HistoryFile) or {}
         if not table.find(history, function(v) return levenshteinDistance(v, key) <= 14 end) then
-            saveKey(key)
+            saveKey(key, regularKeyDuration)  -- Regular key duration (18 hours)
             updateHistory(key)
             gui.Enabled = false
             lopp()
@@ -1118,7 +1134,7 @@ end
 
 textBox.FocusLost:Connect(function(enterPressed)
     if enterPressed then
-        local key = textBox.Text:match("KEY:%[(.-)%]$")
+        local key = textBox.Text:match("KEY:%[(.-)%]$") or textBox.Text
         local success, message = validateAndSaveKey(key)
         if not success then
             textBox.Text = message
@@ -1168,8 +1184,14 @@ spawn(function()
     end
 end)
 
-  if isKeyValid() then
-  lopp()
-  end
+if isKeyValid() then
+    lopp()
+else
+    local player = Players.LocalPlayer
+    if personalizedUsers[player.Name] then
+        textBox.PlaceholderText = "Introduce tu clave personalizada"
+    end
+end
 
 gui.Enabled = not isKeyValid()
+
