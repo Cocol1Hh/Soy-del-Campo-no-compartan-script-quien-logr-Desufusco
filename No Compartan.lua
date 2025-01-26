@@ -870,12 +870,8 @@ task.spawn(function()
             if game.PlaceId ~= 5151400895 and data.Quest.Value == "" and getIsActive12() and boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0  and yo() >= 5e7 then
                         lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)                        
                         if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
-                            lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)                 
-                          spawn(function()                                      
+                            lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)                                          
                            Ex.p:FireServer("Blacknwhite27",1)    
-                           Ex.mel:InvokeServer("Mach Kick", "Blacknwhite27")  
-                           Ex.mel:InvokeServer("High Power Rush", "Blacknwhite27")                                                       
-                       end)                
                     end
             end
         end)
@@ -928,16 +924,21 @@ task.spawn(function()
                     lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)      
                      Ex.p:FireServer("Blacknwhite27",1)              
                     end                 
-               end
-               task.spawn(function()
-                 local Ki = lplr.Character.Stats.Ki
-                   if Ki.Value < Ki.MaxValue * 0.25 and player() and characterInvisible() and getIsActive4() then
-                       Ex.cha:InvokeServer("Blacknwhite27")        
-                  end    
-              end)             
+               end               
          end)
       end
   end)
+  
+  task.spawn(function()
+  while task.wait() do
+  pcall(function()
+    local Ki = lplr.Character.Stats.Ki
+    if Ki.Value < Ki.MaxValue * 0.25 and player() and characterInvisible() and getIsActive4() then
+         Ex.cha:InvokeServer("Blacknwhite27")        
+         end
+       end)
+     end    
+   end)             
   
 
 local questData = game.PlaceId ~= 5151400895 and {
