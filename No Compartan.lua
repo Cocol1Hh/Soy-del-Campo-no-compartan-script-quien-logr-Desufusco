@@ -867,7 +867,7 @@ task.spawn(function()
     while true do
         pcall(function()
         local boss = game.Workspace.Living:FindFirstChild("Halloween Boss")
-            if game.PlaceId ~= 5151400895 and data.Quest.Value == "" and getIsActive12() and boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0  and yo() >= 5e7 then
+            if game.PlaceId ~= 5151400895 and data.Quest.Value == "" and getIsActive12() and boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0  and yo() >= 9e7 then
                         lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)                        
                         if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
                             lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)                                          
@@ -901,8 +901,10 @@ task.spawn(function()
                     if not lplr.Status:FindFirstChild(move.name) and yo() >= move.condition and Ki.Value > Ki.MaxValue * 0.14 then
                         task.spawn(function()
                             Ex.mel:InvokeServer(move.name, "Blacknwhite27")
-                            Ex.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, "Blacknwhite27")           
-                          Ex.cha:InvokeServer("Blacknwhite27")                            
+                            Ex.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, "Blacknwhite27")    
+                         if game.PlaceId ~= 5151400895 then
+                          Ex.cha:InvokeServer("Blacknwhite27")            
+                            end                
                         end)
                     end
                 end
@@ -921,7 +923,7 @@ task.spawn(function()
                 if boss and boss:FindFirstChild("HumanoidRootPart") then
                     if boss:FindFirstChild("Humanoid") and boss.Humanoid.Health <= 0 then
                     end
-                    lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)      
+                    lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 7)      
                      Ex.p:FireServer("Blacknwhite27",1)              
                     end                 
                end               
@@ -941,7 +943,7 @@ task.spawn(function()
    end)             
   
 
-local questData = game.PlaceId ~= 5151400895 and {
+local questData = (game.PlaceId ~= 5151400895) and {
     {0, 2e5, {"Klirin", "Kid Nohag"}}, {2e5, 8.5e5, {"Mapa", "Radish"}}, {8.5e5, 4.5e6, {"Super Vegetable", "Chilly"}},
     {4.5e6, 5e6, {"Perfect Atom", "SSJ2 Wukong"}}, {5e6, 2.5e7, {"SSJB Wukong", "Kai-fist Master"}},
     {2.5e7, 5e7, {"SSJB Wukong", "Broccoli"}}, {5e7, math.huge, {"SSJG Kakata", "Broccoli"}}
@@ -950,6 +952,7 @@ local questData = game.PlaceId ~= 5151400895 and {
     {9e8, 1.5e9, {"Vis (20%)", "Vegetable (LBSSJ4)"}}, {1.5e9, 2.5e9, {"Wukong (LBSSJ4)", "Vegetable (LBSSJ4)"}},
     {2.5e9, math.huge, {"Vekuta (SSJBUI)", "Wukong Rose"}}
 }
+
 
 task.spawn(function()
     while wait(.5) do
@@ -969,29 +972,19 @@ task.spawn(function()
             elseif game.PlaceId ~= 5151400895 and yo() >= 200000000 and getIsActive10() then
                 Ex.TP:InvokeServer("Vills Planet")
                 end
-                pcall(function()
-               if getIsActive1() then
-                for _, quest in ipairs(questData) do
-                    if yo() >= quest[1] and yo() < quest[2] then
-                        local currentQuestMob = game.Workspace.Living:FindFirstChild(data.Quest.Value)
-                        if data.Quest.Value ~= "" and (not currentQuestMob or not currentQuestMob:FindFirstChild("Humanoid")) then
-                            data.Quest.Value = ""
+      if data.Quest.Value ~= "" then return end
+            for _, quest in ipairs(questData) do
+                if data.Defense.Value >= quest[1] and data.Defense.Value < quest[2] then
+                    for _, mob in ipairs(quest[3]) do
+                        local npc, boss = game.Workspace.Others.NPCs:FindFirstChild(mob), game.Workspace.Living:FindFirstChild(mob)
+                        if npc and boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
+                            lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
+                            game.ReplicatedStorage.Package.Events.Qaction:InvokeServer(npc)
+                            return
                         end
-                        if data.Quest.Value == "" then
-                            for _, mob in ipairs(quest[3]) do
-                                local npc = game.Workspace.Others.NPCs:FindFirstChild(mob)
-                                local boss = game.Workspace.Living:FindFirstChild(mob)
-                                if npc and boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
-                                    lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
-                                    Ex.Qaction:InvokeServer(npc)
-                                       return
-                                   end
-                               end
-                            end
-                        end
-                     end
-                  end
-               end)
+                    end
+                end
+            end
             end
         end)       
     end
