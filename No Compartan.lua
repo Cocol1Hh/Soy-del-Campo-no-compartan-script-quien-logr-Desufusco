@@ -106,6 +106,8 @@ local UserInputService = game:GetService("UserInputService")--Barra
 local lplr = game.Players.LocalPlayer
 local data = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(lplr.UserId)
 local Ex = game:GetService("ReplicatedStorage").Package.Events
+local HttpService = game:GetService("HttpService")
+local KeyFile = "ClaveGuardada.json"
 
 Fernando.Name = "fffg"
 Fernando.Parent = game.CoreGui
@@ -387,6 +389,17 @@ time.Image = "rbxassetid://126015597245029"
 time.MouseButton1Click:Connect(function()
 Ex.TP:InvokeServer("Hyperbolic Time Chamber")
 end)
+
+local textLabel = Instance.new("TextLabel")
+textLabel.Size = UDim2.new(0.135, 0, 0.05, 0)
+textLabel.Position = UDim2.new(0.42, 0, 0.012, 0)
+textLabel.Font = Enum.Font.GothamBold
+textLabel.TextScaled = true
+textLabel.TextColor3 = Color3.new(1, 1, 1)
+textLabel.BackgroundTransparency = 1
+textLabel.Text = "0"
+textLabel.Parent = Barra1
+
 
 local forms = {"Divine Rose Prominence", "Astral Instinct", "Ultra Ego", "SSJBUI", "Beast", "LSSJ4"}
 local frame = Instance.new("Frame", Barra2)
@@ -727,6 +740,23 @@ if selectedForm then
     end
 end
 
+--Key lector
+local function getTimeRemaining()
+    if isfile(KeyFile) then
+        local data = HttpService:JSONDecode(readfile(KeyFile))
+        local remainingTime = data.duration - (os.time() - data.time)
+        return remainingTime > 0 and remainingTime or 0
+    end
+    return 0
+end
+
+local function formatTime(seconds)
+    local hours = math.floor(seconds / 3600)
+    local minutes = math.floor((seconds % 3600) / 60)
+    local secs = seconds % 60
+    return string.format("%02d:%02d:%02d", hours, minutes, secs)
+end
+
 
 local getIsActive1 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.120, 0), "Switch1", LoadSwitchState("Switch1"))--Farm
 local getIsActive2 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.115, 0), "Switch2", LoadSwitchState("Switch2"))--Ozaru
@@ -945,28 +975,22 @@ task.spawn(function()
       end
   end)
   
-  task.spawn(function()
-  while task.wait() do
-  pcall(function()
+task.spawn(function()
+    while task.wait() do
+      pcall(function()
     local Ki = lplr.Character.Stats.Ki
     if Ki.Value < Ki.MaxValue * 0.25 and player() and characterInvisible() and getIsActive4() then
          Ex.cha:InvokeServer("Blacknwhite27")        
          end
-       end)
-     end    
-   end)             
-   
-task.spawn(function()
-  while task.wait() do
-  pcall(function()
-  if getIsActive1() then
-      lplr.Character.Humanoid:ChangeState(11)
+         if getIsActive1() then
+         lplr.Character.Humanoid:ChangeState(11)
 	      lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0) 
 	       end
        end)
      end    
    end)             
-  
+   
+
 
 local npcList = {
     {"Vekuta (SSJBUI)", 2.375e9},
@@ -1052,7 +1076,20 @@ while wait(100) do
   end)
     end
 end)    
-            
+           
+
+
+function quets()
+   if data.Quest.Value ~= "" and player() and characterInvisible() then
+         wait(2)
+       for _, npc in ipairs(game.Workspace.Others.NPCs:GetChildren()) do
+          if npc:FindFirstChild("HumanoidRootPart") and (npc.HumanoidRootPart.Position - lplr.Character.HumanoidRootPart.Position).Magnitude <= 500 and npc.Name ~= "Halloween NPC" then
+              data.Quest.Value = ""
+                break
+               end
+          end
+       end
+    end            
 
 task.spawn(function()
     if data:FindFirstChild("Allignment") then
@@ -1082,6 +1119,15 @@ game:GetService("UserInputService").InputBegan:Connect(function()
 end)
 
 
+
+task.spawn(function()
+    while wait(.4) do
+    pcall(function()
+    loadServerData()
+    quets() 
+      end)
+    end
+ end)
 
 
 task.spawn(function()
@@ -1132,33 +1178,44 @@ task.spawn(function()
             formatNumber(nextRebirth),
             formatNumber(strengthValue),
             formatNumber(additionalStrength),
-            formatNumber(rebirthValue))        
+            formatNumber(rebirthValue))    
             
-            if data.Quest.Value ~= "" and player() and characterInvisible() then
-            wait(2)
-            for _, npc in ipairs(game.Workspace.Others.NPCs:GetChildren()) do
-                if npc:FindFirstChild("HumanoidRootPart") and (npc.HumanoidRootPart.Position - lplr.Character.HumanoidRootPart.Position).Magnitude <= 500 and npc.Name ~= "Halloween NPC" then
-                    data.Quest.Value = ""
-                    break
-                        end
-                     end
-                  end
+            local remainingTime = getTimeRemaining()
+           textLabel.Text = formatTime(remainingTime)
+           
+               updateTimer()
+              local currentRebirthValue = data.Rebirth.Value
+        if currentRebirthValue > previousRebirthValue then
+            game.ReplicatedStorage.RebirthTimeValue.Value = tick()
+            previousRebirthValue = currentRebirthValue
+        end
+        if isInTargetPlace() then
+            if not hasReinitialized then
+                game.ReplicatedStorage.RebirthTimeValue.Value = tick()
+                previousRebirthValue = currentRebirthValue
+                hasReinitialized = true
+            end
+        else
+            hasReinitialized = false
+          end
+           saveRebirthData()
                 end                                     
-         end)
+         end)        
     end
 end)
 
 task.spawn(function()
-    while flying and task.wait() and player() and characterInvisible() do
+    while flying do
         pcall(function()
             local hum = lplr.Character and lplr.Character:FindFirstChild("Humanoid")
             if hum and hum.MoveDirection.Magnitude > 0 then
                 lplr.Character:TranslateBy(hum.MoveDirection * speed)
             end
-            loadServerData()
         end)
+        task.wait()
     end
 end)
+
 
 --fin de todo \/
        end)    
