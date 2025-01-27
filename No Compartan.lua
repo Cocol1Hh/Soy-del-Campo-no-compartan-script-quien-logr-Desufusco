@@ -907,6 +907,26 @@ task.spawn(function()
     end
 end)
 
+ task.spawn(function()
+ lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)                        
+    while true do
+        pcall(function()
+        local boss = game.Workspace.Living:FindFirstChild("Halloween Boss")
+            if game.PlaceId ~= 5151400895 and data.Quest.Value == "" and getIsActive12() and boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0  and yo() >= 5e7 then
+                        lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)                        
+                        if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
+                            lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)                 
+                          spawn(function()                  
+                           Ex.p:FireServer("Blacknwhite27",1)    
+                           Ex.mel:InvokeServer("Wolf Fang Fist", "Blacknwhite27")                                  
+                       end)                
+                    end
+            end
+        end)
+        task.wait()
+    end
+end)
+
 task.spawn(function()
     while task.wait() do
         pcall(function()
