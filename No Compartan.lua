@@ -948,8 +948,8 @@ local npcList = {
     {"Vegetable (GoD in-training)", 150e6},
     {"SSJG Kakata", 100e6},
     {"Broccoli", 45.5e6},
-    {"SSJB Wukong", 8e6},
-    {"Kai-fist Master", 3625000},
+    {"SSJB Wukong", 4e6},
+    {"Kai-fist Master", 3025000},
     {"SSJ2 Wukong", 2250000},
     {"Perfect Atom", 1275000},
     {"Chilly", 950000},
@@ -983,7 +983,7 @@ task.spawn(function()
               if data.Quest.Value == "" and getIsActive1() then
             for i, npc in ipairs(npcList) do
                 local npcName, requisito = npc[1], npc[2]
-                if (data.Rebirth.Value > 1000 or npcName ~= "Mapa") and yo() >= requisito then
+                if (data.Rebirth.Value > 1500 or npcName ~= "Mapa") and yo() >= requisito then
                     local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
                     local bossInstance = game.Workspace.Living:FindFirstChild(npcName)                    
                     if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
