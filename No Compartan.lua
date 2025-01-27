@@ -921,7 +921,7 @@ task.spawn(function()
             local Ki = lplr.Character.Stats.Ki
             if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 and data.Quest.Value ~= "" then
                 for _, move in pairs(moves) do
-                    if not lplr.Status:FindFirstChild(move.name) and yo() >= move.condition and Ki.Value > Ki.MaxValue * 0.14 then
+                    if not lplr.Status:FindFirstChild(move.name) and yo() >= move.condition and Ki.Value > Ki.MaxValue * 0.11 then
                         task.spawn(function()
                             Ex.mel:InvokeServer(move.name, "Blacknwhite27")
                             Ex.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, "Blacknwhite27")    
@@ -1182,6 +1182,13 @@ task.spawn(function()
             
             local remainingTime = getTimeRemaining()
            textLabel.Text = formatTime(remainingTime)
+           
+           
+            for _, obj in pairs(game.Workspace:GetDescendants()) do
+            if obj.Name == "Effects" or obj:IsA("ParticleEmitter") then
+              obj:Destroy()
+                end
+            end          
            
                updateTimer()
               local currentRebirthValue = data.Rebirth.Value
