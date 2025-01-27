@@ -918,7 +918,8 @@ end)
                             lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)                 
                           spawn(function()                  
                            Ex.p:FireServer("Blacknwhite27",1)    
-                           Ex.mel:InvokeServer("Wolf Fang Fist", "Blacknwhite27")                                  
+                           Ex.mel:InvokeServer("Wolf Fang Fist", "Blacknwhite27") 
+                           Ex.mel:InvokeServer("High Power Rush", "Blacknwhite27")        
                        end)                
                     end
             end
@@ -937,7 +938,7 @@ task.spawn(function()
                     if boss:FindFirstChild("Humanoid") and boss.Humanoid.Health <= 0 then
                     end
                     lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5.7)      
-                     Ex.p:FireServer("Blacknwhite27",1)              
+                     Ex.p:FireServer("Blacknwhite27",1)             
                     end                 
                end               
          end)
@@ -951,6 +952,17 @@ task.spawn(function()
     if Ki.Value < Ki.MaxValue * 0.25 and player() and characterInvisible() and getIsActive4() then
          Ex.cha:InvokeServer("Blacknwhite27")        
          end
+       end)
+     end    
+   end)             
+   
+task.spawn(function()
+  while task.wait() do
+  pcall(function()
+  if getIsActive1() then
+      lplr.Character.Humanoid:ChangeState(11)
+	      lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0) 
+	       end
        end)
      end    
    end)             
@@ -983,7 +995,7 @@ local npcList = {
 
 
 task.spawn(function()
-    while wait(.5) do
+    while wait() do
         pcall(function()        
         if player() and characterInvisible() then
            if lplr.Status.Blocking.Value ~= true and getIsActive4() then
