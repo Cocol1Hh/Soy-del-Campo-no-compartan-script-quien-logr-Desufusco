@@ -936,7 +936,7 @@ task.spawn(function()
                 if boss and boss:FindFirstChild("HumanoidRootPart") then
                     if boss:FindFirstChild("Humanoid") and boss.Humanoid.Health <= 0 then
                     end
-                    lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 7)      
+                    lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5.7)      
                      Ex.p:FireServer("Blacknwhite27",1)              
                     end                 
                end               
