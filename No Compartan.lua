@@ -759,7 +759,7 @@ end
 
 
 local getIsActive1 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.120, 0), "Switch1", LoadSwitchState("Switch1"))--Farm
-local getIsActive2 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.115, 0), "Switch2", LoadSwitchState("Switch2"))--Ozaru
+local getIsActive2 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.115, 0), "Switch2", LoadSwitchState("Switch2"))--Form
 local getIsActive3 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.2, 0), "Switch3", LoadSwitchState("Switch3"))--Atack
 local getIsActive4 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.195, 0), "Switch4", LoadSwitchState("Switch4"))--Puch
 local getIsActive5 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.275, 0), "Switch5", LoadSwitchState("Switch5"))--Rebirth
@@ -859,6 +859,7 @@ function yo()
     return l
 end
 
+
 function characterInvisible()
 	return lplr.Character
 end
@@ -943,7 +944,7 @@ end)
         pcall(function()
         local Ki = lplr.Character.Stats.Ki
         local boss = game.Workspace.Living:FindFirstChild("Halloween Boss")
-            if game.PlaceId ~= 5151400895 and data.Quest.Value == "" and getIsActive12() and boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0  and yo() >= 8e6 then
+            if game.PlaceId ~= 5151400895 and data.Quest.Value == "" and getIsActive12() and boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0  and yo() >= 5e7 then
                         lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)                        
                         if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
                             lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)                                                            
@@ -964,34 +965,25 @@ end)
 task.spawn(function()
     while task.wait() do
         pcall(function()
-            local questValue = data.Quest.Value
+        local questValue = data.Quest.Value
             if questValue ~= "" and getIsActive1() and player() and characterInvisible() then
-                local bossName = questValue == "X Fighter Trainer" and "X Fighter" or questValue
-                local bosses = game.Workspace.Living:GetChildren()
-                local target = false                
-                for _, boss in pairs(bosses) do
-                    if boss.Name == bossName and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 and boss:FindFirstChild("HumanoidRootPart") then
-                        target = boss
-                        break
+                local boss = game.Workspace.Living:FindFirstChild(questValue)
+                if boss and boss:FindFirstChild("HumanoidRootPart") then
+                    if boss:FindFirstChild("Humanoid") and boss.Humanoid.Health <= 0 then
                     end
-                end
-                if not target then
-                    target = game.Workspace.Living:FindFirstChild(questValue)
-                end
-                if target and target:FindFirstChild("HumanoidRootPart") then
-                    lplr.Character.HumanoidRootPart.CFrame = target.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5.7)
-                    Ex.p:FireServer("Blacknwhite27", 1)
-                end
-            end
-        end)
-    end
-end)
+                    lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5.7)      
+                     Ex.p:FireServer("Blacknwhite27",1)             
+                    end                 
+               end               
+         end)
+      end
+  end)
   
 task.spawn(function()
     while task.wait() do
       pcall(function()
     local Ki = lplr.Character.Stats.Ki
-    if Ki.Value < Ki.MaxValue * 0.25 and player() and characterInvisible() and getIsActive4() then
+    if Ki.Value < Ki.MaxValue * 0.35 and player() and characterInvisible() and getIsActive4() then
          Ex.cha:InvokeServer("Blacknwhite27")        
          end
          if getIsActive1() then
@@ -1005,29 +997,28 @@ task.spawn(function()
 
 
 local npcList = {
-    {"Vekuta (SSJBUI)", 2.375e9},
-    {"Wukong Rose", 1.65e9},
-    {"Vekuta (LBSSJ4)", 1.05e9},
-    {"Wukong (LBSSJ4)", 950e6},
-    {"Vegetable (LBSSJ4)", 650e6},
-    {"Vis (20%)", 500e6},
-    {"Vills (50%)", 350e6},
-    {"Wukong (Omen)", 200e6},
-    {"Vegetable (GoD in-training)", 150e6},
-    {"SSJG Kakata", 100e6},
-    {"Broccoli", 45.5e6},
-    {"SSJB Wukong", 4e6},
-    {"Kai-fist Master", 3025000},
-    {"SSJ2 Wukong", 2250000},
-    {"Perfect Atom", 1275000},
-    {"Chilly", 950000},
-    {"Super Vegetable", 358000},
-    {"Mapa", 0},
-    {"Radish", 55000},
-    {"Kid Nohag", 40000},
-    {"X Fighter Trainer", 0}
+    {"Vekuta (SSJBUI)", 2.375e9, true},
+    {"Wukong Rose", 1.65e9, true},
+    {"Vekuta (LBSSJ4)", 1.05e9, true},
+    {"Wukong (LBSSJ4)", 950e6, true},
+    {"Vegetable (LBSSJ4)", 650e6, true},
+    {"Vis (20%)", 500e6, true},
+    {"Vills (50%)", 350e6, true},
+    {"Wukong (Omen)", 200e6, true},
+    {"Vegetable (GoD in-training)", 150e6, true},
+    {"SSJG Kakata", 100e6, true},
+    {"Broccoli", 45.5e6, true},
+    {"SSJB Wukong", 4e6, true},
+    {"Kai-fist Master", 3025000, true},
+    {"SSJ2 Wukong", 2250000, true},
+    {"Perfect Atom", 1275000, true},
+    {"Chilly", 950000, true},
+    {"Super Vegetable", 358000, true},
+    {"Mapa", 118000, true},
+    {"Radish", 55000, true},
+    {"Kid Nohag", 40000, true},
+    {"Klirin", 0, true}
 }
-
 
 
 task.spawn(function()
@@ -1048,24 +1039,17 @@ task.spawn(function()
             elseif game.PlaceId ~= 5151400895 and yo() >= 200000000 and getIsActive10() then
                 Ex.TP:InvokeServer("Vills Planet")
                 end    
-              if data.Quest.Value == "" and getIsActive1() then
+          if data.Quest.Value == "" then
                 for i, npc in ipairs(npcList) do
-                    local npcName, requisito = npc[1], npc[2]
-                    local bossName = npcName == "X Fighter Trainer" and "X Fighter" or npcName 
-                    if (data.Rebirth.Value > 1500 or npcName ~= "Mapa") and yo() >= requisito then
-                        local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
-                        local bossInstance = game.Workspace.Living:FindFirstChild(bossName)                    
-                        if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
-                           (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
-                            lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame
-                            game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(npcInstance)
-                            break
-                        elseif i > 1 then
-                            local prevNpc = npcList[i-1][1]
-                            local prevNpcInstance = game.Workspace.Others.NPCs:FindFirstChild(prevNpc)
-                            if prevNpcInstance and prevNpcInstance:FindFirstChild("HumanoidRootPart") then
-                                lplr.Character.HumanoidRootPart.CFrame = prevNpcInstance.HumanoidRootPart.CFrame
-                                game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(prevNpcInstance)
+                    local npcName, requisito, isActive = npc[1], npc[2], npc[3]
+                    if isActive then
+                        if data.Defense.Value >= requisito then
+                            local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
+                            local bossInstance = game.Workspace.Living:FindFirstChild(npcName)
+                            if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
+                               (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
+                                lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.4)      
+                                game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(npcInstance)
                                 break
                             end
                         end
@@ -1076,6 +1060,7 @@ task.spawn(function()
         end)       
     end
 end)
+
 
 spawn(function()
 while wait(100) do
@@ -1089,7 +1074,7 @@ while wait(100) do
   end)
     end
 end)    
-           
+
 
 
 function quets()
@@ -1196,12 +1181,13 @@ task.spawn(function()
             local remainingTime = getTimeRemaining()
            textLabel.Text = formatTime(remainingTime)
            
-           
+           if getIsActive9() then
             for _, obj in pairs(game.Workspace:GetDescendants()) do
             if obj.Name == "Effects" or obj:IsA("ParticleEmitter") then
               obj:Destroy()
                 end
             end          
+         end
            
                updateTimer()
               local currentRebirthValue = data.Rebirth.Value
