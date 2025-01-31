@@ -1032,10 +1032,12 @@ task.spawn(function()
     if Ki.Value < Ki.MaxValue * 0.35 and player() and characterInvisible() and getIsActive4() then
          Ex.cha:InvokeServer("Blacknwhite27")        
          end
-         if getIsActive1() then
+         pcall(function()
+         if getIsActive1() or getIsActive6() then
          lplr.Character.Humanoid:ChangeState(11)
 	      lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0) 
 	       end
+    	end)
        end)
      end    
    end)             
@@ -1051,8 +1053,8 @@ npcList = {
     {"Vis (20%)", 350e6},
     {"Vills (50%)", 250e6},
     {"Wukong (Omen)", 150e6},
-    {"Vegetable (GoD in-training)", 100e6},
-    {"SSJG Kakata", 70e6},
+    {"Vegetable (GoD in-training)", 990e6},
+    {"SSJG Kakata", 65e6},
     {"Broccoli", 35.5e6},
     {"SSJB Wukong", 4e6},
     {"Kai-fist Master", 2525000},
@@ -1102,9 +1104,9 @@ task.spawn(function()
                (yo() < (((data.Rebirth.Value * 3e6) + 2e6) * 2)) and getIsActive5() then
                 Ex.reb:InvokeServer()   
                    end
-                  if game.PlaceId == 5151400895 and yo() <= 100000000 and getIsActive10() then
+                  if game.PlaceId == 5151400895 and yo() <= 101e6 and getIsActive10() then
                 Ex.TP:InvokeServer("Earth")
-            elseif game.PlaceId ~= 5151400895 and yo() >= 100000000 and getIsActive10() then
+            elseif game.PlaceId ~= 5151400895 and yo() >= 101e6 and getIsActive10() then
                 Ex.TP:InvokeServer("Vills Planet")
                 end    
           if data.Quest.Value == "" and getIsActive1() then
