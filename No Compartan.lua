@@ -401,7 +401,17 @@ textLabel.Text = "0"
 textLabel.Parent = Barra1
 
 
-local forms = {"Divine Rose Prominence", "Astral Instinct", "Ultra Ego", "SSJBUI", "Beast", "LSSJ4"}
+local Contenedor = Instance.new("ScrollingFrame", Barra1)
+Contenedor.Size = UDim2.new(0, 400, 0, 200)
+Contenedor.Position = UDim2.new(0.490, 0, 0.731, 0)
+Contenedor.AnchorPoint = Vector2.new(0.5, 0.5)
+Contenedor.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Contenedor.BorderSizePixel = 0
+Contenedor.ScrollBarThickness = 6
+Contenedor.CanvasSize = UDim2.new(0, 0, 0, 400)
+Contenedor.ScrollingDirection = Enum.ScrollingDirection.Y
+
+local forms = {"Rose Prominence", "Astral Instinct", "Ultra Ego", "SSJBUI", "Beast", "LSSJ4"}
 local frame = Instance.new("Frame", Barra2)
 frame.Size = UDim2.new(0, 200, 0, #forms * 30 + 10)
 frame.Position = UDim2.new(1, -220, 0.5, -frame.Size.Y.Offset / 2)
@@ -444,25 +454,43 @@ end)
 
 --incio de color txt\/
 local textProperties = {
-    {text = "Farm", position = UDim2.new(-0.155, 0, 0.115, 0), color = Color3.fromRGB(255, 0, 0)},
-    {text = "Form", position = UDim2.new(0.350, 0, 0.115, 0), color = Color3.fromRGB(0, 255, 0)},
-    {text = "Atck", position = UDim2.new(-0.160, 0, 0.195, 0), color = Color3.fromRGB(0, 255, 255)},   
-    {text = "Puch", position = UDim2.new(0.360, 0, 0.195, 0), color = Color3.fromRGB(0, 0, 255)},
-    {text = "Reb", position = UDim2.new(-0.160, 0, 0.270, 0), color = Color3.fromRGB(255, 255, 0)},
-    {text = "Main", position = UDim2.new(0.350, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 255)},
-    {text = "Fly", position = UDim2.new(-0.04, 0, 0.320, 0), color = Color3.fromRGB(200, 300, 400)},
-    {text = "Brillo", position = UDim2.new(0.473, 0, 0.320, 0), color = Color3.fromRGB(180, 200, 100)},
-    {text = "Duck", position = UDim2.new(-0.160, 0, 0.420, 0), color = Color3.fromRGB(200, 100, 300)},
-    {text = "Ɓºrª", position = UDim2.new(0.350, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70)},    
-    {text = "Graf", position = UDim2.new(-0.160, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100)},   
-    {text = "Plant", position = UDim2.new(0.350, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100)},
-    {text = "Zom", position = UDim2.new(-0.160, 0, 0.570, 0), color = Color3.fromRGB(200, 380, 90)},   
-    {text = "HA🎃", position = UDim2.new(0.360, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100)},  
+    {text = "Farm", position = UDim2.new(-0.155, 0, 0.115, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra1},
+    {text = "Form", position = UDim2.new(0.350, 0, 0.115, 0), color = Color3.fromRGB(0, 255, 0), parent = Barra1},
+    {text = "Atck", position = UDim2.new(-0.160, 0, 0.195, 0), color = Color3.fromRGB(0, 255, 255), parent = Barra1},
+    {text = "Puch", position = UDim2.new(0.360, 0, 0.195, 0), color = Color3.fromRGB(0, 0, 255), parent = Barra1},
+    {text = "Reb", position = UDim2.new(-0.160, 0, 0.270, 0), color = Color3.fromRGB(255, 255, 0), parent = Barra1},
+    {text = "Main", position = UDim2.new(0.350, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 255), parent = Barra1},
+    {text = "Fly", position = UDim2.new(-0.04, 0, 0.320, 0), color = Color3.fromRGB(200, 300, 400), parent = Barra1},
+    {text = "Brillo", position = UDim2.new(0.473, 0, 0.320, 0), color = Color3.fromRGB(180, 200, 100), parent = Barra1},
+    {text = "Duck", position = UDim2.new(-0.160, 0, 0.420, 0), color = Color3.fromRGB(200, 100, 300), parent = Barra1},
+    {text = "Ɓºrª", position = UDim2.new(0.350, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70), parent = Barra1},
+    {text = "Graf", position = UDim2.new(-0.160, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
+    {text = "Plant", position = UDim2.new(0.350, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
+    {text = "Zom", position = UDim2.new(-0.160, 0, 0.570, 0), color = Color3.fromRGB(200, 380, 90), parent = Barra1},
+    {text = "HA🎃", position = UDim2.new(0.360, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
+    
+    
+    {text = "Klirin", position = UDim2.new(-0.155, 0, 0.085, 0), color = Color3.fromRGB(200, 190, 255), parent = Contenedor},
+    {text = "Mapa", position = UDim2.new(0.350, 0, 0.085, 0), color = Color3.fromRGB(255, 190, 150), parent = Contenedor},
+    {text = "Vegta", position = UDim2.new(-0.155, 0, 0.197, 0), color = Color3.fromRGB(255, 80, 80), parent = Contenedor},
+    {text = "Freze", position = UDim2.new(0.350, 0, 0.197, 0), color = Color3.fromRGB(80, 255, 120), parent = Contenedor},
+    {text = "Cell", position = UDim2.new(-0.160, 0, 0.317), color = Color3.fromRGB(120, 120, 255), parent = Contenedor},
+    {text = "SSJ2", position = UDim2.new(0.350, 0, 0.317, 0), color = Color3.fromRGB(180, 180, 60), parent = Contenedor},
+    {text = "Kai-", position = UDim2.new(-0.160, 0, 0.425, 0), color = Color3.fromRGB(255, 0, 0), parent = Contenedor},
+    {text = "Sblue", position = UDim2.new(0.350, 0, 0.425, 0), color = Color3.fromRGB(0, 0, 255), parent = Contenedor},
+    {text = "Brcoli", position = UDim2.new(-0.160, 0, 0.545, 0), color = Color3.fromRGB(0, 255, 0), parent = Contenedor},
+    {text = "Vigit", position = UDim2.new(0.350, 0, 0.545, 0), color = Color3.fromRGB(255, 255, 0), parent = Contenedor},
+    {text = "Vegt", position = UDim2.new(-0.160, 0, 0.665, 0), color = Color3.fromRGB(255, 128, 0), parent = Contenedor},
+    {text = "Goku", position = UDim2.new(0.350, 0, 0.665, 0), color = Color3.fromRGB(128, 0, 255), parent = Contenedor},
+    {text = "Vills", position = UDim2.new(-0.160, 0, 0.785, 0), color = Color3.fromRGB(60, 60, 60), parent = Contenedor},
+    {text = "Viss", position = UDim2.new(0.350, 0, 0.785, 0), color = Color3.fromRGB(200, 100, 200), parent = Contenedor},
+    {text = "VS4", position = UDim2.new(-0.160, 0, 0.905, 0), color = Color3.fromRGB(0, 255, 255), parent = Contenedor},
+    {text = "WS4", position = UDim2.new(0.350, 0, 0.905, 0), color = Color3.fromRGB(128, 128, 128), parent = Contenedor}
 }
 
 for _, props in pairs(textProperties) do
     local TextLabel = Instance.new("TextLabel")
-    TextLabel.Parent = Barra1
+    TextLabel.Parent = props.parent
     TextLabel.Size = UDim2.new(0, 200, 0, 36)
     TextLabel.Position = props.position
     TextLabel.BackgroundTransparency = 1
@@ -763,13 +791,32 @@ local getIsActive2 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.115, 0), "Switch
 local getIsActive3 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.2, 0), "Switch3", LoadSwitchState("Switch3"))--Atack
 local getIsActive4 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.195, 0), "Switch4", LoadSwitchState("Switch4"))--Puch
 local getIsActive5 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.275, 0), "Switch5", LoadSwitchState("Switch5"))--Rebirth
-local getIsActive6 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.275, 0), "Switch6", LoadSwitchState("Switch6"))--Main
+local getIsActive6 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.275, 0), "Switch6", LoadSwitchState("Switch6"))--Ozaru
 local getIsActive7 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.420, 0), "Switch7", LoadSwitchState("Switch7"))--Duck
 local getIsActive8 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.420, 0), "Switch8", LoadSwitchState("Switch8"))--Bºrª
 local getIsActive9 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.495, 0), "Switch9", LoadSwitchState("Switch9"))--Graf
 local getIsActive10 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.495, 0), "Switch10", LoadSwitchState("Switch10"))--Planet
 local getIsActive11 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.570, 0), "Switch11", LoadSwitchState("Switch11"))--Black
 local getIsActive12 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.570, 0), "Switch12", LoadSwitchState("Switch12"))--Hall🎃
+
+
+local getIsActive13 = createSwitch(Contenedor, UDim2.new(0.2, 0, 0.090, 0), "Switch13", LoadSwitchState("Switch13"))--Klirin
+local getIsActive14 = createSwitch(Contenedor, UDim2.new(0.755, 0, 0.090, 0), "Switch14", LoadSwitchState("Switch14"))--Mapa
+local getIsActive15 = createSwitch(Contenedor, UDim2.new(0.2, 0, 0.2, 0), "Switch15", LoadSwitchState("Switch15"))--Vegeta
+local getIsActive16 = createSwitch(Contenedor, UDim2.new(0.755, 0, 0.2, 0), "Switch16", LoadSwitchState("Switch16"))--Freze
+local getIsActive17 = createSwitch(Contenedor, UDim2.new(0.2, 0, 0.317, 0), "Switch17", LoadSwitchState("Switch17"))--Cell
+local getIsActive18 = createSwitch(Contenedor, UDim2.new(0.755, 0, 0.317, 0), "Switch18", LoadSwitchState("Switch18"))--SSJ2
+local getIsActive19 = createSwitch(Contenedor, UDim2.new(0.2, 0, 0.425), "Switch19", LoadSwitchState("Switch19"))--Kai-fist Master
+local getIsActive20 = createSwitch(Contenedor, UDim2.new(0.755, 0, 0.425), "Switch20", LoadSwitchState("Switch20"))--SSJB Wukong
+local getIsActive21 = createSwitch(Contenedor, UDim2.new(0.2, 0, 0.545), "Switch21", LoadSwitchState("Switch21"))--Broccoli
+local getIsActive22 = createSwitch(Contenedor, UDim2.new(0.755, 0, 0.545), "Switch22", LoadSwitchState("Switch22"))--SSJG Kakata
+local getIsActive23 = createSwitch(Contenedor, UDim2.new(0.2, 0, 0.675), "Switch23", LoadSwitchState("Switch23"))--Vegetable (GoD in-training)
+local getIsActive24 = createSwitch(Contenedor, UDim2.new(0.755, 0, 0.675), "Switch24", LoadSwitchState("Switch24"))--Wukong (Omen)
+local getIsActive25 = createSwitch(Contenedor, UDim2.new(0.2, 0, 0.795), "Switch25", LoadSwitchState("Switch25"))--Vills (50%)
+local getIsActive26 = createSwitch(Contenedor, UDim2.new(0.755, 0, 0.795), "Switch26", LoadSwitchState("Switch26"))--Vis (20%)
+local getIsActive27 = createSwitch(Contenedor, UDim2.new(0.2, 0, 0.905), "Switch27", LoadSwitchState("Switch27"))--Vegetable (LBSSJ4)
+local getIsActive28 = createSwitch(Contenedor, UDim2.new(0.755, 0, 0.920), "Switch28", LoadSwitchState("Switch28"))--Wukong (LBSSJ4)
+
 
 --Barras
 createBar(0, "Flight", Color3.fromRGB(255, 0, 0), 0.37, 100, function(v) speed = v end, "flight")
@@ -1001,23 +1048,23 @@ local npcList = {
     {"Wukong Rose", 1.65e9, true},
     {"Vekuta (LBSSJ4)", 1.05e9, true},
     {"Wukong (LBSSJ4)", 950e6, true},
-    {"Vegetable (LBSSJ4)", 650e6, true},
-    {"Vis (20%)", 500e6, true},
-    {"Vills (50%)", 350e6, true},
-    {"Wukong (Omen)", 200e6, true},
-    {"Vegetable (GoD in-training)", 150e6, true},
-    {"SSJG Kakata", 100e6, true},
-    {"Broccoli", 45.5e6, true},
-    {"SSJB Wukong", 4e6, true},
-    {"Kai-fist Master", 3025000, true},
-    {"SSJ2 Wukong", 2250000, true},
-    {"Perfect Atom", 1275000, true},
-    {"Chilly", 950000, true},
-    {"Super Vegetable", 358000, true},
-    {"Mapa", 118000, true},
-    {"Radish", 55000, true},
-    {"Kid Nohag", 40000, true},
-    {"Klirin", 0, true}
+    {"Vegetable (LBSSJ4)", 750e6, true},
+    {"Vis (20%)", 550e6, true},
+    {"Vills (50%)", 300e6, true},
+    {"Wukong (Omen)", 150e6, true},
+    {"Vegetable (GoD in-training)", 100e6, true},
+    {"SSJG Kakata", 70e6, true},
+    {"Broccoli", 35.5e6, true},
+    {"SSJB Wukong", 8e6, true},
+    {"Kai-fist Master", 2525000, true},
+    {"SSJ2 Wukong", 1850000, true}, 
+    {"Perfect Atom", 1075000, true},
+    {"Chilly", 650000, true},
+    {"Super Vegetable", 308000, true},
+    {"Mapa", 0},
+    {"Radish", 45000},
+    {"Kid Nohag", 30000},
+    {"Klirin", 0}
 }
 
 
@@ -1034,9 +1081,9 @@ task.spawn(function()
                (yo() < (((data.Rebirth.Value * 3e6) + 2e6) * 2)) and getIsActive5() then
                 Ex.reb:InvokeServer()   
                    end
-                  if game.PlaceId == 5151400895 and yo() <= 200000000 and getIsActive10() then
+                  if game.PlaceId == 5151400895 and yo() <= 100000000 and getIsActive10() then
                 Ex.TP:InvokeServer("Earth")
-            elseif game.PlaceId ~= 5151400895 and yo() >= 200000000 and getIsActive10() then
+            elseif game.PlaceId ~= 5151400895 and yo() >= 100000000 and getIsActive10() then
                 Ex.TP:InvokeServer("Vills Planet")
                 end    
           if data.Quest.Value == "" then
@@ -1061,6 +1108,92 @@ task.spawn(function()
     end
 end)
 
+task.spawn(function()
+    while task.wait() do
+        pcall(function()
+        if getIsActive13() then
+            npcList[21][3] = true  
+            else
+            npcList[21][3] = false
+            end
+            if getIsActive14() then
+            npcList[18][3] = true  
+            else
+            npcList[18][3] = false
+            end
+            if getIsActive15() then
+            npcList[17][3] = true  
+            else
+            npcList[17][3] = false
+            end
+            if getIsActive16() then
+            npcList[16][3] = true  
+            else
+            npcList[16][3] = false
+            end
+            if getIsActive17() then
+            npcList[15][3] = true  
+            else
+            npcList[15][3] = false
+            end
+            if getIsActive18() then
+            npcList[14][3] = true  
+            else
+            npcList[14][3] = false
+            end
+            if getIsActive19() then
+            npcList[13][3] = true  
+            else
+            npcList[13][3] = false
+            end
+            if getIsActive20() then
+            npcList[12][3] = true  
+            else
+            npcList[12][3] = false
+            end
+            if getIsActive21() then
+            npcList[11][3] = true  
+            else
+            npcList[11][3] = false
+            end
+            if getIsActive22() then
+            npcList[10][3] = true  
+            else
+            npcList[10][3] = false
+            end
+            if getIsActive23() then
+            npcList[9][3] = true  
+            else
+            npcList[9][3] = false
+            end
+            if getIsActive24() then
+            npcList[8][3] = true  
+            else
+            npcList[8][3] = false
+            end
+            if getIsActive25() then
+            npcList[7][3] = true  
+            else
+            npcList[7][3] = false
+            end
+            if getIsActive26() then
+            npcList[6][3] = true  
+            else
+            npcList[6][3] = false
+            end
+            if getIsActive27() then
+            npcList[5][3] = true  
+            else
+            npcList[5][3] = false
+            end
+            if getIsActive28() then
+            npcList[4][3] = true  
+            else
+            npcList[4][3] = false
+            end
+        end)
+    end
+end)
 
 spawn(function()
 while wait(100) do
