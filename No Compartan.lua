@@ -1012,19 +1012,18 @@ end)
 task.spawn(function()
     while task.wait() do
         pcall(function()
-        local questValue = data.Quest.Value
-            if questValue ~= "" and getIsActive1() or getIsActive6() and player() and characterInvisible() then
-                local boss = game.Workspace.Living:FindFirstChild(questValue)
-                if boss and boss:FindFirstChild("HumanoidRootPart") then
-                    if boss:FindFirstChild("Humanoid") and boss.Humanoid.Health <= 0 then
-                    end
-                    lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5.7)      
-                     Ex.p:FireServer("Blacknwhite27",1)             
-                    end                 
-               end               
-         end)
-      end
-  end)
+            local questValue = data.Quest.Value
+            local targetName = questValue == "Top X Fighter" and "X Fighter Master" or questValue            
+            if targetName ~= "" and (getIsActive1() or getIsActive6()) and player() and characterInvisible() then
+                local boss = game.Workspace.Living:FindFirstChild(targetName)
+                if boss and boss:FindFirstChild("HumanoidRootPart") and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
+                    lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5.7)
+                    Ex.p:FireServer("Blacknwhite27", 1)
+                end
+            end
+        end)
+    end
+end)
   
 task.spawn(function()
     while task.wait() do
@@ -1087,6 +1086,7 @@ Boss = {
         {"Perfect Atom",875000},
         {"Chilly",550000},
         {"Super Vegetable",188000},
+        {"Top X Fighter",115000},
         {"Mapa",0},
     }
 
