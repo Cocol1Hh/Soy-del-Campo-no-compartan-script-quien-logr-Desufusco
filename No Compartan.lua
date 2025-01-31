@@ -1087,7 +1087,6 @@ Boss = {
         {"Perfect Atom",875000},
         {"Chilly",550000},
         {"Super Vegetable",188000},
-        {"Top X Fighter",115000},
         {"Mapa",0},
     }
 
