@@ -1185,7 +1185,7 @@ task.spawn(function() -- Pick quest
             --while not CanAttack do wait() end
             if data.Quest.Value == "" or not Boss then
                 for i,boss in pairs(bosses) do
-                    if data.Rebirth.Value >= 2000 and boss[1] == "Mapa" then
+                    if data.Rebirth.Value >= 1000 and boss[1] == "Mapa" then
                         boss[2] = 0
                     end
                     if getloweststat()/2 >= boss[2] and game.Workspace.Living:FindFirstChild(boss[1]) and game.Workspace.Living[boss[1]]:FindFirstChild("Humanoid") and game.Workspace.Living[boss[1]].Humanoid.Health > 0 then
