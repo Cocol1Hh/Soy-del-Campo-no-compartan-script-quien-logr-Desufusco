@@ -400,17 +400,6 @@ textLabel.BackgroundTransparency = 1
 textLabel.Text = "0"
 textLabel.Parent = Barra1
 
-local Contenedor = Instance.new("ScrollingFrame", Barra1)
-Contenedor.Size = UDim2.new(0, 400, 0, 200)
-Contenedor.Position = UDim2.new(0.490, 0, 0.731, 0)
-Contenedor.AnchorPoint = Vector2.new(0.5, 0.5)
-Contenedor.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-Contenedor.BorderSizePixel = 0
-Contenedor.ScrollBarThickness = 6
-Contenedor.CanvasSize = UDim2.new(0, 0, 0, 400)
-Contenedor.ScrollingDirection = Enum.ScrollingDirection.Y
-
-
 
 local forms = {"Divine Rose Prominence", "Astral Instinct", "Ultra Ego", "SSJBUI", "Beast", "LSSJ4"}
 local frame = Instance.new("Frame", Barra2)
@@ -455,28 +444,25 @@ end)
 
 --incio de color txt\/
 local textProperties = {
-    {text = "Farm", position = UDim2.new(-0.155, 0, 0.115, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra1},
-    {text = "Form", position = UDim2.new(0.350, 0, 0.115, 0), color = Color3.fromRGB(0, 255, 0), parent = Barra1},
-    {text = "Atck", position = UDim2.new(-0.160, 0, 0.195, 0), color = Color3.fromRGB(0, 255, 255), parent = Barra1},
-    {text = "Puch", position = UDim2.new(0.360, 0, 0.195, 0), color = Color3.fromRGB(0, 0, 255), parent = Barra1},
-    {text = "Reb", position = UDim2.new(-0.160, 0, 0.270, 0), color = Color3.fromRGB(255, 255, 0), parent = Barra1},
-    {text = "main", position = UDim2.new(0.350, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 255), parent = Barra1},
-    {text = "Fly", position = UDim2.new(-0.04, 0, 0.320, 0), color = Color3.fromRGB(200, 300, 400), parent = Barra1},
-    {text = "Brillo", position = UDim2.new(0.473, 0, 0.320, 0), color = Color3.fromRGB(180, 200, 100), parent = Barra1},
-    {text = "Duck", position = UDim2.new(-0.160, 0, 0.420, 0), color = Color3.fromRGB(200, 100, 300), parent = Barra1},
-    {text = "Ɓºrª", position = UDim2.new(0.350, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70), parent = Barra1},
-    {text = "Graf", position = UDim2.new(-0.160, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
-    {text = "Plant", position = UDim2.new(0.350, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
-    {text = "Zom", position = UDim2.new(-0.160, 0, 0.570, 0), color = Color3.fromRGB(200, 380, 90), parent = Barra1},
-    {text = "HA🎃", position = UDim2.new(0.360, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
-    
-    {text = "Klirin", position = UDim2.new(-0.155, 0, 0.085, 0), color = Color3.fromRGB(200, 190, 255), parent = Contenedor},
-    {text = "Mapa", position = UDim2.new(0.350, 0, 0.085, 0), color = Color3.fromRGB(255, 190, 150), parent = Contenedor},
+    {text = "Farm", position = UDim2.new(-0.155, 0, 0.115, 0), color = Color3.fromRGB(255, 0, 0)},
+    {text = "Form", position = UDim2.new(0.350, 0, 0.115, 0), color = Color3.fromRGB(0, 255, 0)},
+    {text = "Atck", position = UDim2.new(-0.160, 0, 0.195, 0), color = Color3.fromRGB(0, 255, 255)},   
+    {text = "Puch", position = UDim2.new(0.360, 0, 0.195, 0), color = Color3.fromRGB(0, 0, 255)},
+    {text = "Reb", position = UDim2.new(-0.160, 0, 0.270, 0), color = Color3.fromRGB(255, 255, 0)},
+    {text = "Main", position = UDim2.new(0.350, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 255)},
+    {text = "Fly", position = UDim2.new(-0.04, 0, 0.320, 0), color = Color3.fromRGB(200, 300, 400)},
+    {text = "Brillo", position = UDim2.new(0.473, 0, 0.320, 0), color = Color3.fromRGB(180, 200, 100)},
+    {text = "Duck", position = UDim2.new(-0.160, 0, 0.420, 0), color = Color3.fromRGB(200, 100, 300)},
+    {text = "Ɓºrª", position = UDim2.new(0.350, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70)},    
+    {text = "Graf", position = UDim2.new(-0.160, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100)},   
+    {text = "Plant", position = UDim2.new(0.350, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100)},
+    {text = "Zom", position = UDim2.new(-0.160, 0, 0.570, 0), color = Color3.fromRGB(200, 380, 90)},   
+    {text = "HA🎃", position = UDim2.new(0.360, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100)},  
 }
 
 for _, props in pairs(textProperties) do
     local TextLabel = Instance.new("TextLabel")
-    TextLabel.Parent = props.parent
+    TextLabel.Parent = Barra1
     TextLabel.Size = UDim2.new(0, 200, 0, 36)
     TextLabel.Position = props.position
     TextLabel.BackgroundTransparency = 1
@@ -773,7 +759,7 @@ end
 
 
 local getIsActive1 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.120, 0), "Switch1", LoadSwitchState("Switch1"))--Farm
-local getIsActive2 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.115, 0), "Switch2", LoadSwitchState("Switch2"))--Form
+local getIsActive2 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.115, 0), "Switch2", LoadSwitchState("Switch2"))--Ozaru
 local getIsActive3 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.2, 0), "Switch3", LoadSwitchState("Switch3"))--Atack
 local getIsActive4 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.195, 0), "Switch4", LoadSwitchState("Switch4"))--Puch
 local getIsActive5 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.275, 0), "Switch5", LoadSwitchState("Switch5"))--Rebirth
@@ -784,9 +770,6 @@ local getIsActive9 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.495, 0), "Switch9"
 local getIsActive10 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.495, 0), "Switch10", LoadSwitchState("Switch10"))--Planet
 local getIsActive11 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.570, 0), "Switch11", LoadSwitchState("Switch11"))--Black
 local getIsActive12 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.570, 0), "Switch12", LoadSwitchState("Switch12"))--Hall🎃
-
-local getIsActive13 = createSwitch(Contenedor, UDim2.new(0.2, 0, 0.090, 0), "Switch13", LoadSwitchState("Switch13"))--Klirin
-local getIsActive14 = createSwitch(Contenedor, UDim2.new(0.755, 0, 0.090, 0), "Switch14", LoadSwitchState("Switch14"))--Mapa
 
 --Barras
 createBar(0, "Flight", Color3.fromRGB(255, 0, 0), 0.37, 100, function(v) speed = v end, "flight")
@@ -876,7 +859,6 @@ function yo()
     return l
 end
 
-
 function characterInvisible()
 	return lplr.Character
 end
@@ -884,8 +866,6 @@ end
 function player()
 	return lplr.Character and lplr.Character.Humanoid and lplr.Character.Humanoid.Health > 0 and lplr.Character:FindFirstChild("HumanoidRootPart")
 end
-
-
 
 
 task.spawn(function()
@@ -906,7 +886,7 @@ task.spawn(function()
         if status and status.SelectedTransformation.Value ~= status.Transformation.Value then
             Ex.ta:InvokeServer()
                        end
-                end        
+                end
                 if not getIsActive2() and selectedForm and not transforming and lplr.Status.Transformation.Value ~= selectedForm and player() and characterInvisible() then
                   transforming = true
                     pcall(function()
@@ -961,19 +941,16 @@ end)
  lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)                        
     while true do
         pcall(function()
-        local Ki = lplr.Character.Stats.Ki
         local boss = game.Workspace.Living:FindFirstChild("Halloween Boss")
             if game.PlaceId ~= 5151400895 and data.Quest.Value == "" and getIsActive12() and boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0  and yo() >= 5e7 then
                         lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)                        
                         if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
-                            lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)                                                            
-                           for _, move in pairs(moves) do
-                           spawn(function() 
-                     if not lplr.Status:FindFirstChild(move.name) and yo() >= move.condition and Ki.Value > Ki.MaxValue * 0.11 then
-                    game:GetService("ReplicatedStorage").Package.Events.mel:InvokeServer(move.name, "Blacknwhite27")
-                          end
-                         end)
-                       end          
+                            lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)                 
+                          spawn(function()                  
+                           Ex.p:FireServer("Blacknwhite27",1)    
+                           Ex.mel:InvokeServer("Wolf Fang Fist", "Blacknwhite27") 
+                           Ex.mel:InvokeServer("High Power Rush", "Blacknwhite27")        
+                       end)                
                     end
             end
         end)
@@ -1002,27 +979,44 @@ task.spawn(function()
     while task.wait() do
       pcall(function()
     local Ki = lplr.Character.Stats.Ki
-    if Ki.Value < Ki.MaxValue * 0.35 and player() and characterInvisible() and getIsActive4() then
+    if Ki.Value < Ki.MaxValue * 0.25 and player() and characterInvisible() and getIsActive4() then
          Ex.cha:InvokeServer("Blacknwhite27")        
          end
          if getIsActive1() then
          lplr.Character.Humanoid:ChangeState(11)
 	      lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0) 
 	       end
-       	if getIsActive13() then
-            npcList[21][3] = true  
-            else
-            npcList[21][3] = false
-            end
-            if getIsActive14() then
-            npcList[18][3] = true  
-            else
-            npcList[18][3] = false
-            end
        end)
      end    
    end)             
    
+
+
+local npcList = {
+    {"Vekuta (SSJBUI)", 2.375e9},
+    {"Wukong Rose", 1.65e9},
+    {"Vekuta (LBSSJ4)", 1.05e9},
+    {"Wukong (LBSSJ4)", 850e6},
+    {"Vegetable (LBSSJ4)", 650e6},
+    {"Vis (20%)", 450e6},
+    {"Vills (50%)", 300e6},
+    {"Wukong (Omen)", 200e6},
+    {"Vegetable (GoD in-training)", 150e6},
+    {"SSJG Kakata", 100e6},
+    {"Broccoli", 45.5e6},
+    {"SSJB Wukong", 4e6},
+    {"Kai-fist Master", 3025000},
+    {"SSJ2 Wukong", 2250000},
+    {"Perfect Atom", 1275000},
+    {"Chilly", 950000},
+    {"Super Vegetable", 358000},
+    {"Mapa", 0},
+    {"Radish", 55000},
+    {"Kid Nohag", 40000},
+    {"Klirin", 0}
+}
+
+
 
 task.spawn(function()
     while wait() do
@@ -1037,13 +1031,12 @@ task.spawn(function()
                (yo() < (((data.Rebirth.Value * 3e6) + 2e6) * 2)) and getIsActive5() then
                 Ex.reb:InvokeServer()   
                    end
-                  if game.PlaceId == 5151400895 and yo() <= 150000000 and getIsActive10() then
+                  if game.PlaceId == 5151400895 and yo() <= 100000000 and getIsActive10() then
                 Ex.TP:InvokeServer("Earth")
-            elseif game.PlaceId ~= 5151400895 and yo() >= 150000000 and getIsActive10() then
+            elseif game.PlaceId ~= 5151400895 and yo() >= 100000000 and getIsActive10() then
                 Ex.TP:InvokeServer("Vills Planet")
-                end            
-            end
-            if data.Quest.Value == "" and getIsActive1() then
+                end    
+              if data.Quest.Value == "" and getIsActive1() then
             for i, npc in ipairs(npcList) do
                 local npcName, requisito = npc[1], npc[2]
                 if (data.Rebirth.Value > 1500 or npcName ~= "Mapa") and yo() >= requisito then
@@ -1059,19 +1052,17 @@ task.spawn(function()
                         local prevNpcInstance = game.Workspace.Others.NPCs:FindFirstChild(prevNpc)
                         if prevNpcInstance and prevNpcInstance:FindFirstChild("HumanoidRootPart") then
                             lplr.Character.HumanoidRootPart.CFrame = prevNpcInstance.HumanoidRootPart.CFrame
-                            pcall(finction()
                             game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(prevNpcInstance)
-                            end)
                             break
                          end
                         end
                     end
                 end
            end
+            end
         end)       
     end
 end)
-
 
 spawn(function()
 while wait(100) do
@@ -1085,7 +1076,20 @@ while wait(100) do
   end)
     end
 end)    
+           
 
+
+function quets()
+   if data.Quest.Value ~= "" and player() and characterInvisible() then
+         wait(2)
+       for _, npc in ipairs(game.Workspace.Others.NPCs:GetChildren()) do
+          if npc:FindFirstChild("HumanoidRootPart") and (npc.HumanoidRootPart.Position - lplr.Character.HumanoidRootPart.Position).Magnitude <= 500 and npc.Name ~= "Halloween NPC" then
+              data.Quest.Value = ""
+                break
+               end
+          end
+       end
+    end            
 
 task.spawn(function()
     if data:FindFirstChild("Allignment") then
@@ -1114,17 +1118,6 @@ game:GetService("UserInputService").InputBegan:Connect(function()
     afkLabel.Text = "Tiempo AFK: 0s"
 end)
 
-function quets()
-   if data.Quest.Value ~= "" and player() and characterInvisible() then
-         wait(2)
-       for _, npc in ipairs(game.Workspace.Others.NPCs:GetChildren()) do
-          if npc:FindFirstChild("HumanoidRootPart") and (npc.HumanoidRootPart.Position - lplr.Character.HumanoidRootPart.Position).Magnitude <= 500 and npc.Name ~= "Halloween NPC" then
-              data.Quest.Value = ""
-                break
-               end
-          end
-       end
-    end            
 
 
 task.spawn(function()
@@ -1135,8 +1128,6 @@ task.spawn(function()
       end)
     end
  end)
- 
- 
 
 
 task.spawn(function()
@@ -1192,13 +1183,12 @@ task.spawn(function()
             local remainingTime = getTimeRemaining()
            textLabel.Text = formatTime(remainingTime)
            
-           if getIsActive9() then
+           
             for _, obj in pairs(game.Workspace:GetDescendants()) do
             if obj.Name == "Effects" or obj:IsA("ParticleEmitter") then
               obj:Destroy()
                 end
             end          
-         end
            
                updateTimer()
               local currentRebirthValue = data.Rebirth.Value
@@ -1217,7 +1207,6 @@ task.spawn(function()
           end
            saveRebirthData()
                 end                                     
-                
          end)        
     end
 end)
