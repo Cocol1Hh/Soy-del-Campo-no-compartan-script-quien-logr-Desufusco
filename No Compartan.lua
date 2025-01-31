@@ -1012,19 +1012,18 @@ end)
 task.spawn(function()
     while task.wait() do
         pcall(function()
-        local questValue = data.Quest.Value
-            if questValue ~= "" and getIsActive1() and player() and characterInvisible() then
-                local boss = game.Workspace.Living:FindFirstChild(questValue)
-                if boss and boss:FindFirstChild("HumanoidRootPart") then
-                    if boss:FindFirstChild("Humanoid") and boss.Humanoid.Health <= 0 then
-                    end
-                    lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5.7)      
-                     Ex.p:FireServer("Blacknwhite27",1)             
-                    end                 
-               end               
-         end)
-      end
-  end)
+            local questValue = data.Quest.Value
+            local targetName = questValue == "Top X Fighter" and "X Fighter Master" or questValue            
+            if targetName ~= "" and (getIsActive1() or getIsActive6()) and player() and characterInvisible() then
+                local boss = game.Workspace.Living:FindFirstChild(targetName)
+                if boss and boss:FindFirstChild("HumanoidRootPart") and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
+                    lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5.7)
+                    Ex.p:FireServer("Blacknwhite27", 1)
+                end
+            end
+        end)
+    end
+end)
   
 task.spawn(function()
     while task.wait() do
@@ -1043,29 +1042,51 @@ task.spawn(function()
    
 
 
-local npcList = {
-    {"Vekuta (SSJBUI)", 2.375e9, true},
-    {"Wukong Rose", 1.65e9, true},
-    {"Vekuta (LBSSJ4)", 1.05e9, true},
-    {"Wukong (LBSSJ4)", 950e6, true},
-    {"Vegetable (LBSSJ4)", 650e6, true},
-    {"Vis (20%)", 350e6, true},
-    {"Vills (50%)", 250e6, true},
-    {"Wukong (Omen)", 150e6, true},
-    {"Vegetable (GoD in-training)", 100e6, true},
-    {"SSJG Kakata", 70e6, true},
-    {"Broccoli", 35.5e6, true},
-    {"SSJB Wukong", 4e6, true},
-    {"Kai-fist Master", 2525000, true},
-    {"SSJ2 Wukong", 1850000, true}, 
-    {"Perfect Atom", 1075000, true},
-    {"Chilly", 650000, true},
-    {"Super Vegetable", 308000, true},
+npcList = {
+    {"Vekuta (SSJBUI)", 2.375e9},
+    {"Wukong Rose", 1.65e9},
+    {"Vekuta (LBSSJ4)", 1.05e9},
+    {"Wukong (LBSSJ4)", 950e6},
+    {"Vegetable (LBSSJ4)", 650e6,},
+    {"Vis (20%)", 350e6},
+    {"Vills (50%)", 250e6},
+    {"Wukong (Omen)", 150e6},
+    {"Vegetable (GoD in-training)", 100e6},
+    {"SSJG Kakata", 70e6},
+    {"Broccoli", 35.5e6},
+    {"SSJB Wukong", 4e6},
+    {"Kai-fist Master", 2525000},
+    {"SSJ2 Wukong", 1850000}, 
+    {"Perfect Atom", 1075000},
+    {"Chilly", 650000},
+    {"Super Vegetable", 308000},
     {"Mapa", 0},
     {"Radish", 45000},
     {"Kid Nohag", 30000},
     {"Klirin", 0}
 }
+
+Boss = {
+        {"Vekuta (SSJBUI)",1.375e9},
+        {"Wukong Rose",1.25e9},
+        {"Vekuta (LBSSJ4)",1.05e9},
+        {"Wukong (LBSSJ4)",675e6},
+        {"Vegetable (LBSSJ4)",450e6},
+        {"Vis (20%)",250e6},
+        {"Vills (50%)",150e6},
+        {"Wukong (Omen)",75e6},
+        {"Vegetable (GoD in-training)",50e6},
+        {"SSJG Kakata",39e6},
+        {"Broccoli",33e6},
+        {"SSJB Wukong",2e6},
+        {"Kai-fist Master",1625000},
+        {"SSJ2 Wukong",1250000},
+        {"Perfect Atom",875000},
+        {"Chilly",550000},
+        {"Super Vegetable",188000},
+        {"Top X Fighter",115000},
+        {"Mapa",0},
+    }
 
 
 task.spawn(function()
@@ -1105,6 +1126,25 @@ task.spawn(function()
                     end
                 end
             end
+            pcall(function()
+            if data.Quest.Value == "" and getIsActive6() then
+                for i, npc in ipairs(Boss) do
+                    local npcName, requisito = npc[1], npc[2]
+                    if data.Defense.Value >= requisito then
+                        local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
+                        local bossInstance = game.Workspace.Living:FindFirstChild(npcName)
+                        if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
+                           (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
+                            lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame
+                            pcall(function()
+                            game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(npcInstance)
+                               end)
+                            break
+                        end
+                    end
+                end
+            end
+            end)
             end
         end)       
     end
@@ -1370,207 +1410,6 @@ task.spawn(function()
     end
 end)
 
-getgenv().Stats = {}
-
-
-local stats = getgenv().Stats
-
-local planet = "Earth"
-
--- Verify player 
-function checkplr()
-    found = false
-    for i,v in pairs(stats) do
-        if v[1] == lplr.Name then
-            found = false
-            return v
-        end
-    end
-    local table = {lplr.Name, math.huge, math.huge, }
-    if not found then return table end
-end
-
-
-local sts = {"Strength","Speed","Defense","Energy"}
-function getloweststat()
-    local l = math.huge
-    for i,v in pairs(sts) do
-        if not data:FindFirstChild(v) then return end
-        local st = data[v]
-        if st.Value < l then l = st.Value end
-    end
-    return l
-end
-
--- New Script
-function FindChar()
-    while (not lplr.Character) and (not lplr.Character:FindFirstChild("Humanoid")) and (not lplr.Character.Humanoid.Health > 0) do task.wait() end
-    return lplr.Character
-end
-
-
-
-local r = math.random(1,1e9)
-_G.Key = r
--- ResetOnSpawn, Name = "Autofarm", 
-
-
-
-local Directory = lplr.PlayerGui
-pcall(function() Directory.Autofarm:Destroy()end)
-local ScGui = Instance.new("ScreenGui")
-ScGui.ResetOnSpawn = false
-ScGui.Name = "Autofarm"
-ScGui.Parent = lplr.PlayerGui
--- Instances:
-
-
-kick = false
-
-local questNPCs = game.Workspace.Others.NPCs
-if questNPCs:FindFirstChild("Vegetable (GoD in-training)") then
-    planet = "Bills"
-end
-Farming = true
-Boss = nil
-CanAttack = true
-
-
-local bosses = {} -- Fight every boss at the lowest possible
-if planet == "Bills" then
-    bosses = {
-        {"Vekuta (SSJBUI)",1.375e9},
-        {"Wukong Rose",1.25e9},
-        {"Vekuta (LBSSJ4)",1.05e9},
-        {"Wukong (LBSSJ4)",675e6},
-        {"Vegetable (LBSSJ4)",450e6},
-        {"Vis (20%)",250e6},
-        {"Vills (50%)",150e6},
-        {"Wukong (Omen)",75e6},
-        {"Vegetable (GoD in-training)",50e6},
-    }
-else
-    bosses = {
-        {"SSJG Kakata",39e6},
-        {"Broccoli",33e6},
-        {"SSJB Wukong",2e6},
-        {"Kai-fist Master",1625000},
-        {"SSJ2 Wukong",1250000},
-        {"Perfect Atom",875000},
-        {"Chilly",550000},
-        {"Super Vegetable",188000},
-        {"Top X Fighter",115000},
-        {"Mapa",75000},
-        {"Radish",45000},
-        {"Kid Nohag",30000},
-        {"Klirin",0},
-    }
-end
-
-
-local questbosses = game.Workspace.Living
-function findboss(questname) -- Finds the bossmodel
-    local bossname = questname
-    if questname == "Top X Fighter" then
-        bossname = "X Fighter Master"
-    end
-    if 
-     questbosses:FindFirstChild(bossname) and
-     questbosses[bossname]:FindFirstChild("HumanoidRootPart") and 
-     questbosses[bossname]:FindFirstChild("Humanoid")
-    then -- If the boss isn't deleted
-        local boss = questbosses[bossname]
-        return boss
-    end
-end
-
-
-local part = Instance.new("Part")
-part.Parent = Workspace
-part.Position = Vector3.new(0,20000,0)
-part.Anchored = true
-part.Transparency = .9
-
-
-local mobs = {"X Fighter","Evil Saya"}
-canvolley = true
-task.spawn(function() -- Move/Attack
-    while ScGui do
-        if Farming then
-            if _G.Key ~= r then
-                return
-            end
-            task.spawn(function() 
-            	pcall(function()
-	                lplr.Character.Humanoid:ChangeState(11)
-	                lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
-	                if (not Boss) and #game.Players:GetChildren() > 1 then 
-	                    pcall(function()
-	                        lplr.Character.HumanidoRootPart.CFrame = part.CFrame
-	                    end)
-	                end
-	                pcall(function()
-	                    lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Boss.HumanoidRootPart.CFrame * CFrame.new(0,0,4.5).p, Boss.HumanoidRootPart.Position)
-	                Ex.p:FireServer("Blacknwhite27",1) 
-	                end)
-	                if Boss then
-	                    task.spawn(function()
-	                        for i,blast in pairs(FindChar().Effects:GetChildren()) do
-	                            if blast.Name == "Blast" then
-	                                blast.CFrame = Boss.HumanoidRootPart.CFrame
-	                            end
-	                        end
-	                    end)
-	                end
-	          end)
-            end)
-        end
-        task.wait()
-    end
-end)
-
-task.spawn(function() -- Pick quest
-    while ScGui and getloweststat() < checkplr()[3] do
-        if Farming  and getIsActive6() then
-            --while not CanAttack do wait() end
-            if data.Quest.Value == "" or not Boss then
-                for i,boss in pairs(bosses) do
-                    if data.Rebirth.Value >= 2000 and boss[1] == "Mapa" and getIsActive6() then
-                        boss[2] = 0
-                    end
-                    if getloweststat()/2 >= boss[2] and game.Workspace.Living:FindFirstChild(boss[1]) and game.Workspace.Living[boss[1]]:FindFirstChild("Humanoid") and game.Workspace.Living[boss[1]].Humanoid.Health > 0 then
-                    if data.Quest.Value ~= boss[1] then
-              local npc = game.Workspace.Others.NPCs:FindFirstChild(boss[1])  -- Cambié Boss por boss[1] para encontrar el NPC correcto
-                 if npc then
-                     lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
-                          wait() 
-                          end
-                        pcall(function()
-                          game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(questNPCs[boss[1]])
-                            end) 
-                          end
-                        if data.Quest.Value == boss[1] then
-                            Boss = game.Workspace.Living[boss[1]]
-                            if CanAttack ~= false then -- Sets if it's not nil                            
-                                CanAttack = true
-                            end
-                        else
-                            task.wait(.01)
-                            Boss = nil
-                        end
-                        task.wait(.01)
-                        break 
-                    end
-                end
-            elseif game.Workspace.Living:FindFirstChild(data.Quest.Value)  then
-                Boss = game.Workspace.Living[data.Quest.Value]
-            else data.Quest.Value = ""
-                wait(.01)
-            end
-        end
-        task.wait()
-    end
-end)  
 
 --fin de todo \/
        end)    
