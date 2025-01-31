@@ -1221,6 +1221,8 @@ function quets()
           end
        end
     end            
+    
+   
 
 task.spawn(function()
     if data:FindFirstChild("Allignment") then
@@ -1299,6 +1301,7 @@ task.spawn(function()
             afkTime = afkTime + 1
             afkLabel.Text = "Tiempo AFK: " .. afkTime .. "s"
           end
+                         
 
         local rebirthValue = data.Rebirth.Value
         local strengthValue = data.Strength.Value
@@ -1322,6 +1325,23 @@ task.spawn(function()
             end          
          end
            
+          if getIsActive7() then
+                local accessories = {}            
+                for _, v in pairs(lplr.Character:GetChildren()) do 
+                    if v:IsA("Hat") or v:IsA("Accessory") or v.Name:lower():find("hair") then
+                        v.Parent = game.ReplicatedStorage
+                        table.insert(accessories, v)
+                    elseif v:IsA("BasePart") then
+                        v.Transparency = 1
+                    end
+                end             
+                local duck = Instance.new("SpecialMesh", lplr.Character.HumanoidRootPart)
+                duck.MeshId = "http://www.roblox.com/asset/?id=9419831"
+                duck.TextureId = "http://www.roblox.com/asset/?id=9419827"
+                duck.Scale = Vector3.new(5, 5, 5)
+                lplr.Character.HumanoidRootPart.Transparency = 0
+            end
+          
                updateTimer()
               local currentRebirthValue = data.Rebirth.Value
         if currentRebirthValue > previousRebirthValue then
