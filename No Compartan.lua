@@ -1163,6 +1163,15 @@ task.spawn(function() -- Move/Attack
 	                    lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Boss.HumanoidRootPart.CFrame * CFrame.new(0,0,4.5).p, Boss.HumanoidRootPart.Position)
                       	Ex.p:FireServer("Blacknwhite27",1)             
 	                end)
+	   if data.Quest.Value ~= "" and player() and characterInvisible() then
+         wait(2)
+       for _, npc in ipairs(game.Workspace.Others.NPCs:GetChildren()) do
+          if npc:FindFirstChild("HumanoidRootPart") and (npc.HumanoidRootPart.Position - lplr.Character.HumanoidRootPart.Position).Magnitude <= 500 and npc.Name ~= "X Fighter Trainer" then
+              data.Quest.Value = ""
+                break
+               end
+          end
+       end
 	                if Boss then
 	                    task.spawn(function()
 	                        for i,blast in pairs(FindChar().Effects:GetChildren()) do
@@ -1260,19 +1269,6 @@ while wait(100) do
     end
 end)    
 
-
-
-function quets()
-   if data.Quest.Value ~= "" and player() and characterInvisible() then
-         wait(2)
-       for _, npc in ipairs(game.Workspace.Others.NPCs:GetChildren()) do
-          if npc:FindFirstChild("HumanoidRootPart") and (npc.HumanoidRootPart.Position - lplr.Character.HumanoidRootPart.Position).Magnitude <= 500 and npc.Name ~= "X Fighter Trainer" then
-              data.Quest.Value = ""
-                break
-               end
-          end
-       end
-    end            
 
 task.spawn(function()
     if data:FindFirstChild("Allignment") then
