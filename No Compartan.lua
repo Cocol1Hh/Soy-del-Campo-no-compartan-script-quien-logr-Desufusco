@@ -1209,21 +1209,6 @@ while wait(100) do
   end)
     end
 end)    
-
-
-
-function quets()
-   if data.Quest.Value ~= "" and player() and characterInvisible() then
-         wait(2)
-       for _, npc in ipairs(game.Workspace.Others.NPCs:GetChildren()) do
-          if npc:FindFirstChild("HumanoidRootPart") and (npc.HumanoidRootPart.Position - lplr.Character.HumanoidRootPart.Position).Magnitude <= 500 and npc.Name ~= "X Fighter Trainer" then
-              data.Quest.Value = ""
-                break
-               end
-          end
-       end
-    end            
-    
    
 
 task.spawn(function()
@@ -1256,10 +1241,18 @@ end)
 
 
 task.spawn(function()
-    while wait(.4) do
+    while wait() do
     pcall(function()
     loadServerData()
-    quets() 
+     if data.Quest.Value ~= "" and player() and characterInvisible() then
+         wait(2)
+       for _, npc in ipairs(game.Workspace.Others.NPCs:GetChildren()) do
+          if npc:FindFirstChild("HumanoidRootPart") and (npc.HumanoidRootPart.Position - lplr.Character.HumanoidRootPart.Position).Magnitude <= 500 and npc.Name ~= "X Fighter Trainer" then
+              data.Quest.Value = ""
+                break
+               end
+          end
+       end
       end)
     end
  end)
