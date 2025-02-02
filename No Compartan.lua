@@ -1042,14 +1042,7 @@ task.spawn(function()
                  if (yo() >= ((data.Rebirth.Value * 3e6) + 2e6)) and 
                (yo() < (((data.Rebirth.Value * 3e6) + 2e6) * 2)) and getIsActive5() then
                 Ex.reb:InvokeServer()   
-                   end
-                   pcall(function()        
-                  if game.PlaceId == 5151400895 and data.Strength.Value <= 500000000 and getIsActive10() then
-                Ex.TP:InvokeServer("Earth")
-            elseif game.PlaceId ~= 5151400895 and yo() >= 100000000 and getIsActive10() then
-                Ex.TP:InvokeServer("Vills Planet")
-                end                
-             end)
+                   end                
             if data.Quest.Value == "" and getIsActive1() then
                 for i, npc in ipairs(npcList) do
                     local npcName, requisito, isActive = npc[1], npc[2], npc[3]
@@ -1078,6 +1071,22 @@ task.spawn(function()
             end
             end
         end)       
+    end
+end)
+
+local planet = "Earth"
+local planet = "Bills"
+task.spawn(function() 
+    while true do       
+            if yo() >= 150e6 and data.Zeni.Value >= 15000 and game.PlaceId == 3311165597  then
+                game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
+                wait(5)
+            end
+            if yo() < 50e6 and game.PlaceId == 5151400895  then
+                game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
+                wait(5)
+            end
+        task.wait()
     end
 end)
 
@@ -1112,8 +1121,10 @@ end)
  end)          
 
 
-function quets()
-   if data.Quest.Value ~= "" and player() then
+task.spawn(function()
+    while task.wait(.4) do
+    pcall(function()
+   if data.Quest.Value ~= "" and player() and game.PlaceId == 3311165597 then
          wait(2)
        for _, npc in ipairs(game.Workspace.Others.NPCs:GetChildren()) do
           if npc:FindFirstChild("HumanoidRootPart") and (npc.HumanoidRootPart.Position - lplr.Character.HumanoidRootPart.Position).Magnitude <= 500 and npc.Name ~= "Halloween NPC" then
@@ -1122,7 +1133,9 @@ function quets()
                end
           end
        end
-    end            
+      end)
+    end
+ end)            
 
 task.spawn(function()
     if data:FindFirstChild("Allignment") then
@@ -1156,8 +1169,9 @@ end)
 task.spawn(function()
     while wait(.4) do
     pcall(function()
+    if player() then
     loadServerData()
-    quets() 
+          end
       end)
     end
  end)
