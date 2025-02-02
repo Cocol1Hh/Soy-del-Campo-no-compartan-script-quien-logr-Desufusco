@@ -1042,40 +1042,39 @@ task.spawn(function()
                  if (yo() >= ((data.Rebirth.Value * 3e6) + 2e6)) and 
                (yo() < (((data.Rebirth.Value * 3e6) + 2e6) * 2)) and getIsActive5() then
                 Ex.reb:InvokeServer()   
-                   end                
-            if data.Quest.Value == "" and getIsActive1() then
-                for i, npc in ipairs(npcList) do
-                    local npcName, requisito, isActive = npc[1], npc[2], npc[3]
-                    if isActive then
-                        if data.Defense.Value >= requisito then
-                            local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
-                            local bossInstance = game.Workspace.Living:FindFirstChild(npcName)
-                            if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
-                               (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
-                                lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.4)      
-                                pcall(function()
-                                game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(npcInstance)
-                                  end)
-                                  if bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0 then
-                                for _, blast in pairs(lplr.Character.Effects:GetChildren()) do
-                                    if blast.Name == "Blast" then
-                                        blast.CFrame = bossInstance.HumanoidRootPart.CFrame
-                                    end
-                                end
-                            end
-                                break
-                            end
-                        end
-                    end
-                end
-            end
+                   end                         
             end
         end)       
     end
 end)
 
-local planet = "Earth"
-local planet = "Bills"
+
+task.spawn(function() 
+    while true do     
+    pcall(function()  
+    if data.Quest.Value == "" and getIsActive1() and player() then
+                for i, npc in ipairs(npcList) do
+                    local npcName, requisito, isActive = npc[1], npc[2], npc[3]
+                    if isActive then
+                        if yo() >= requisito then
+                            local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
+                            local bossInstance = game.Workspace.Living:FindFirstChild(npcName)
+                            if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
+                               (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
+                                lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.4)      
+                                game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(npcInstance)
+                                break
+                                end
+                             end
+                         end
+                     end
+                 end         
+            end)
+            wait()
+        end
+    end)
+    
+
 task.spawn(function() 
     while true do       
             if yo() >= 150e6 and data.Zeni.Value >= 15000 and game.PlaceId == 3311165597  then
