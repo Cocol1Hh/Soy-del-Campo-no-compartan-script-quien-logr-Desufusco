@@ -875,9 +875,6 @@ function yo()
     return l
 end
 
-function characterInvisible()
-	return lplr.Character
-end
 
 function player()
 	return lplr.Character and lplr.Character.Humanoid and lplr.Character.Humanoid.Health > 0 and lplr.Character:FindFirstChild("HumanoidRootPart")
@@ -887,7 +884,7 @@ end
 task.spawn(function()
     while task.wait() do
         pcall(function()
-        if player() and characterInvisible() and getIsActive2() then
+        if player() and getIsActive2() then
         local Forms = {'Divine Rose Prominence', 'Astral Instinct', 'Ultra Ego', 'SSJB4', 'True God of Creation', 
     'True God of Destruction', 'Super Broly', 'LSSJG', 'LSSJ4', 'SSJG4', 'LSSJ3', 'Mystic Kaioken', 
     'LSSJ Kaioken', 'SSJR3', 'SSJB3', 'God Of Destruction', 'God Of Creation', 'Jiren Ultra Instinct', 
@@ -903,7 +900,7 @@ task.spawn(function()
             Ex.ta:InvokeServer()
                        end
                 end
-                if not getIsActive2() and selectedForm and not transforming and lplr.Status.Transformation.Value ~= selectedForm and player() and characterInvisible() then
+                if not getIsActive2() and selectedForm and not transforming and lplr.Status.Transformation.Value ~= selectedForm and player() then
                   transforming = true
                     pcall(function()
                 if Ex.equipskill:InvokeServer(selectedForm) then
@@ -932,7 +929,7 @@ task.spawn(function()
   data.Quest.Value = ""
     while wait() do
         pcall(function()
-        if getIsActive3() and player() and characterInvisible() then
+        if getIsActive3() and player() then
             local boss = game.Workspace.Living:FindFirstChild(data.Quest.Value)
             local Ki = lplr.Character.Stats.Ki
             if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 and data.Quest.Value ~= "" then
@@ -978,7 +975,7 @@ task.spawn(function()
     while task.wait() do
         pcall(function()
         local questValue = data.Quest.Value
-            if questValue ~= "" and getIsActive1() and player() and characterInvisible() then
+            if questValue ~= "" and getIsActive1() and player() then
                 local boss = game.Workspace.Living:FindFirstChild(questValue)
                 if boss and boss:FindFirstChild("HumanoidRootPart") then
                     if boss:FindFirstChild("Humanoid") and boss.Humanoid.Health <= 0 then
@@ -995,7 +992,7 @@ task.spawn(function()
     while task.wait() do
       pcall(function()
     local Ki = lplr.Character.Stats.Ki
-    if Ki.Value < Ki.MaxValue * 0.25 and player() and characterInvisible() and getIsActive4() then
+    if Ki.Value < Ki.MaxValue * 0.25 and player() and getIsActive4() then
          Ex.cha:InvokeServer("Blacknwhite27")        
          end
          if getIsActive1() then
@@ -1036,7 +1033,7 @@ task.spawn(function()
 task.spawn(function()
     while wait() do
         pcall(function()        
-        if player() and characterInvisible() then
+        if player() then
            if lplr.Status.Blocking.Value ~= true and getIsActive4() then
            pcall(function()
              Ex.block:InvokeServer(true)
@@ -1046,11 +1043,13 @@ task.spawn(function()
                (yo() < (((data.Rebirth.Value * 3e6) + 2e6) * 2)) and getIsActive5() then
                 Ex.reb:InvokeServer()   
                    end
-                  if game.PlaceId == 5151400895 and yo() <= 100000000 and getIsActive10() then
+                   pcall(function()        
+                  if game.PlaceId == 5151400895 and data.Strength.Value <= 500000000 and getIsActive10() then
                 Ex.TP:InvokeServer("Earth")
             elseif game.PlaceId ~= 5151400895 and yo() >= 100000000 and getIsActive10() then
                 Ex.TP:InvokeServer("Vills Planet")
                 end                
+             end)
             if data.Quest.Value == "" and getIsActive1() then
                 for i, npc in ipairs(npcList) do
                     local npcName, requisito, isActive = npc[1], npc[2], npc[3]
@@ -1114,7 +1113,7 @@ end)
 
 
 function quets()
-   if data.Quest.Value ~= "" and player() and characterInvisible() then
+   if data.Quest.Value ~= "" and player() then
          wait(2)
        for _, npc in ipairs(game.Workspace.Others.NPCs:GetChildren()) do
           if npc:FindFirstChild("HumanoidRootPart") and (npc.HumanoidRootPart.Position - lplr.Character.HumanoidRootPart.Position).Magnitude <= 500 and npc.Name ~= "Halloween NPC" then
@@ -1167,7 +1166,7 @@ task.spawn(function()
 task.spawn(function()
     while wait(.8) do
     pcall(function()
-    if player() and characterInvisible() then
+    if player() then
         local ping = math.floor(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue())
         pingLabel.Text = "Ping: " .. (ping < 1000 and ping or math.floor(ping / 10) * 10) .. " ms"---PING
 
