@@ -265,7 +265,7 @@ Fps.Parent = Barra1
 
 local VS = Instance.new("TextLabel")
 VS.Parent = Barra1
-VS.Text = "V [0.5]"
+VS.Text = "V [0.6]"
 VS.Size = UDim2.new(0, 100, 0, 10)
 VS.Position = UDim2.new(0.783, 0, 0.009, 0)
 VS.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -1135,6 +1135,25 @@ task.spawn(function()
       end)
     end
  end)            
+ 
+ local Q = data:WaitForChild("Quest")
+local notified = false
+local function NotyQ()
+    if Q.Value ~= "" and not notified then
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Misión Iniciada",
+            Text = tostring(Q.Value),
+            Duration = 2
+        })
+        notified = true
+    elseif Q.Value == "" then
+        notified = false
+    end
+end
+NotyQ()
+game.ReplicatedStorage.Datas[lplr.UserId].Quest.Changed:Connect(function()
+    NotyQ()
+end)
 
 task.spawn(function()
     if data:FindFirstChild("Allignment") then
@@ -1168,13 +1187,29 @@ end)
 task.spawn(function()
     while wait(.4) do
     pcall(function()
-    if player() then
-    loadServerData()
+    if player() then    
+    if getIsActive7() then
+                local accessories = {}            
+                for _, v in pairs(lplr.Character:GetChildren()) do 
+                    if v:IsA("Hat") or v:IsA("Accessory") or v.Name:lower():find("hair") then
+                        v.Parent = game.ReplicatedStorage
+                        table.insert(accessories, v)
+                    elseif v:IsA("BasePart") then
+                        v.Transparency = 1
+                    end
+                end             
+                local duck = Instance.new("SpecialMesh", lplr.Character.HumanoidRootPart)
+                duck.MeshId = "http://www.roblox.com/asset/?id=9419831"
+                duck.TextureId = "http://www.roblox.com/asset/?id=9419827"
+                duck.Scale = Vector3.new(5, 5, 5)
+                lplr.Character.HumanoidRootPart.Transparency = 0
+            end             
+loadServerData()  
           end
       end)
     end
  end)
-
+ 
 
 task.spawn(function()
     while wait(.8) do
@@ -1215,6 +1250,8 @@ task.spawn(function()
             afkLabel.Text = "Tiempo AFK: " .. afkTime .. "s"
           end
 
+        lplr.PlayerGui.Main.MainFrame.Frames.Quest.Visible = false
+
         local rebirthValue = data.Rebirth.Value
         local strengthValue = data.Strength.Value
         local nextRebirth = (rebirthValue * 3e6) + 2e6
@@ -1229,12 +1266,13 @@ task.spawn(function()
             local remainingTime = getTimeRemaining()
            textLabel.Text = formatTime(remainingTime)
            
-           
+           if getIsActive9() then
             for _, obj in pairs(game.Workspace:GetDescendants()) do
             if obj.Name == "Effects" or obj:IsA("ParticleEmitter") then
               obj:Destroy()
                 end
             end          
+        end
            
                updateTimer()
               local currentRebirthValue = data.Rebirth.Value
@@ -1252,7 +1290,7 @@ task.spawn(function()
             hasReinitialized = false
           end
            saveRebirthData()
-                end                                     
+                end                                                      
          end)        
     end
 end)
