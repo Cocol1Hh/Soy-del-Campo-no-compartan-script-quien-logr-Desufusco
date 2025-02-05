@@ -1166,7 +1166,7 @@ task.spawn(function()
                                 game:GetService("ReplicatedStorage").Package.Events.mel:InvokeServer(Mel, "Blacknwhite27")
                                 Ex.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, "Blacknwhite27")    
                                 Ex.block:InvokeServer(true)
-                                if game.PlaceId ~= 5151400895 and yo() <= 80e9 then
+                                if game.PlaceId ~= 5151400895 and yo() <= 800e9 then
                                 Ex.cha:InvokeServer("Blacknwhite27")            
                                end            
                             end)
