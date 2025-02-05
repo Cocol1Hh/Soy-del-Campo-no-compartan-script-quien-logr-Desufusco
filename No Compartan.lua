@@ -552,6 +552,8 @@ local textProperties = {
     {text = "Mapa", position = UDim2.new(0.350, 0, 0.085, 0), color = Color3.fromRGB(255, 190, 150), parent = Contenedor},
     {text = "Tp", position = UDim2.new(-0.160, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3},
     {text = "Actk", position = UDim2.new(0.350, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3},
+    {text = "Fijar", position = UDim2.new(-0.160, 0, 0.345, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3},
+    {text = "Camr", position = UDim2.new(0.350, 0, 0.345, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3},
 }
 
 for _, props in pairs(textProperties) do
@@ -862,6 +864,8 @@ end
 
 --Tp Players
 local getIsActive15 = createSwitch(Barra3, UDim2.new(0.2, 0, 0.275, 0), "Switch15", LoadSwitchState("Switch15"))--Tp
+local getIsActive17 = createSwitch(Barra3, UDim2.new(0.2, 0, 0.345, 0), "Switch17", LoadSwitchState("Switch17"))--Tp
+local getIsActive18 = createSwitch(Barra3, UDim2.new(0.740, 0, 0.345, 0), "Switch18", LoadSwitchState("Switch178"))--Tp
 --[Xd]
 local selectedPlayer = nil
 local teleportConnection = nil
@@ -1145,7 +1149,7 @@ task.spawn(function()
      if getIsActive11() and game.Workspace.Living:FindFirstChild("Goku Black") and game.Workspace.Living["Goku Black"]:FindFirstChild("Humanoid") and game.Workspace.Living["Goku Black"].Humanoid.Health > 0 and distance <= 900  then
                 if dat:FindFirstChild("Status") then
                     for _, Atck in ipairs(Atck) do
-                        if not dat.Status:FindFirstChild(Mel) then
+                        if not dat.Status:FindFirstChild(Atck) then
                             task.spawn(function()
                                 game:GetService("ReplicatedStorage").Package.Events.mel:InvokeServer(Atck, "Blacknwhite27")
                                 Ex.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, "Blacknwhite27")    
@@ -1158,22 +1162,7 @@ task.spawn(function()
                     end
                 end
             end
-            if getIsActive16() and selectedPlayer and selectedPlayer.Character and selectedPlayer.Character:FindFirstChild("Humanoid") and selectedPlayer.Character.Humanoid.Health > 0 then            
-                if dat:FindFirstChild("Status") then
-                    for _, Mel in ipairs(Mel) do
-                        if not dat.Status:FindFirstChild(Mel) then
-                            task.spawn(function()
-                                game:GetService("ReplicatedStorage").Package.Events.mel:InvokeServer(Mel, "Blacknwhite27")
-                                Ex.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, "Blacknwhite27")    
-                                Ex.block:InvokeServer(true)
-                                if game.PlaceId ~= 5151400895 and yo() <= 80e9 then
-                                Ex.cha:InvokeServer("Blacknwhite27")            
-                               end            
-                            end)
-                        end
-                    end
-                end
-            end
+            
         end)
     end
 end)
@@ -1198,6 +1187,30 @@ end)
         task.wait()
     end
 end)
+
+task.spawn(function()
+    while task.wait() do
+        pcall(function()
+            local dat = (game.PlaceId == 5151400895) and game.Workspace.Living:FindFirstChild(lplr.Name) or lplr
+            if getIsActive16() and selectedPlayer and selectedPlayer.Character and selectedPlayer.Character:FindFirstChild("Humanoid") and selectedPlayer.Character.Humanoid.Health > 0 then            
+                if dat:FindFirstChild("Status") then
+                    for _, Mel in ipairs(Mel) do
+                        if not dat.Status:FindFirstChild(Mel) then
+                            task.spawn(function()
+                                game:GetService("ReplicatedStorage").Package.Events.mel:InvokeServer(Mel, "Blacknwhite27")
+                                Ex.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, "Blacknwhite27")    
+                                Ex.block:InvokeServer(true)
+                                if game.PlaceId ~= 5151400895 and yo() <= 80e9 then
+                                Ex.cha:InvokeServer("Blacknwhite27")            
+                               end            
+                            end)
+                        end
+                    end
+                end
+            end
+         end)
+      end
+  end)
 
 
 task.spawn(function()
