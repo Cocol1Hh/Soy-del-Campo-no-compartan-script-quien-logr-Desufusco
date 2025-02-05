@@ -1,90 +1,119 @@
+local ArchivoClaveGuardada = "jses_syn"
+local ArchivoHistorial = "mses_syn"
 local HttpService = game:GetService("HttpService")
-local Players = game:GetService("Players")
-local KeyFile, HistoryFile = "ClaveGuardada.json", "HistorialClaves.json"
 
-local personalizedUsers = {
-    ["Zerincee"] = "Felicidad",
-    ["Latios789_2"] = "Felicidad",
-    ["armijosfernando2178"] = "Friv"
+local KeyGui = Instance.new("ScreenGui")
+KeyGui.Parent = game.CoreGui
+
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0.318272662, 0, 0.318272662, 0)
+Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+Frame.BorderSizePixel = 0
+Frame.Parent = KeyGui
+
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0.05, 0)
+UICorner.Parent = Frame
+
+local Gradient = Instance.new("UIGradient")
+Gradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 45, 50)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 15, 20))
 }
+Gradient.Rotation = 45
+Gradient.Parent = Frame
 
-local personalizedKeyDuration = 30 * 86400 
-local regularKeyDuration = 24 * 3600  
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(0.950000000, 0, 0.150000000, 0)
+Title.Position = UDim2.new(0.025000000, 0, 0.050000000, 0)
+Title.BackgroundTransparency = 1
+Title.TextColor3 = Color3.fromRGB(220, 220, 220)
+Title.TextScaled = true
+Title.Font = Enum.Font.GothamBold
+Title.Text = "🔐 Sistema de Claves"
+Title.Parent = Frame
 
-local function readJsonFile(filename)
-    if isfile(filename) then
-        local success, result = pcall(HttpService.JSONDecode, HttpService, readfile(filename))
-        return success and result or nil
+local TextBox = Instance.new("TextBox")
+TextBox.Size = UDim2.new(0.900635200, 0, 0.126137561, 0)
+TextBox.Position = UDim2.new(0.049682240, 0, 0.278634136, 0)
+TextBox.PlaceholderText = "Introduce tu clave aquí"
+TextBox.Font = Enum.Font.Gotham
+TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextBox.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+TextBox.BorderSizePixel = 0
+TextBox.TextScaled = true
+TextBox.ClearTextOnFocus = false
+TextBox.Parent = Frame
+
+local UICornerTextBox = Instance.new("UICorner")
+UICornerTextBox.CornerRadius = UDim.new(0.05, 0)
+UICornerTextBox.Parent = TextBox
+
+local BotonUrl = Instance.new("TextButton")
+BotonUrl.Size = UDim2.new(0.715488320, 0, 0.147448120, 0)
+BotonUrl.Position = UDim2.new(0.142255450, 0, 0.550486350, 0)
+BotonUrl.Text = "Copiar URL de Clave"
+BotonUrl.Font = Enum.Font.GothamBold
+BotonUrl.TextScaled = true
+BotonUrl.TextColor3 = Color3.fromRGB(255, 255, 255)
+BotonUrl.BackgroundColor3 = Color3.fromRGB(0, 122, 204)
+BotonUrl.BorderSizePixel = 0
+BotonUrl.Parent = Frame
+
+local UICornerBotonUrl = Instance.new("UICorner")
+UICornerBotonUrl.CornerRadius = UDim.new(0.05, 0)
+UICornerBotonUrl.Parent = BotonUrl
+
+local BotonInvitacion = Instance.new("ImageButton")
+BotonInvitacion.Size = UDim2.new(0.097682243, 0, 0.116241136, 0)
+BotonInvitacion.Position = UDim2.new(0.870682243, 0, 0.562241136, 0)
+BotonInvitacion.Image = "rbxassetid://17085964685"
+BotonInvitacion.BackgroundTransparency = 1
+BotonInvitacion.BorderSizePixel = 0
+BotonInvitacion.Parent = Frame
+
+
+local UICornerBotonUrl = Instance.new("UICorner")
+UICornerBotonUrl.CornerRadius = UDim.new(0.1, 0)
+UICornerBotonUrl.Parent = BotonUrl
+
+local claveValida = false
+
+local function guardarClaveGuardada(clave)
+    writefile(ArchivoClaveGuardada, HttpService:JSONEncode({clave = clave, fecha = os.time()}))
+end
+
+local function actualizarHistorial(clave)
+    local historial = {}
+    if isfile(ArchivoHistorial) then
+        historial = HttpService:JSONDecode(readfile(ArchivoHistorial))
     end
-    return nil
+    table.insert(historial, clave)
+    if #historial > 5 then
+        table.remove(historial, 1)
+    end
+    writefile(ArchivoHistorial, HttpService:JSONEncode(historial))
 end
 
-local function writeJsonFile(filename, data)
-    writefile(filename, HttpService:JSONEncode(data))
-end
-
-local function saveKey(key, duration)
-    writeJsonFile(KeyFile, {key = key, time = os.time(), duration = duration})
-end
-
-local function updateHistory(key)
-    local history = readJsonFile(HistoryFile) or {}
-    table.insert(history, 1, key)
-    if #history > 7 then table.remove(history) end
-    writeJsonFile(HistoryFile, history)
-end
-
-local function isKeyValid()
-    local data = readJsonFile(KeyFile)
-    if data then
-        local duration = data.duration or regularKeyDuration
-        return (os.time() - data.time < duration)
+local function claveEsValida()
+    if isfile(ArchivoClaveGuardada) then
+        local datos = HttpService:JSONDecode(readfile(ArchivoClaveGuardada))
+        if os.time() - datos.fecha < (24 * 60 * 60) then
+            return true
+        end
     end
     return false
 end
 
-local function levenshteinDistance(a, b)
-    local m, n = #a, #b
-    local dp = {}
-    for i = 0, m do dp[i] = {[0] = i} end
-    for j = 1, n do
-        dp[0][j] = j
-        for i = 1, m do
-            dp[i][j] = math.min(dp[i-1][j] + 1, dp[i][j-1] + 1, dp[i-1][j-1] + (a:sub(i,i) ~= b:sub(j,j) and 1 or 0))
-        end
+local function resetearClave()
+    if isfile(ArchivoClaveGuardada) then
+        delfile(ArchivoClaveGuardada)
     end
-    return dp[m][n]
 end
 
-local gui = Instance.new("ScreenGui")
-gui.Parent = game:GetService("CoreGui")
-
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0.32, 0, 0.32, 0)
-frame.Position = UDim2.new(0.5, 0, 0.5, 0)
-frame.AnchorPoint = Vector2.new(0.5, 0.5)
-frame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
-frame.Parent = gui
-
-local gradient = Instance.new("UIGradient")
-gradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 45, 50)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 15, 20))
-}
-gradient.Rotation = 45
-gradient.Parent = frame
-
-local textBox = Instance.new("TextBox")
-textBox.Size = UDim2.new(0.9, 0, 0.126, 0)
-textBox.Position = UDim2.new(0.05, 0, 0.279, 0)
-textBox.PlaceholderText = "Introduce tu clave aquí"
-textBox.Font = Enum.Font.Gotham
-textBox.TextColor3 = Color3.new(1, 1, 1)
-textBox.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
-textBox.TextScaled = true
-textBox.Parent = frame
-
-function lopp()
+local function lopoi()
 local fffg = game.CoreGui:FindFirstChild("fffg")
 if fffg then
     return  
@@ -94,36 +123,41 @@ local Frame = Instance.new("Frame")
 local TextLabel = Instance.new("TextLabel")
 local Cuadro1 = Instance.new("Frame")
 local Cuadro2 = Instance.new("Frame")
+local Cuadro3 = Instance.new("Frame")
 local Barra1 = Instance.new("ScrollingFrame")
 local Barra2 = Instance.new("ScrollingFrame")
+local Barra3 = Instance.new("ScrollingFrame")
 local Siguiente = Instance.new("TextButton")
 local Mix = Instance.new("TextButton")
 local Borde1 = Instance.new("UIStroke")
 local Borde2 = Instance.new("UIStroke")
+local Borde3 = Instance.new("UIStroke")
 local HttpService = game:GetService("HttpService")--Barra
 local Lighting = game:GetService("Lighting")--Barra
 local UserInputService = game:GetService("UserInputService")--Barra
 local lplr = game.Players.LocalPlayer
 local data = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(lplr.UserId)
 local Ex = game:GetService("ReplicatedStorage").Package.Events
-local HttpService = game:GetService("HttpService")
-local KeyFile = "ClaveGuardada.json"
+local KeyFile = "jses_syn"
 
 Fernando.Name = "fffg"
 Fernando.Parent = game.CoreGui
 
+
 local function formatNumber(number)
-    if number < 1000 then
-        return tostring(number)
-    end
     local suffixes = {"", "K", "M", "B", "T", "QD"}
     local suffix_index = 1
     while math.abs(number) >= 1000 and suffix_index < #suffixes do
         number = number / 1000.0
         suffix_index = suffix_index + 1
     end
-    return string.format("%.2f%s", number, suffixes[suffix_index])
+    local formatted_number = string.format("%.2f", number)
+    if math.floor(number) == number then
+        formatted_number = string.format("%d", number)
+    end
+    return formatted_number .. suffixes[suffix_index]
 end
+
 
 Frame.Parent = Fernando
 Frame.BackgroundTransparency = 1
@@ -155,6 +189,12 @@ Cuadro2.Position = UDim2.new(0, 0, 1, 0)
 Cuadro2.Size = UDim2.new(0, 410, 0, 400)
 Cuadro2.Visible = false  -- Comienza oculto
 
+Cuadro3.Parent = TextLabel
+Cuadro3.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Cuadro3.Position = UDim2.new(0, 0, 1, 0)
+Cuadro3.Size = UDim2.new(0, 410, 0, 400)
+Cuadro3.Visible = false  -- Comienza oculto
+
 Barra1.Parent = Cuadro1
 Barra1.Size = UDim2.new(1, 0, 1, 0)
 Barra1.CanvasSize = UDim2.new(0, 0, 2, 0)
@@ -168,6 +208,13 @@ Barra2.CanvasSize = UDim2.new(0, 0, 2, 0)
 Barra2.ScrollBarThickness = 10
 Barra2.BackgroundTransparency = 1
 Barra2.ScrollingDirection = Enum.ScrollingDirection.Y 
+
+Barra3.Parent = Cuadro3
+Barra3.Size = UDim2.new(1, 0, 1, 0)
+Barra3.CanvasSize = UDim2.new(0, 0, 2, 0)
+Barra3.ScrollBarThickness = 10
+Barra3.BackgroundTransparency = 1
+Barra3.ScrollingDirection = Enum.ScrollingDirection.Y 
 
 Siguiente.Parent = Frame
 Siguiente.BackgroundTransparency = 1
@@ -330,7 +377,7 @@ uiStroke.Color = Color3.fromRGB(0, 0, 255)
 local button = Instance.new("TextButton", Barra1)
 button.Size = UDim2.new(0.120, 0, 0.03, 0)
 button.Position = UDim2.new(0.840, 0, 0.03, 0)
-button.Text = "Ret[Mode]"
+button.Text = "Reset"
 button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 button.TextColor3 = Color3.fromRGB(255, 100, 200)
 
@@ -350,13 +397,12 @@ tierra.Position = UDim2.new(0.440, 0, 0.205, 0)
 tierra.BackgroundTransparency = 1
 tierra.Image = "rbxassetid://105319560378349"
 tierra.MouseButton1Click:Connect(function()
-    local playerCount = #game.Players:GetPlayers()
-    if playerCount > 3 then
-        game:GetService("TeleportService"):Teleport(3311165597, game.Players.LocalPlayer)
-    elseif playerCount < 3 then
-        Ex.TP:InvokeServer("Earth")
-    end
+    game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
 end)
+
+local UICorner_1 = Instance.new("UICorner")
+UICorner_1.CornerRadius = UDim.new(0, 5)
+UICorner_1.Parent = tierra
 
 local bills = Instance.new("ImageButton", Barra2)
 bills.Size = UDim2.new(0, 41, 0, 41)
@@ -364,13 +410,12 @@ bills.Position = UDim2.new(0.03, 0, 0.205, 0)
 bills.BackgroundTransparency = 1
 bills.Image = "rbxassetid://17345700746"
 bills.MouseButton1Click:Connect(function()
-    local playerCount = #game.Players:GetPlayers()
-    if playerCount > 3 then
-        game:GetService("TeleportService"):Teleport(5151400895, game.Players.LocalPlayer)
-    elseif playerCount < 3 then
-        Ex.TP:InvokeServer("Vills Planet")
-    end
+    game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
 end)
+
+local UICorner_2 = Instance.new("UICorner")
+UICorner_2.CornerRadius = UDim.new(0, 12)
+UICorner_2.Parent = bills
 
 local grvd = Instance.new("ImageButton", Barra2)
 grvd.Size = UDim2.new(0, 41, 0, 41)
@@ -381,6 +426,10 @@ grvd.MouseButton1Click:Connect(function()
     Ex.TP:InvokeServer("Gravity Room")
 end)
 
+local UICorner_3 = Instance.new("UICorner")
+UICorner_3.CornerRadius = UDim.new(0, 10)
+UICorner_3.Parent = grvd
+
 local time = Instance.new("ImageButton", Barra2)
 time.Size = UDim2.new(0, 41, 0, 41)
 time.Position = UDim2.new(0.3, 0, 0.205, 0)
@@ -389,6 +438,10 @@ time.Image = "rbxassetid://126015597245029"
 time.MouseButton1Click:Connect(function()
 Ex.TP:InvokeServer("Hyperbolic Time Chamber")
 end)
+
+local UICorner_4 = Instance.new("UICorner")
+UICorner_4.CornerRadius = UDim.new(0, 10)
+UICorner_4.Parent = time
 
 local textLabel = Instance.new("TextLabel")
 textLabel.Size = UDim2.new(0.135, 0, 0.05, 0)
@@ -410,11 +463,32 @@ Contenedor.ScrollBarThickness = 6
 Contenedor.CanvasSize = UDim2.new(0, 0, 0, 400)
 Contenedor.ScrollingDirection = Enum.ScrollingDirection.Y
 
+local Kill = Instance.new("ScrollingFrame", Barra3)
+Kill.Size = UDim2.new(0, 400, 0, 200)
+Kill.Position = UDim2.new(0.490, 0, 0.131, 0)
+Kill.AnchorPoint = Vector2.new(0.5, 0.5)
+Kill.BackgroundColor3 = Color3.fromRGB(0, 0, 70)
+Kill.BorderSizePixel = 0
+Kill.ScrollBarThickness = 6
+Kill.CanvasSize = UDim2.new(0, 0, 0, 400)
+Kill.ScrollingDirection = Enum.ScrollingDirection.Y
+
+
+local Selct = Instance.new("ScrollingFrame", Barra2)
+Selct.Size = UDim2.new(0, 320, 0, 170)
+Selct.Position = UDim2.new(0.990, 0, 0.165, 0)
+Selct.AnchorPoint = Vector2.new(0.5, 0.5)
+Selct.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Selct.BorderSizePixel = 0
+Selct.ScrollBarThickness = 6
+Selct.CanvasSize = UDim2.new(0, 0, 0, 400)
+Selct.ScrollingDirection = Enum.ScrollingDirection.Y
+
 
 local forms = {"Divine Rose Prominence", "Astral Instinct", "Ultra Ego", "SSJBUI", "Beast", "LSSJ4"}
-local frame = Instance.new("Frame", Barra2)
-frame.Size = UDim2.new(0, 200, 0, #forms * 30 + 10)
-frame.Position = UDim2.new(1, -220, 0.5, -frame.Size.Y.Offset / 2)
+local frame = Instance.new("Frame", Selct)
+frame.Size = UDim2.new(0, 100, 0, #forms * 30 + 10)
+frame.Position = UDim2.new(0.8, -220, 0.270, -frame.Size.Y.Offset / 2)
 frame.BackgroundTransparency = 1
 
 local list = Instance.new("UIListLayout", frame)
@@ -428,6 +502,10 @@ Borde1.Color = Color3.fromRGB(255, 0, 0)
 Borde2.Parent = Cuadro2
 Borde2.Thickness = 2
 Borde2.Color = Color3.fromRGB(255, 0, 0) 
+
+Borde3.Parent = Cuadro3
+Borde3.Thickness = 2
+Borde3.Color = Color3.fromRGB(255, 0, 0) 
 --parte 2 de color Borde\/
 
 
@@ -443,6 +521,7 @@ task.spawn(function()
     while true do
         Borde1.Color = colors[index]
         Borde2.Color = colors[index]
+        Borde3.Color = colors[index]
         index = index + 1
         if index > #colors then
             index = 1
@@ -466,11 +545,13 @@ local textProperties = {
     {text = "Ɓºrª", position = UDim2.new(0.350, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70), parent = Barra1},
     {text = "Graf", position = UDim2.new(-0.160, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
     {text = "Plant", position = UDim2.new(0.350, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
-    {text = "Zom", position = UDim2.new(-0.160, 0, 0.570, 0), color = Color3.fromRGB(200, 380, 90), parent = Barra1},
+    {text = "Black", position = UDim2.new(-0.160, 0, 0.570, 0), color = Color3.fromRGB(200, 380, 90), parent = Barra1},
     {text = "HA🎃", position = UDim2.new(0.360, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
     
     {text = "Klirin", position = UDim2.new(-0.155, 0, 0.085, 0), color = Color3.fromRGB(200, 190, 255), parent = Contenedor},
     {text = "Mapa", position = UDim2.new(0.350, 0, 0.085, 0), color = Color3.fromRGB(255, 190, 150), parent = Contenedor},
+    {text = "Tp", position = UDim2.new(-0.160, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3},
+    {text = "Actk", position = UDim2.new(0.350, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3},
 }
 
 for _, props in pairs(textProperties) do
@@ -489,31 +570,34 @@ end
  
 --Codeg Para Button Minimizar = Maximizar
 local currentPanel = 1
-local isMinimized = true  
+local isMinimized = true
+local clickCount = 0
+
+-- Botón para cambiar entre cuadros
+local currentPanel = 1
+local isMinimized = true
+local clickCount = 0
+
 Siguiente.MouseButton1Click:Connect(function()
     if not isMinimized then
         if currentPanel == 1 then
             Cuadro1.Visible = false
             currentPanel = 2
             Cuadro2.Visible = true
-        else
+        elseif currentPanel == 2 then
             Cuadro2.Visible = false
+            currentPanel = 3
+            Cuadro3.Visible = true
+        else
+            Cuadro3.Visible = false
             currentPanel = 1
             Cuadro1.Visible = true
         end
     end
 end)
 
-local clickCount = 0
 button.MouseButton1Click:Connect(function()
-    clickCount = clickCount + 1
-    if clickCount == 1 then
-        game.Players.LocalPlayer.Character:FindFirstChild("Humanoid").Health = 0
-        game.ReplicatedStorage.Modules2.Name = "Invalido"
-    elseif clickCount == 2 then
-         game.ReplicatedStorage.Invalido.Name = "Modules2"
-        clickCount = 0 
-    end
+    lplr.Character.Humanoid:ChangeState(15)
 end)
 
 Mix.MouseButton1Click:Connect(function()
@@ -521,12 +605,15 @@ Mix.MouseButton1Click:Connect(function()
     if isMinimized then
         Cuadro1.Visible = false
         Cuadro2.Visible = false
+        Cuadro3.Visible = false
         Mix.Text = "+"
     else
         if currentPanel == 1 then
             Cuadro1.Visible = true
-        else
+        elseif currentPanel == 2 then
             Cuadro2.Visible = true
+        else
+            Cuadro3.Visible = true
         end
         Mix.Text = "×"
     end
@@ -730,9 +817,11 @@ for i, form in ipairs(forms) do
     btn.Text = form
     btn.TextColor3 = Color3.new(1, 1, 1)
     btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-    btn.TextSize = 14  
+    btn.TextScaled = true 
+    btn.TextWrapped = true 
     local corner = Instance.new("UICorner", btn)
-    corner.CornerRadius = UDim.new(0, 12)    
+    corner.CornerRadius = UDim.new(0, 12)
+    
     btn.MouseButton1Click:Connect(function()
         selectedForm = (selectedForm ~= form) and form or nil
         saveForm(selectedForm)
@@ -743,6 +832,7 @@ for i, form in ipairs(forms) do
         end
     end)
 end
+
 selectedForm = loadForm()
 if selectedForm then
     for _, btn in ipairs(frame:GetChildren()) do
@@ -757,7 +847,7 @@ end
 local function getTimeRemaining()
     if isfile(KeyFile) then
         local data = HttpService:JSONDecode(readfile(KeyFile))
-        local remainingTime = data.duration - (os.time() - data.time)
+        local remainingTime = (data.fecha + 86400) - os.time() 
         return remainingTime > 0 and remainingTime or 0
     end
     return 0
@@ -769,6 +859,99 @@ local function formatTime(seconds)
     local secs = seconds % 60
     return string.format("%02d:%02d:%02d", hours, minutes, secs)
 end
+
+--Tp Players
+local getIsActive15 = createSwitch(Barra3, UDim2.new(0.2, 0, 0.275, 0), "Switch15", LoadSwitchState("Switch15"))--Tp
+--[Xd]
+local selectedPlayer = nil
+local teleportConnection = nil
+
+local function teleportToPlayer(player)
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        lplr.Character:SetPrimaryPartCFrame(player.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3))
+        lplr.Character.Humanoid:ChangeState(11)
+        lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0) 
+    end
+end
+
+local function toggleTeleport(player)
+    if selectedPlayer == player then
+        selectedPlayer = nil
+    else    
+        selectedPlayer = player        
+        spawn(function()
+            while selectedPlayer == player do
+                if getIsActive15() then
+                    teleportToPlayer(player)                                   
+                end
+                task.wait()
+            end
+        end)        
+    end
+end
+
+local function createClickableFrame(size, position, parent, player)
+    local frame = Instance.new("TextButton", parent)
+    frame.Size, frame.Position, frame.BackgroundColor3 = size, position, Color3.fromRGB(30, 30, 30)
+    frame.BorderSizePixel, frame.BorderColor3, frame.Text, frame.AutoButtonColor = 2, Color3.fromRGB(255, 0, 0), "", false
+    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
+    
+    frame.MouseButton1Click:Connect(function()
+        toggleTeleport(player)
+    end)
+    
+    return frame
+end
+
+local function createLabel(parent, text)
+    local label = Instance.new("TextLabel", parent)
+    label.Size, label.BackgroundTransparency = UDim2.new(1, 0, 1, 0), 1
+    label.TextColor3, label.Font, label.TextSize, label.Text = Color3.new(1, 1, 1), Enum.Font.SourceSans, 18, text
+    return label
+end
+
+local function getStat(player, statName)
+    local statsFolder = game.Workspace.Living:FindFirstChild(player.Name) and game.Workspace.Living[player.Name]:FindFirstChild("Stats")
+    if statsFolder then
+        local stat = statsFolder:FindFirstChild(statName)
+        return stat and stat.Value or 0
+    end
+    return 0
+end
+
+local function updateList()
+    Kill:ClearAllChildren()
+    local playerList = {}
+    
+    
+    for _, player in ipairs(game.Players:GetPlayers()) do
+        table.insert(playerList, {player = player, strength = getStat(player, "Strength")})
+    end
+    
+    table.sort(playerList, function(a, b) return a.strength > b.strength end)
+
+    local frameWidth = Kill.AbsoluteSize.X
+    local columnWidth = (frameWidth - 20) / 3  -- 20 para padding
+
+    for i, info in ipairs(playerList) do
+        local yPos = (i - 1) * 35
+        local player, strength = info.player, info.strength
+        local rebirth = getStat(player, "Rebirth")
+
+        local function createFrame(xPos, value, player)
+            local frame = createClickableFrame(UDim2.new(0, columnWidth, 0, 30), UDim2.new(0, xPos, 0, yPos), Kill, player)
+            createLabel(frame, value)
+        end
+
+        
+        createFrame(5, player.Name, player)
+        createFrame(10 + columnWidth, formatNumber(rebirth), player)
+        createFrame(15 + columnWidth * 2, formatNumber(strength), player)
+    end
+    Kill.CanvasSize = UDim2.new(0, 0, 0, #playerList * 35)
+end
+
+Kill:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateList)
 
 
 local getIsActive1 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.120, 0), "Switch1", LoadSwitchState("Switch1"))--Farm
@@ -786,6 +969,8 @@ local getIsActive12 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.570, 0), "Switc
 
 local getIsActive13 = createSwitch(Contenedor, UDim2.new(0.2, 0, 0.090, 0), "Switch13", LoadSwitchState("Switch13"))--Klirin
 local getIsActive14 = createSwitch(Contenedor, UDim2.new(0.755, 0, 0.090, 0), "Switch14", LoadSwitchState("Switch14"))--Mapa
+
+local getIsActive16 = createSwitch(Barra3, UDim2.new(0.740, 0, 0.275, 0), "Switch16", LoadSwitchState("Switch16"))--Atakes
 
 --Barras
 createBar(0, "Flight", Color3.fromRGB(255, 0, 0), 0.37, 100, function(v) speed = v end, "flight")
@@ -894,8 +1079,8 @@ task.spawn(function()
     'SSJ2', 'SSJ Kaioken', 'SSJ', 'FSSJ', 'Kaioken'}
         local status = lplr.Status    
         for _, form in ipairs(Forms) do 
-            if Ex.equipskill:InvokeServer(form) then break end 
-        end
+            if Ex.equipskill:InvokeServer(form) then break end  
+     end
         if status and status.SelectedTransformation.Value ~= status.Transformation.Value then
             Ex.ta:InvokeServer()
                        end
@@ -925,6 +1110,14 @@ local moves = {
     {name = "God Slicer", condition = 60e6}
 }     
 
+local Mel = { "Super Dragon Fist", "God Slicer", "Spirit Barrage", "Mach Kick", "Wolf Fang Fist", 
+                            "High Power Rush", "Meteor Strike", "Meteor Charge", "Spirit Breaking Cannon", 
+                            "Vital Strike", "Flash Kick", "Vanish Strike", "Uppercut", "Sledgehammer", "Rock Impact" }
+                            
+ local Atck = { "Super Dragon Fist", "God Slicer", "Spirit Barrage", "Mach Kick", "Wolf Fang Fist", 
+                            "High Power Rush", "Meteor Strike" }                           
+
+
 task.spawn(function()
   data.Quest.Value = ""
     while wait() do
@@ -938,7 +1131,7 @@ task.spawn(function()
                         task.spawn(function()
                             Ex.mel:InvokeServer(move.name, "Blacknwhite27")
                             Ex.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, "Blacknwhite27")    
-                         if game.PlaceId ~= 5151400895 then
+                         if game.PlaceId ~= 5151400895 and yo() <= 80e9 then
                           Ex.cha:InvokeServer("Blacknwhite27")            
                             end                
                         end)
@@ -946,6 +1139,41 @@ task.spawn(function()
                 end
             end
           end
+          local bossPosition = Vector3.new(848.1, 362.7, 2219.8)            
+            local dat = (game.PlaceId == 5151400895) and game.Workspace.Living:FindFirstChild(lplr.Name) or lplr
+            local distance = (game.Workspace.Living:FindFirstChild("Goku Black").HumanoidRootPart.Position - bossPosition).Magnitude
+     if getIsActive11() and game.Workspace.Living:FindFirstChild("Goku Black") and game.Workspace.Living["Goku Black"]:FindFirstChild("Humanoid") and game.Workspace.Living["Goku Black"].Humanoid.Health > 0 and distance <= 900  then
+                if dat:FindFirstChild("Status") then
+                    for _, Atck in ipairs(Atck) do
+                        if not dat.Status:FindFirstChild(Mel) then
+                            task.spawn(function()
+                                game:GetService("ReplicatedStorage").Package.Events.mel:InvokeServer(Atck, "Blacknwhite27")
+                                Ex.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, "Blacknwhite27")    
+                                Ex.block:InvokeServer(true)
+                                if game.PlaceId ~= 5151400895 and yo() <= 80e9 then
+                                Ex.cha:InvokeServer("Blacknwhite27")            
+                               end            
+                            end)
+                        end
+                    end
+                end
+            end
+            if getIsActive16() and selectedPlayer and selectedPlayer.Character and selectedPlayer.Character:FindFirstChild("Humanoid") and selectedPlayer.Character.Humanoid.Health > 0 then            
+                if dat:FindFirstChild("Status") then
+                    for _, Mel in ipairs(Mel) do
+                        if not dat.Status:FindFirstChild(Mel) then
+                            task.spawn(function()
+                                game:GetService("ReplicatedStorage").Package.Events.mel:InvokeServer(Mel, "Blacknwhite27")
+                                Ex.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, "Blacknwhite27")    
+                                Ex.block:InvokeServer(true)
+                                if game.PlaceId ~= 5151400895 and yo() <= 80e9 then
+                                Ex.cha:InvokeServer("Blacknwhite27")            
+                               end            
+                            end)
+                        end
+                    end
+                end
+            end
         end)
     end
 end)
@@ -971,6 +1199,7 @@ end)
     end
 end)
 
+
 task.spawn(function()
     while task.wait() do
         pcall(function()
@@ -992,17 +1221,39 @@ task.spawn(function()
     while task.wait() do
       pcall(function()
     local Ki = lplr.Character.Stats.Ki
-    if Ki.Value < Ki.MaxValue * 0.25 and player() and getIsActive4() then
+    if Ki.Value < Ki.MaxValue * 0.25 and player() and getIsActive4() and yo() <= 80e9 then
          Ex.cha:InvokeServer("Blacknwhite27")        
          end
-         if getIsActive1() then
+         if getIsActive4() then
          lplr.Character.Humanoid:ChangeState(11)
-	      lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0) 
+	           lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0) 
 	       end
+           	if getIsActive11() and player() then
+                local gokuBlack = game.Workspace.Living:FindFirstChild("Goku Black")
+                local bossPosition = Vector3.new(848.1, 362.7, 2219.8)            
+                if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack.Humanoid.Health > 0 then
+                    local distance = (gokuBlack.HumanoidRootPart.Position - bossPosition).Magnitude
+                    if distance <= 900 then
+                        lplr.Character.HumanoidRootPart.CFrame = gokuBlack.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
+                    end
+                end
+            end
+            if player() then
+           if lplr.Status.Blocking.Value ~= true and getIsActive4() then
+           pcall(function()
+             Ex.block:InvokeServer(true)
+                   end)
+                 end
+                 if (yo() >= ((data.Rebirth.Value * 3e6) + 2e6)) and 
+               (yo() < (((data.Rebirth.Value * 3e6) + 2e6) * 2)) and getIsActive5() then
+                Ex.reb:InvokeServer()   
+                   end                         
+            end
        end)
      end    
    end)             
-   
+  
+     
 
 
  npcList = {
@@ -1030,25 +1281,6 @@ task.spawn(function()
 }
 
 
-task.spawn(function()
-    while wait() do
-        pcall(function()        
-        if player() then
-           if lplr.Status.Blocking.Value ~= true and getIsActive4() then
-           pcall(function()
-             Ex.block:InvokeServer(true)
-                   end)
-                 end
-                 if (yo() >= ((data.Rebirth.Value * 3e6) + 2e6)) and 
-               (yo() < (((data.Rebirth.Value * 3e6) + 2e6) * 2)) and getIsActive5() then
-                Ex.reb:InvokeServer()   
-                   end                         
-            end
-        end)       
-    end
-end)
-
-
 task.spawn(function() 
     while true do     
     pcall(function()  
@@ -1061,8 +1293,12 @@ task.spawn(function()
                             local bossInstance = game.Workspace.Living:FindFirstChild(npcName)
                             if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
                                (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
-                                lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.4)      
+                                lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.4)  
+                                 pcall(function()
+                                  if getIsActive1() then    
                                 game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(npcInstance)
+                                   end
+                                end)
                                 break
                                 end
                              end
@@ -1077,6 +1313,7 @@ task.spawn(function()
 
 task.spawn(function() 
     while true do       
+    if getIsActive10() then
             if yo() >= 150e6 and data.Zeni.Value >= 15000 and game.PlaceId == 3311165597  then
                 game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
                 wait(5)
@@ -1085,6 +1322,7 @@ task.spawn(function()
                 game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
                 wait(5)
             end
+         end
         task.wait()
     end
 end)
@@ -1132,6 +1370,7 @@ task.spawn(function()
                end
           end
        end
+       updateList()
       end)
     end
  end)            
@@ -1212,7 +1451,7 @@ loadServerData()
  
 
 task.spawn(function()
-    while wait(.8) do
+    while wait(1) do
     pcall(function()
     if player() then
         local ping = math.floor(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue())
@@ -1274,7 +1513,7 @@ task.spawn(function()
             end          
         end
            
-               updateTimer()
+               updateTimer() 
               local currentRebirthValue = data.Rebirth.Value
         if currentRebirthValue > previousRebirthValue then
             game.ReplicatedStorage.RebirthTimeValue.Value = tick()
@@ -1314,87 +1553,103 @@ end)
 end)
 end
 
-local function validateAndSaveKey(key)
-    local player = Players.LocalPlayer
-    if personalizedUsers[player.Name] and key == personalizedUsers[player.Name] then
-        saveKey(key, personalizedKeyDuration)
-        gui.Enabled = false
-        lopp()
-        return true
-    elseif key and #key == 64 and key:match("%u") and key:match("%l") and key:match("%d") then
-        local history = readJsonFile(HistoryFile) or {}
-        if not table.find(history, function(v) return levenshteinDistance(v, key) <= 14 end) then
-            saveKey(key, regularKeyDuration)  -- Regular key duration (18 hours)
-            updateHistory(key)
-            gui.Enabled = false
-            lopp()
-            return true
-        else
-            return false, "Clave Igual"
+spawn(function()
+    if claveEsValida() then
+        lopoi()
+    end
+end)
+
+spawn(function()
+    if claveEsValida() then
+        KeyGui.Enabled = false
+    else
+        KeyGui.Enabled = true
+    end
+end)
+
+-- Función para calcular la distancia de Levenshtein
+local function calcularDistanciaLevenshtein(a, b)
+    local m = #a
+    local n = #b
+    local dp = {}
+    for i = 0, m do
+        dp[i] = {}
+        dp[i][0] = i
+    end
+    for j = 0, n do
+        dp[0][j] = j
+    end
+    for i = 1, m do
+        for j = 1, n do
+            local cost = (a:sub(i, i) == b:sub(j, j)) and 0 or 1
+            dp[i][j] = math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost)
         end
     end
-    return false, "Clave inválida"
+    return dp[m][n]
 end
 
-textBox.FocusLost:Connect(function(enterPressed)
+TextBox.FocusLost:Connect(function(enterPressed)
     if enterPressed then
-        local key = textBox.Text:match("KEY:%[(.-)%]$") or textBox.Text
-        local success, message = validateAndSaveKey(key)
-        if not success then
-            textBox.Text = message
-            textBox.TextColor3 = Color3.new(1, 0, 0)
+        local texto = TextBox.Text
+        local clave = texto:match("KEY:%[(.-)%]$")
+        
+        if clave and #clave == 64 then
+            local tieneMayuscula = clave:match("%u") ~= nil
+            local tieneMinuscula = clave:match("%l") ~= nil
+            local tieneNumero = clave:match("%d") ~= nil
+
+            if tieneMayuscula and tieneMinuscula and tieneNumero then
+                local historial = HttpService:JSONDecode(isfile(ArchivoHistorial) and readfile(ArchivoHistorial) or "[]")
+                local claveExistente = false
+
+                for _, v in pairs(historial) do
+                    local distancia = calcularDistanciaLevenshtein(v, clave)
+                    if distancia <= 14 then 
+                        claveExistente = true
+                        break
+                    end
+                end
+
+                if not claveExistente then
+                    guardarClaveGuardada(clave)
+                    actualizarHistorial(clave)
+                    KeyGui.Enabled = false
+                    lopoi()
+                else
+                    TextBox.Text = "Clave Error"
+                    TextBox.TextColor3 = Color3.fromRGB(255, 0, 0)
+                    wait(1)
+                    TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    TextBox.Text = ""
+                end
+            else
+                TextBox.Text = "Clave Incorrecto"
+                TextBox.TextColor3 = Color3.fromRGB(255, 0, 0)
+                wait(1)
+                TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+                TextBox.Text = ""
+            end
+        else
+            TextBox.Text = "Clave inválida"
+            TextBox.TextColor3 = Color3.fromRGB(255, 0, 0)
             wait(1)
-            textBox.TextColor3 = Color3.new(1, 1, 1)
-            textBox.Text = ""
+            TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+            TextBox.Text = ""
         end
     end
 end)
 
-local urlButton = Instance.new("TextButton")
-urlButton.Size = UDim2.new(0.715, 0, 0.147, 0)
-urlButton.Position = UDim2.new(0.142, 0, 0.55, 0)
-urlButton.Text = "Copiar URL de Clave"
-urlButton.Font = Enum.Font.GothamBold
-urlButton.TextScaled = true
-urlButton.TextColor3 = Color3.new(1, 1, 1)
-urlButton.BackgroundColor3 = Color3.fromRGB(0, 122, 204)
-urlButton.Parent = frame
-
-urlButton.MouseButton1Click:Connect(function()
-    setclipboard("https://luatt11.github.io/Keysistema/")
-end)
-
-local discordButton = Instance.new("ImageButton")
-discordButton.Size = UDim2.new(0.098, 0, 0.116, 0)
-discordButton.Position = UDim2.new(0.871, 0, 0.562, 0)
-discordButton.Image = "rbxassetid://17085964685"
-discordButton.BackgroundTransparency = 1
-discordButton.Parent = frame
-
-discordButton.MouseButton1Click:Connect(function()
+BotonInvitacion.MouseButton1Click:Connect(function()
     setclipboard("https://discord.com/invite/P6b85GfDdF")
 end)
 
-for _, v in ipairs({frame, textBox, urlButton}) do
-    Instance.new("UICorner", v).CornerRadius = UDim.new(0.05, 0)
-end
-
-spawn(function()
-    while wait(10) do
-        if not isKeyValid() then
-            if isfile(KeyFile) then delfile(KeyFile) end
-            gui.Enabled = true            
-        end
-    end
+BotonUrl.MouseButton1Click:Connect(function()
+    setclipboard("https://luatt11.github.io/Keysistema/")
 end)
 
-if isKeyValid() then
-    lopp()
-else
-    local player = Players.LocalPlayer
-    if personalizedUsers[player.Name] then
-        textBox.PlaceholderText = "Introduce tu clave personalizada"
+while wait(4) do
+    if not claveEsValida() then
+        resetearClave()
+        KeyGui.Enabled = true
     end
 end
-
-gui.Enabled = not isKeyValid()
