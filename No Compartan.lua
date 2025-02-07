@@ -1,107 +1,17 @@
-local ArchivoClaveGuardada = "jses_syn"
-local ArchivoHistorial = "mses_syn"
 local HttpService = game:GetService("HttpService")
-
-local KeyGui = Instance.new("ScreenGui")
-KeyGui.Parent = game.CoreGui
-
-local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0.318272662, 0, 0.318272662, 0)
-Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
-Frame.AnchorPoint = Vector2.new(0.5, 0.5)
-Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
-Frame.BorderSizePixel = 0
-Frame.Parent = KeyGui
-
-local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0.05, 0)
-UICorner.Parent = Frame
-
-local Gradient = Instance.new("UIGradient")
-Gradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 45, 50)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 15, 20))
-}
-Gradient.Rotation = 45
-Gradient.Parent = Frame
-
-local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(0.950000000, 0, 0.150000000, 0)
-Title.Position = UDim2.new(0.025000000, 0, 0.050000000, 0)
-Title.BackgroundTransparency = 1
-Title.TextColor3 = Color3.fromRGB(220, 220, 220)
-Title.TextScaled = true
-Title.Font = Enum.Font.GothamBold
-Title.Text = "🔐 Sistema de Claves"
-Title.Parent = Frame
-
-local TextBox = Instance.new("TextBox")
-TextBox.Size = UDim2.new(0.900635200, 0, 0.126137561, 0)
-TextBox.Position = UDim2.new(0.049682240, 0, 0.278634136, 0)
-TextBox.PlaceholderText = "Introduce tu clave aquí"
-TextBox.Font = Enum.Font.Gotham
-TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-TextBox.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
-TextBox.BorderSizePixel = 0
-TextBox.TextScaled = true
-TextBox.ClearTextOnFocus = false
-TextBox.Parent = Frame
-
-local UICornerTextBox = Instance.new("UICorner")
-UICornerTextBox.CornerRadius = UDim.new(0.05, 0)
-UICornerTextBox.Parent = TextBox
-
-local BotonUrl = Instance.new("TextButton")
-BotonUrl.Size = UDim2.new(0.715488320, 0, 0.147448120, 0)
-BotonUrl.Position = UDim2.new(0.142255450, 0, 0.550486350, 0)
-BotonUrl.Text = "Copiar URL de Clave"
-BotonUrl.Font = Enum.Font.GothamBold
-BotonUrl.TextScaled = true
-BotonUrl.TextColor3 = Color3.fromRGB(255, 255, 255)
-BotonUrl.BackgroundColor3 = Color3.fromRGB(0, 122, 204)
-BotonUrl.BorderSizePixel = 0
-BotonUrl.Parent = Frame
-
-local UICornerBotonUrl = Instance.new("UICorner")
-UICornerBotonUrl.CornerRadius = UDim.new(0.05, 0)
-UICornerBotonUrl.Parent = BotonUrl
-
-local BotonInvitacion = Instance.new("ImageButton")
-BotonInvitacion.Size = UDim2.new(0.097682243, 0, 0.116241136, 0)
-BotonInvitacion.Position = UDim2.new(0.870682243, 0, 0.562241136, 0)
-BotonInvitacion.Image = "rbxassetid://17085964685"
-BotonInvitacion.BackgroundTransparency = 1
-BotonInvitacion.BorderSizePixel = 0
-BotonInvitacion.Parent = Frame
-
-
-local UICornerBotonUrl = Instance.new("UICorner")
-UICornerBotonUrl.CornerRadius = UDim.new(0.1, 0)
-UICornerBotonUrl.Parent = BotonUrl
-
-local claveValida = false
+local ArchivoClaveGuardada = "jses_syn"
 
 local function guardarClaveGuardada(clave)
     writefile(ArchivoClaveGuardada, HttpService:JSONEncode({clave = clave, fecha = os.time()}))
 end
 
-local function actualizarHistorial(clave)
-    local historial = {}
-    if isfile(ArchivoHistorial) then
-        historial = HttpService:JSONDecode(readfile(ArchivoHistorial))
-    end
-    table.insert(historial, clave)
-    if #historial > 5 then
-        table.remove(historial, 1)
-    end
-    writefile(ArchivoHistorial, HttpService:JSONEncode(historial))
-end
-
 local function claveEsValida()
     if isfile(ArchivoClaveGuardada) then
         local datos = HttpService:JSONDecode(readfile(ArchivoClaveGuardada))
-        if os.time() - datos.fecha < (24 * 60 * 60) then
+        if os.time() - datos.fecha < (23 * 60 * 60) then
             return true
+        else
+            delfile(ArchivoClaveGuardada)
         end
     end
     return false
@@ -113,7 +23,10 @@ local function resetearClave()
     end
 end
 
-local function lopoi()
+local function script()
+    print("¡La clave es válida! Ejecutando el script principal...")
+
+
 local fffg = game.CoreGui:FindFirstChild("fffg")
 if fffg then
     return  
@@ -1112,60 +1025,87 @@ local moves = {
     {name = "Mach Kick", condition = 125000},
     {name = "Spirit Barrage", condition = 60e6},
     {name = "God Slicer", condition = 60e6}
-}     
+}
 
-local Mel = { "Super Dragon Fist", "God Slicer", "Spirit Barrage", "Mach Kick", "Wolf Fang Fist", 
-                            "High Power Rush", "Meteor Strike", "Meteor Charge", "Spirit Breaking Cannon", 
-                            "Vital Strike", "Flash Kick", "Vanish Strike", "Uppercut", "Sledgehammer", "Rock Impact" }
-                            
- local Atck = { "Super Dragon Fist", "God Slicer", "Spirit Barrage", "Mach Kick", "Wolf Fang Fist", 
-                            "High Power Rush", "Meteor Strike" }                           
+local Mel = { 
+    "Super Dragon Fist", "God Slicer", "Spirit Barrage", "Mach Kick", "Wolf Fang Fist", 
+    "High Power Rush", "Meteor Strike", "Meteor Charge", "Spirit Breaking Cannon", 
+    "Vital Strike", "Flash Kick", "Vanish Strike", "Uppercut", "Sledgehammer", "Rock Impact"
+}
 
+local Atck = { 
+    "Super Dragon Fist", "God Slicer", "Spirit Barrage", "Mach Kick", "Wolf Fang Fist", 
+    "High Power Rush", "Meteor Strike"
+}
+
+local function invokeMove(move)
+    Ex.mel:InvokeServer(move, "Blacknwhite27")
+    Ex.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, "Blacknwhite27")
+    Ex.block:InvokeServer(true)
+    if game.PlaceId ~= 5151400895 and yo() <= 80e9 then
+        Ex.cha:InvokeServer("Blacknwhite27")
+    end
+end
 
 task.spawn(function()
-  data.Quest.Value = ""
+    data.Quest.Value = ""
     while wait() do
         pcall(function()
-        if getIsActive3() and player() then
-            local boss = game.Workspace.Living:FindFirstChild(data.Quest.Value)
-            local Ki = lplr.Character.Stats.Ki
-            if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 and data.Quest.Value ~= "" then
-                for _, move in pairs(moves) do
-                    if not lplr.Status:FindFirstChild(move.name) and yo() >= move.condition and Ki.Value > Ki.MaxValue * 0.11 then
-                        task.spawn(function()
-                            Ex.mel:InvokeServer(move.name, "Blacknwhite27")
-                            Ex.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, "Blacknwhite27")    
-                         if game.PlaceId ~= 5151400895 and yo() <= 80e9 then
-                          Ex.cha:InvokeServer("Blacknwhite27")            
-                            end                
-                        end)
+            if getIsActive3() and player() then
+                local boss = game.Workspace.Living:FindFirstChild(data.Quest.Value)
+                local Ki = lplr.Character.Stats.Ki
+                if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 and data.Quest.Value ~= "" then
+                    for _, move in pairs(moves) do
+                        if not lplr.Status:FindFirstChild(move.name) and yo() >= move.condition and Ki.Value > Ki.MaxValue * 0.11 then
+                            task.spawn(function()
+                                invokeMove(move.name)
+                            end)
+                        end
                     end
                 end
-            end
-          end
-          local bossPosition = Vector3.new(848.1, 362.7, 2219.8)            
+            end           
+            local bossPosition = Vector3.new(848.1, 362.7, 2219.8)
             local dat = (game.PlaceId == 5151400895) and game.Workspace.Living:FindFirstChild(lplr.Name) or lplr
             local distance = (game.Workspace.Living:FindFirstChild("Goku Black").HumanoidRootPart.Position - bossPosition).Magnitude
-     if getIsActive11() and game.Workspace.Living:FindFirstChild("Goku Black") and game.Workspace.Living["Goku Black"]:FindFirstChild("Humanoid") and game.Workspace.Living["Goku Black"].Humanoid.Health > 0 and distance <= 900  then
+            if getIsActive11() and game.Workspace.Living:FindFirstChild("Goku Black") and game.Workspace.Living["Goku Black"]:FindFirstChild("Humanoid") and game.Workspace.Living["Goku Black"].Humanoid.Health > 0 and distance <= 900 then
                 if dat:FindFirstChild("Status") then
                     for _, Atck in ipairs(Atck) do
                         if not dat.Status:FindFirstChild(Atck) then
                             task.spawn(function()
                                 game:GetService("ReplicatedStorage").Package.Events.mel:InvokeServer(Atck, "Blacknwhite27")
-                                Ex.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, "Blacknwhite27")    
+                                Ex.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, "Blacknwhite27")
                                 Ex.block:InvokeServer(true)
                                 if game.PlaceId ~= 5151400895 and yo() <= 80e9 then
-                                Ex.cha:InvokeServer("Blacknwhite27")            
-                               end            
+                                    Ex.cha:InvokeServer("Blacknwhite27")
+                                end
                             end)
                         end
                     end
                 end
             end
-            
         end)
     end
 end)
+
+task.spawn(function()
+    while wait() do
+        pcall(function()
+            local dat = (game.PlaceId == 5151400895) and game.Workspace.Living:FindFirstChild(lplr.Name) or lplr
+            if getIsActive16() and selectedPlayer and selectedPlayer.Character and selectedPlayer.Character:FindFirstChild("Humanoid") and selectedPlayer.Character.Humanoid.Health > 0 then
+                if dat:FindFirstChild("Status") then
+                    for _, Mel in ipairs(Mel) do
+                        if not dat.Status:FindFirstChild(Mel) then
+                            task.spawn(function()
+                                invokeMove(Mel)
+                            end)
+                        end
+                    end
+                end
+            end
+        end)
+    end
+end)
+
 
  task.spawn(function()
  lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)                        
@@ -1188,29 +1128,6 @@ end)
     end
 end)
 
-task.spawn(function()
-    while task.wait() do
-        pcall(function()
-            local dat = (game.PlaceId == 5151400895) and game.Workspace.Living:FindFirstChild(lplr.Name) or lplr
-            if getIsActive16() and selectedPlayer and selectedPlayer.Character and selectedPlayer.Character:FindFirstChild("Humanoid") and selectedPlayer.Character.Humanoid.Health > 0 then            
-                if dat:FindFirstChild("Status") then
-                    for _, Mel in ipairs(Mel) do
-                        if not dat.Status:FindFirstChild(Mel) then
-                            task.spawn(function()
-                                game:GetService("ReplicatedStorage").Package.Events.mel:InvokeServer(Mel, "Blacknwhite27")
-                                Ex.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, "Blacknwhite27")    
-                                Ex.block:InvokeServer(true)
-                                if game.PlaceId ~= 5151400895 and yo() <= 80e9 then
-                                Ex.cha:InvokeServer("Blacknwhite27")            
-                               end            
-                            end)
-                        end
-                    end
-                end
-            end
-         end)
-      end
-  end)
 
 
 task.spawn(function()
@@ -1232,39 +1149,53 @@ task.spawn(function()
   
 task.spawn(function()
     while task.wait() do
-      pcall(function()
-    local Ki = lplr.Character.Stats.Ki
-    if Ki.Value < Ki.MaxValue * 0.25 and player() and getIsActive4() and yo() <= 800e9 then
-         Ex.cha:InvokeServer("Blacknwhite27")        
-         end
-         if getIsActive4() then
-         lplr.Character.Humanoid:ChangeState(11)
-	           lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0) 
-	       end
-           	if getIsActive11() and player() then
+        pcall(function()
+            local character = lplr.Character
+            if not character or not character:FindFirstChild("Stats") then return end
+
+            local stats = character.Stats
+            local ki = stats:FindFirstChild("Ki")
+            local humanoid = character:FindFirstChild("Humanoid")
+            local rootPart = character:FindFirstChild("HumanoidRootPart")
+
+            if not (ki and humanoid and rootPart) then return end
+
+            if ki.Value < ki.MaxValue * 0.25 and player() and getIsActive4() and yo() <= 800e9 then
+                Ex.cha:InvokeServer("Blacknwhite27")
+            end
+
+            if getIsActive4() then
+                humanoid:ChangeState(11)
+                rootPart.Velocity = Vector3.zero
+            end
+
+            if getIsActive11() and player() then
                 local gokuBlack = game.Workspace.Living:FindFirstChild("Goku Black")
-                local bossPosition = Vector3.new(848.1, 362.7, 2219.8)            
+                local bossPosition = Vector3.new(848.1, 362.7, 2219.8)
+
                 if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack.Humanoid.Health > 0 then
                     local distance = (gokuBlack.HumanoidRootPart.Position - bossPosition).Magnitude
                     if distance <= 900 then
-                        lplr.Character.HumanoidRootPart.CFrame = gokuBlack.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
+                        rootPart.CFrame = gokuBlack.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
                     end
                 end
             end
+
             if player() then
-           if lplr.Status.Blocking.Value ~= true and getIsActive4() then
-           pcall(function()
-             Ex.block:InvokeServer(true)
-                   end)
-                 end
-                 if (yo() >= ((data.Rebirth.Value * 3e6) + 2e6)) and 
-               (yo() < (((data.Rebirth.Value * 3e6) + 2e6) * 2)) and getIsActive5() then
-                Ex.reb:InvokeServer()   
-                   end                         
+                if lplr.Status.Blocking.Value ~= true and getIsActive4() then
+                    Ex.block:InvokeServer(true)
+                end
+
+                local rebirthValue = data.Rebirth.Value
+                local rebirthThreshold = (rebirthValue * 3e6) + 2e6
+                if yo() >= rebirthThreshold and yo() < (rebirthThreshold * 2) and getIsActive5() then
+                    Ex.reb:InvokeServer()
+                end
             end
-       end)
-     end    
-   end)             
+        end)
+    end
+ end)
+  
   
      
 
@@ -1319,26 +1250,10 @@ task.spawn(function()
                      end
                  end         
             end)
-            wait()
+            task.wait()
         end
     end)
     
-
-task.spawn(function() 
-    while true do       
-    if getIsActive10() then
-            if yo() >= 150e6 and data.Zeni.Value >= 15000 and game.PlaceId == 3311165597  then
-                game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
-                wait(5)
-            end
-            if yo() < 50e6 and game.PlaceId == 5151400895  then
-                game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
-                wait(5)
-            end
-         end
-        task.wait()
-    end
-end)
 
 spawn(function()
 while wait(100) do
@@ -1354,8 +1269,7 @@ while wait(100) do
 end)    
            
  task.spawn(function()
-    while task.wait() do
-        pcall(function()        
+    while task.wait() do        
             if getIsActive13() then
             npcList[21][3] = true  
             else
@@ -1365,15 +1279,48 @@ end)
             npcList[18][3] = true  
             else
             npcList[18][3] = false
-            end     
-          end)
+            end    
+         if getIsActive10() then
+            if yo() >= 150e6 and data.Zeni.Value >= 15000 and game.PlaceId == 3311165597  then
+                game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
+                wait(5)
+            end
+            if yo() < 50e6 and game.PlaceId == 5151400895  then
+                game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
+                wait(5)
+            end
+         end 
       end
  end)          
+ 
 
 
 task.spawn(function()
-    while task.wait(.4) do
+    while wait(.4) do
     pcall(function()
+    if getIsActive7() and player() then
+                local accessories = {}            
+                for _, v in pairs(lplr.Character:GetChildren()) do 
+                    if v:IsA("Hat") or v:IsA("Accessory") or v.Name:lower():find("hair") then
+                        v.Parent = game.ReplicatedStorage
+                        table.insert(accessories, v)
+                    elseif v:IsA("BasePart") then
+                        v.Transparency = 1
+                    end
+                end             
+                local duck = Instance.new("SpecialMesh", lplr.Character.HumanoidRootPart)
+                duck.MeshId = "http://www.roblox.com/asset/?id=9419831"
+                duck.TextureId = "http://www.roblox.com/asset/?id=9419827"
+                duck.Scale = Vector3.new(5, 5, 5)
+                lplr.Character.HumanoidRootPart.Transparency = 0
+            end             
+loadServerData()  
+end)
+   end
+end)
+
+task.spawn(function()
+    while task.wait(.4) do
    if data.Quest.Value ~= "" and player() and game.PlaceId == 3311165597 then
          wait(2)
        for _, npc in ipairs(game.Workspace.Others.NPCs:GetChildren()) do
@@ -1384,7 +1331,6 @@ task.spawn(function()
           end
        end
        updateList()
-      end)
     end
  end)            
  
@@ -1436,31 +1382,6 @@ end)
 
 
 
-task.spawn(function()
-    while wait(.4) do
-    pcall(function()
-    if player() then    
-    if getIsActive7() then
-                local accessories = {}            
-                for _, v in pairs(lplr.Character:GetChildren()) do 
-                    if v:IsA("Hat") or v:IsA("Accessory") or v.Name:lower():find("hair") then
-                        v.Parent = game.ReplicatedStorage
-                        table.insert(accessories, v)
-                    elseif v:IsA("BasePart") then
-                        v.Transparency = 1
-                    end
-                end             
-                local duck = Instance.new("SpecialMesh", lplr.Character.HumanoidRootPart)
-                duck.MeshId = "http://www.roblox.com/asset/?id=9419831"
-                duck.TextureId = "http://www.roblox.com/asset/?id=9419827"
-                duck.Scale = Vector3.new(5, 5, 5)
-                lplr.Character.HumanoidRootPart.Transparency = 0
-            end             
-loadServerData()  
-          end
-      end)
-    end
- end)
  
 
 task.spawn(function()
@@ -1564,105 +1485,180 @@ end)
        end)    
     task.wait()
 end)
+
 end
 
-spawn(function()
-    if claveEsValida() then
-        lopoi()
-    end
-end)
 
-spawn(function()
-    if claveEsValida() then
-        KeyGui.Enabled = false
-    else
-        KeyGui.Enabled = true
-    end
-end)
 
--- Función para calcular la distancia de Levenshtein
-local function calcularDistanciaLevenshtein(a, b)
-    local m = #a
-    local n = #b
-    local dp = {}
-    for i = 0, m do
-        dp[i] = {}
-        dp[i][0] = i
-    end
-    for j = 0, n do
-        dp[0][j] = j
-    end
-    for i = 1, m do
-        for j = 1, n do
-            local cost = (a:sub(i, i) == b:sub(j, j)) and 0 or 1
-            dp[i][j] = math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost)
-        end
-    end
-    return dp[m][n]
+if claveEsValida() then
+    print("Clave válida detectada. No se mostrará la GUI.")
+    script() 
+    return
 end
 
-TextBox.FocusLost:Connect(function(enterPressed)
-    if enterPressed then
-        local texto = TextBox.Text
-        local clave = texto:match("KEY:%[(.-)%]$")
-        
-        if clave and #clave == 64 then
-            local tieneMayuscula = clave:match("%u") ~= nil
-            local tieneMinuscula = clave:match("%l") ~= nil
-            local tieneNumero = clave:match("%d") ~= nil
+local KeyGui = Instance.new("ScreenGui")
+KeyGui.Parent = game.CoreGui
 
-            if tieneMayuscula and tieneMinuscula and tieneNumero then
-                local historial = HttpService:JSONDecode(isfile(ArchivoHistorial) and readfile(ArchivoHistorial) or "[]")
-                local claveExistente = false
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0.318, 0, 0.318, 0)
+Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+Frame.BorderSizePixel = 0
+Frame.Parent = KeyGui
 
-                for _, v in pairs(historial) do
-                    local distancia = calcularDistanciaLevenshtein(v, clave)
-                    if distancia <= 14 then 
-                        claveExistente = true
-                        break
-                    end
-                end
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0.05, 0)
+UICorner.Parent = Frame
 
-                if not claveExistente then
-                    guardarClaveGuardada(clave)
-                    actualizarHistorial(clave)
-                    KeyGui.Enabled = false
-                    lopoi()
-                else
-                    TextBox.Text = "Clave Error"
-                    TextBox.TextColor3 = Color3.fromRGB(255, 0, 0)
-                    wait(1)
-                    TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-                    TextBox.Text = ""
-                end
-            else
-                TextBox.Text = "Clave Incorrecto"
-                TextBox.TextColor3 = Color3.fromRGB(255, 0, 0)
-                wait(1)
-                TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-                TextBox.Text = ""
-            end
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(0.95, 0, 0.15, 0)
+Title.Position = UDim2.new(0.025, 0, 0.05, 0)
+Title.BackgroundTransparency = 1
+Title.TextColor3 = Color3.fromRGB(220, 220, 220)
+Title.TextScaled = true
+Title.Font = Enum.Font.GothamBold
+Title.Text = "🔐 Sistema de Claves"
+Title.Parent = Frame
+
+local TextBox = Instance.new("TextBox")
+TextBox.Size = UDim2.new(0.9, 0, 0.13, 0)
+TextBox.Position = UDim2.new(0.05, 0, 0.28, 0)
+TextBox.PlaceholderText = "Introduce tu clave aquí"
+TextBox.Font = Enum.Font.Gotham
+TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextBox.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+TextBox.BorderSizePixel = 0
+TextBox.TextScaled = true
+TextBox.ClearTextOnFocus = false
+TextBox.Parent = Frame
+
+local BotonUrl = Instance.new("TextButton")
+BotonUrl.Size = UDim2.new(0.7, 0, 0.15, 0)
+BotonUrl.Position = UDim2.new(0.15, 0, 0.45, 0)
+BotonUrl.Text = "Generar URL de Clave"
+BotonUrl.Font = Enum.Font.GothamBold
+BotonUrl.TextScaled = true
+BotonUrl.TextColor3 = Color3.fromRGB(255, 255, 255)
+BotonUrl.BackgroundColor3 = Color3.fromRGB(0, 122, 204)
+BotonUrl.BorderSizePixel = 0
+BotonUrl.Parent = Frame
+
+local BotonVerificar = Instance.new("TextButton")
+BotonVerificar.Size = UDim2.new(0.7, 0, 0.15, 0)
+BotonVerificar.Position = UDim2.new(0.15, 0, 0.65, 0)
+BotonVerificar.Text = "Verificar Clave"
+BotonVerificar.Font = Enum.Font.GothamBold
+BotonVerificar.TextScaled = true
+BotonVerificar.TextColor3 = Color3.fromRGB(255, 255, 255)
+BotonVerificar.BackgroundColor3 = Color3.fromRGB(0, 204, 122)
+BotonVerificar.BorderSizePixel = 0
+BotonVerificar.Parent = Frame
+
+local function generarLink()
+    local identifier = "roblox-client-" .. game.Players.LocalPlayer.UserId
+    local datos = {
+        service = 1951,
+        identifier = identifier
+    }
+
+    local success, response = pcall(function()
+        return http_request({
+            Url = "https://api.platoboost.com/public/start",
+            Method = "POST",
+            Headers = {
+                ["Content-Type"] = "application/json",
+                ["Accept"] = "application/json"
+            },
+            Body = HttpService:JSONEncode(datos)
+        })
+    end)
+
+    if success and response and response.StatusCode == 200 then
+        local data = HttpService:JSONDecode(response.Body)
+        if data.success then
+            return data.data.url
         else
-            TextBox.Text = "Clave inválida"
-            TextBox.TextColor3 = Color3.fromRGB(255, 0, 0)
-            wait(1)
-            TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-            TextBox.Text = ""
+            return "Error del servidor: " .. (data.message or "Mensaje de error no disponible")
         end
+    else
+        return "Error en la solicitud: " .. tostring(response and response.StatusMessage or "Sin mensaje disponible")
     end
-end)
+end
 
-BotonInvitacion.MouseButton1Click:Connect(function()
-    setclipboard("https://discord.com/invite/P6b85GfDdF")
-end)
+local function verificarClave(clave)
+    local identifier = "roblox-client-" .. game.Players.LocalPlayer.UserId
+    local url = string.format(
+        "https://api.platoboost.com/public/whitelist/1951?identifier=%s&key=%s",
+        HttpService:UrlEncode(identifier),
+        HttpService:UrlEncode(clave)
+    )
+
+    local success, response = pcall(function()
+        return http_request({
+            Url = url,
+            Method = "GET",
+            Headers = {
+                ["Accept"] = "application/json"
+            }
+        })
+    end)
+
+    if success and response then
+        local statusCode = response.StatusCode
+        local responseBody
+        pcall(function()
+            responseBody = HttpService:JSONDecode(response.Body)
+        end)
+
+        if statusCode == 200 then
+            if responseBody and responseBody.success and responseBody.data and responseBody.data.valid then
+                guardarClaveGuardada(clave)
+                return true, "Clave válida"
+            else
+                return false, "Respuesta inesperada: " .. tostring(response.Body)
+            end
+        elseif statusCode == 400 then
+            return false, responseBody and responseBody.message or "Clave inválida"
+        else
+            return false, "Error desconocido. Código: " .. tostring(statusCode)
+        end
+    else
+        return false, "Error en la solicitud: " .. tostring(response and response.StatusMessage or "Sin mensaje")
+    end
+end
+
 
 BotonUrl.MouseButton1Click:Connect(function()
-    setclipboard("https://luatt11.github.io/Keysistema/")
+    TextBox.Text = "Generando link..."
+    local linkGenerado = generarLink()
+    
+    if string.sub(linkGenerado, 1, 4) == "http" then
+        setclipboard(linkGenerado)
+        TextBox.Text = "¡Link generado y copiado!"
+        TextBox.TextColor3 = Color3.fromRGB(100, 255, 100)
+    else
+        TextBox.Text = linkGenerado
+        TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
+    end
 end)
 
-while wait(4) do
-    if not claveEsValida() then
-        resetearClave()
-        KeyGui.Enabled = true
+BotonVerificar.MouseButton1Click:Connect(function()
+    local clave = TextBox.Text
+    if clave == "" then
+        TextBox.Text = "Por favor, introduce una clave"
+        TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
+        return
     end
-end
+
+    local esValida, mensaje = verificarClave(clave)
+    if esValida then
+        TextBox.Text = "¡Clave válida!"
+        TextBox.TextColor3 = Color3.fromRGB(100, 255, 100)
+        KeyGui:Destroy() -- Cierra el GUI
+        script() -- Ejecuta la función script()
+    else
+        TextBox.Text = mensaje or "Clave inválida"
+        TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
+    end
+end)
