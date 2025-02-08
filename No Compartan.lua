@@ -1,19 +1,79 @@
+local service = 1951
+local secret = ""
+local host = "https://api.platoboost.com"
+local useNonce = true
+
 local HttpService = game:GetService("HttpService")
-local ArchivoClaveGuardada = "jses_syn"
 
-local fSetClipboard, fRequest, fStringChar, fToString, fStringSub, fOsTime, fMathRandom, fMathFloor, fGetHwid = 
-    setclipboard or toclipboard, 
-    request or http_request or syn.request, 
-    string.char, 
-    tostring, 
-    string.sub, 
-    os.time, 
-    math.random, 
-    math.floor, 
-    gethwid or function() return game:GetService("Players").LocalPlayer.UserId end
+local ArchivoClaveGuardada = "clave_guardada.json"
 
-local function guardarClaveGuardada(clave)
-    writefile(ArchivoClaveGuardada, HttpService:JSONEncode({clave = clave, fecha = fOsTime()}))
+local fSetClipboard, fRequest, fStringChar, fToString, fStringSub, fOsTime, fMathRandom, fMathFloor, fGetHwid, isfile, readfile, writefile, delfile = 
+    setclipboard or toclipboard, request or http_request or syn.request, string.char, tostring, string.sub, os.time, math.random, math.floor, 
+    gethwid or function() return game:GetService("Players").LocalPlayer.UserId end, 
+    isfile, readfile, writefile, delfile
+
+local function generateNonce()
+    local str = ""
+    for _ = 1, 16 do
+        str = str .. fStringChar(fMathFloor(fMathRandom() * (122 - 97 + 1)) + 97)
+    end
+    return str
+end
+
+local function generateLink()
+    local hosts = {"https://api.platoboost.com", "https://api.platoboost.net"}
+    for _, currentHost in ipairs(hosts) do
+        local endpoint = currentHost .. "/public/start"
+        local body = { service = service, identifier = fGetHwid() }
+
+        local response = fRequest({
+            Url = endpoint,
+            Method = "POST",
+            Body = HttpService:JSONEncode(body),
+            Headers = {
+                ["Content-Type"] = "application/json"
+            }
+        })
+
+        if response and response.StatusCode == 200 then
+            local decoded = HttpService:JSONDecode(response.Body)
+            if decoded.success and decoded.data and decoded.data.url then
+                return decoded.data.url
+            end
+        elseif response and response.StatusCode == 429 then
+            print("Rate limited. Wait before retrying.")
+        else
+            print("Failed to connect to: " .. currentHost)
+        end
+    end
+    return nil
+end
+
+local function verificarClave(clave)
+    local nonce = generateNonce()
+    local identifier = fGetHwid()
+    
+    local response = fRequest({
+        Url = string.format("%s/public/redeem/%d", host, service),
+        Method = "POST",
+        Headers = {
+            ["Content-Type"] = "application/json"
+        },
+        Body = HttpService:JSONEncode({
+            identifier = identifier,
+            key = clave,
+            nonce = nonce
+        })
+    })
+
+    if response and response.StatusCode == 200 then
+        local decoded = HttpService:JSONDecode(response.Body)
+        if decoded.success and decoded.data and decoded.data.valid then
+            writefile(ArchivoClaveGuardada, HttpService:JSONEncode({clave = clave, fecha = fOsTime()}))
+            return true
+        end
+    end
+    return false
 end
 
 local function claveEsValida()
@@ -35,6 +95,7 @@ local function resetearClave()
 end
 
 local function script()
+    print("¡La clave es válida! Ejecutando el script principal...")
 
 
 
@@ -1499,15 +1560,16 @@ end)
 
 
     
-print("¡La clave es válida! Ejecutando el script principal...")
 end
 
+-- Verificar si la clave guardada aún es válida
 if claveEsValida() then
     print("Clave válida detectada. No se mostrará la GUI.")
     script()
     return
 end
 
+-- Crear GUI si no hay clave válida
 local KeyGui = Instance.new("ScreenGui")
 KeyGui.Parent = game.CoreGui
 
@@ -1545,20 +1607,9 @@ TextBox.TextScaled = true
 TextBox.ClearTextOnFocus = false
 TextBox.Parent = Frame
 
-local BotonUrl = Instance.new("TextButton")
-BotonUrl.Size = UDim2.new(0.7, 0, 0.15, 0)
-BotonUrl.Position = UDim2.new(0.15, 0, 0.45, 0)
-BotonUrl.Text = "Generar URL de Clave"
-BotonUrl.Font = Enum.Font.GothamBold
-BotonUrl.TextScaled = true
-BotonUrl.TextColor3 = Color3.fromRGB(255, 255, 255)
-BotonUrl.BackgroundColor3 = Color3.fromRGB(0, 122, 204)
-BotonUrl.BorderSizePixel = 0
-BotonUrl.Parent = Frame
-
 local BotonVerificar = Instance.new("TextButton")
-BotonVerificar.Size = UDim2.new(0.7, 0, 0.15, 0)
-BotonVerificar.Position = UDim2.new(0.15, 0, 0.65, 0)
+BotonVerificar.Size = UDim2.new(0.4, 0, 0.15, 0)
+BotonVerificar.Position = UDim2.new(0.05, 0, 0.65, 0)
 BotonVerificar.Text = "Verificar Clave"
 BotonVerificar.Font = Enum.Font.GothamBold
 BotonVerificar.TextScaled = true
@@ -1567,92 +1618,16 @@ BotonVerificar.BackgroundColor3 = Color3.fromRGB(0, 204, 122)
 BotonVerificar.BorderSizePixel = 0
 BotonVerificar.Parent = Frame
 
-local function generarLink()
-    local identifier = "roblox-client-" .. fGetHwid()
-    local datos = {
-        service = 1951,
-        identifier = identifier
-    }
-
-    local success, response = pcall(function()
-        return fRequest({
-            Url = "https://api.platoboost.com/public/start",
-            Method = "POST",
-            Body = HttpService:JSONEncode(datos),
-            Headers = {
-                ["Content-Type"] = "application/json",
-                ["Accept"] = "application/json"
-            }
-        })
-    end)
-
-    if success and response and response.StatusCode == 200 then
-        local data = HttpService:JSONDecode(response.Body)
-        if data.success then
-            return data.data.url
-        else
-            return "Error del servidor: " .. (data.message or "Mensaje de error no disponible")
-        end
-    else
-        return "Error en la solicitud: " .. tostring(response and response.StatusMessage or "Sin mensaje disponible")
-    end
-end
-
-local function verificarClave(clave)
-    local identifier = "roblox-client-" .. fGetHwid()
-    local url = string.format(
-        "https://api.platoboost.com/public/whitelist/1951?identifier=%s&key=%s",
-        HttpService:UrlEncode(identifier),
-        HttpService:UrlEncode(clave)
-    )
-
-    local success, response = pcall(function()
-        return fRequest({
-            Url = url,
-            Method = "GET",
-            Headers = {
-                ["Accept"] = "application/json"
-            }
-        })
-    end)
-
-    if success and response then
-        local statusCode = response.StatusCode
-        local responseBody
-        pcall(function()
-            responseBody = HttpService:JSONDecode(response.Body)
-        end)
-
-        if statusCode == 200 then
-            if responseBody and responseBody.success and responseBody.data and responseBody.data.valid then
-                guardarClaveGuardada(clave)
-                return true, "Clave válida"
-            else
-                return false, "Respuesta inesperada: " .. tostring(response.Body)
-            end
-        elseif statusCode == 400 then
-            return false, responseBody and responseBody.message or "Clave inválida"
-        else
-            return false, "Error desconocido. Código: " .. tostring(statusCode)
-        end
-    else
-        return false, "Error en la solicitud: " .. tostring(response and response.StatusMessage or "Sin mensaje")
-    end
-end
-
-BotonUrl.MouseButton1Click:Connect(function()
-    TextBox.Text = "Generando link..."
-    local linkGenerado = generarLink()
-    
-    if fStringSub(linkGenerado, 1, 4) == "http" then
-        fSetClipboard(linkGenerado)
-        TextBox.Text = "¡Link generado y copiado!"
-        TextBox.TextColor3 = Color3.fromRGB(100, 255, 100)
-    else
-        TextBox.Text = linkGenerado
-        TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
-    end
-end)
+local BotonCopiar = Instance.new("TextButton")
+BotonCopiar.Size = UDim2.new(0.4, 0, 0.15, 0)
+BotonCopiar.Position = UDim2.new(0.55, 0, 0.65, 0)
+BotonCopiar.Text = "Generar Link"
+BotonCopiar.Font = Enum.Font.GothamBold
+BotonCopiar.TextScaled = true
+BotonCopiar.TextColor3 = Color3.fromRGB(255, 255, 255)
+BotonCopiar.BackgroundColor3 = Color3.fromRGB(0, 122, 204)
+BotonCopiar.BorderSizePixel = 0
+BotonCopiar.Parent = Frame
 
 BotonVerificar.MouseButton1Click:Connect(function()
     local clave = TextBox.Text
@@ -1662,14 +1637,35 @@ BotonVerificar.MouseButton1Click:Connect(function()
         return
     end
 
-    local esValida, mensaje = verificarClave(clave)
-    if esValida then
-        TextBox.Text = "¡Clave válida!"
+    TextBox.Text = "Verificando..."
+    TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+    local success = verificarClave(clave)
+    if success then
+        TextBox.Text = "¡Clave aceptada!"
         TextBox.TextColor3 = Color3.fromRGB(100, 255, 100)
-        KeyGui:Destroy() -- Cierra el GUI
-        script() -- Ejecuta la función script()
+        wait(1)
+        KeyGui:Destroy()
+        script()
     else
-        TextBox.Text = mensaje or "Clave inválida"
+        TextBox.Text = "Clave inválida"
+        TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
+    end
+end)
+
+BotonCopiar.MouseButton1Click:Connect(function()
+    TextBox.Text = "Generando link..."
+    TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    
+    local link = generateLink()
+    if link then
+        TextBox.Text = "Link generado y copiado"
+        TextBox.TextColor3 = Color3.fromRGB(100, 255, 100)
+        if fSetClipboard then
+            fSetClipboard(link)
+        end
+    else
+        TextBox.Text = "No se pudo generar el link"
         TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
     end
 end)
