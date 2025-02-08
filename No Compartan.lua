@@ -1,14 +1,25 @@
 local HttpService = game:GetService("HttpService")
 local ArchivoClaveGuardada = "jses_syn"
 
+local fSetClipboard, fRequest, fStringChar, fToString, fStringSub, fOsTime, fMathRandom, fMathFloor, fGetHwid = 
+    setclipboard or toclipboard, 
+    request or http_request or syn.request, 
+    string.char, 
+    tostring, 
+    string.sub, 
+    os.time, 
+    math.random, 
+    math.floor, 
+    gethwid or function() return game:GetService("Players").LocalPlayer.UserId end
+
 local function guardarClaveGuardada(clave)
-    writefile(ArchivoClaveGuardada, HttpService:JSONEncode({clave = clave, fecha = os.time()}))
+    writefile(ArchivoClaveGuardada, HttpService:JSONEncode({clave = clave, fecha = fOsTime()}))
 end
 
 local function claveEsValida()
     if isfile(ArchivoClaveGuardada) then
         local datos = HttpService:JSONDecode(readfile(ArchivoClaveGuardada))
-        if os.time() - datos.fecha < (23 * 60 * 60) then
+        if fOsTime() - datos.fecha < (23 * 60 * 60) then
             return true
         else
             delfile(ArchivoClaveGuardada)
@@ -24,7 +35,6 @@ local function resetearClave()
 end
 
 local function script()
-    print("¡La clave es válida! Ejecutando el script principal...")
 
 
 local fffg = game.CoreGui:FindFirstChild("fffg")
@@ -1486,13 +1496,13 @@ end)
     task.wait()
 end)
 
+
+    print("¡La clave es válida! Ejecutando el script principal...")
 end
-
-
 
 if claveEsValida() then
     print("Clave válida detectada. No se mostrará la GUI.")
-    script() 
+    script()
     return
 end
 
@@ -1556,21 +1566,21 @@ BotonVerificar.BorderSizePixel = 0
 BotonVerificar.Parent = Frame
 
 local function generarLink()
-    local identifier = "roblox-client-" .. game.Players.LocalPlayer.UserId
+    local identifier = "roblox-client-" .. fGetHwid()
     local datos = {
         service = 1951,
         identifier = identifier
     }
 
     local success, response = pcall(function()
-        return http_request({
+        return fRequest({
             Url = "https://api.platoboost.com/public/start",
             Method = "POST",
+            Body = HttpService:JSONEncode(datos),
             Headers = {
                 ["Content-Type"] = "application/json",
                 ["Accept"] = "application/json"
-            },
-            Body = HttpService:JSONEncode(datos)
+            }
         })
     end)
 
@@ -1587,7 +1597,7 @@ local function generarLink()
 end
 
 local function verificarClave(clave)
-    local identifier = "roblox-client-" .. game.Players.LocalPlayer.UserId
+    local identifier = "roblox-client-" .. fGetHwid()
     local url = string.format(
         "https://api.platoboost.com/public/whitelist/1951?identifier=%s&key=%s",
         HttpService:UrlEncode(identifier),
@@ -1595,7 +1605,7 @@ local function verificarClave(clave)
     )
 
     local success, response = pcall(function()
-        return http_request({
+        return fRequest({
             Url = url,
             Method = "GET",
             Headers = {
@@ -1628,13 +1638,12 @@ local function verificarClave(clave)
     end
 end
 
-
 BotonUrl.MouseButton1Click:Connect(function()
     TextBox.Text = "Generando link..."
     local linkGenerado = generarLink()
     
-    if string.sub(linkGenerado, 1, 4) == "http" then
-        setclipboard(linkGenerado)
+    if fStringSub(linkGenerado, 1, 4) == "http" then
+        fSetClipboard(linkGenerado)
         TextBox.Text = "¡Link generado y copiado!"
         TextBox.TextColor3 = Color3.fromRGB(100, 255, 100)
     else
