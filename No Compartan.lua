@@ -1,33 +1,126 @@
 local HttpService = game:GetService("HttpService")
 local ArchivoClaveGuardada = "jses_syn"
+local TiempoExpiracionClave = 23 * 60 * 60
 
 local function guardarClaveGuardada(clave)
-    writefile(ArchivoClaveGuardada, HttpService:JSONEncode({clave = clave, fecha = os.time()}))
+    local success, errorMessage = pcall(function()
+        writefile(ArchivoClaveGuardada, HttpService:JSONEncode({clave = clave, fecha = os.time()}))
+    end)
+    if not success then
+        print("[Error al guardar clave]:", errorMessage)
+    end
 end
 
 local function claveEsValida()
-    if isfile(ArchivoClaveGuardada) then
-        local datos = HttpService:JSONDecode(readfile(ArchivoClaveGuardada))
-        if os.time() - datos.fecha < (23 * 60 * 60) then
-            return true
-        else
-            delfile(ArchivoClaveGuardada)
+    local success, result = pcall(function()
+        if isfile(ArchivoClaveGuardada) then
+            local datos = HttpService:JSONDecode(readfile(ArchivoClaveGuardada))
+            if os.time() - datos.fecha < TiempoExpiracionClave then
+                return true
+            else
+                delfile(ArchivoClaveGuardada)
+            end
         end
+        return false
+    end)
+    if not success then
+        print("[Error al verificar clave]:", result)
     end
-    return false
+    return result or false
 end
 
-local function resetearClave()
-    if isfile(ArchivoClaveGuardada) then
-        delfile(ArchivoClaveGuardada)
+local function verificarClave(clave)
+    local identifier = "roblox-client-" .. game.Players.LocalPlayer.UserId
+    local url = string.format(
+        "https://api.platoboost.com/public/whitelist/1951?identifier=%s&key=%s",
+        HttpService:UrlEncode(identifier),
+        HttpService:UrlEncode(clave)
+    )
+
+    local success, response = pcall(function()
+        return http_request({
+            Url = url,
+            Method = "GET",
+            Headers = {
+                ["Accept"] = "application/json"
+            }
+        })
+    end)
+
+    if not success then
+        print("[Error al verificar clave]:", response)
+        return false, "Error al verificar clave"
+    end
+
+    if response then
+        local statusCode = response.StatusCode
+        local responseBody = HttpService:JSONDecode(response.Body)
+
+        if statusCode == 200 then
+            if responseBody and responseBody.success and responseBody.data and responseBody.data.valid then
+                guardarClaveGuardada(clave)
+                return true, "Clave válida"
+            else
+                return false, "Respuesta inesperada: " .. tostring(response.Body)
+            end
+        elseif statusCode == 400 then
+            return false, responseBody and responseBody.message or "Clave inválida"
+        else
+            return false, "Error desconocido. Código: " .. tostring(statusCode)
+        end
+    else
+        return false, "Error en la solicitud: " .. tostring(response and response.StatusMessage or "Sin mensaje")
     end
 end
 
-local function script()
-    print("¡La clave es válida! Ejecutando el script principal...")
+local function generarLink()
+    local identifier = "roblox-client-" .. game.Players.LocalPlayer.UserId
+    local datos = {
+        service = 1951,
+        identifier = identifier
+    }
 
+    local success, result = pcall(function()
+        local response = http_request({
+            Url = "https://api.platoboost.com/public/start",
+            Method = "POST",
+            Headers = {
+                ["Content-Type"] = "application/json",
+                ["Accept"] = "application/json"
+            },
+            Body = HttpService:JSONEncode(datos)
+        })
 
-local fffg = game.CoreGui:FindFirstChild("fffg")
+        if response and response.StatusCode == 200 then
+            local parsed, data = pcall(function()
+                return HttpService:JSONDecode(response.Body)
+            end)
+
+            if parsed and data and data.success and data.data and data.data.url then
+                return data.data.url
+            else
+                return "Error: No se encontró un enlace válido en la respuesta del servidor."
+            end
+        else
+            return string.format(
+                "Error HTTP: Código %d, Mensaje: %s",
+                response and response.StatusCode or -1,
+                response and response.StatusMessage or "Desconocido"
+            )
+        end
+    end)
+
+    if success then
+        return result
+    else
+        print(result)
+        return "Error al procesar la solicitud para generar el link."
+    end
+end
+
+local function scriptPrincipal()
+    local success, errorMessage = pcall(function()
+        local fffg = game.CoreGui:FindFirstChild("fffg")
 if fffg then
     return  
 end
@@ -1485,14 +1578,14 @@ end)
        end)    
     task.wait()
 end)
-
+    end)
+    if not success then
+        print("[Error en script principal]:", errorMessage)
+    end
 end
 
-
-
 if claveEsValida() then
-    print("Clave válida detectada. No se mostrará la GUI.")
-    script() 
+    scriptPrincipal()
     return
 end
 
@@ -1533,9 +1626,25 @@ TextBox.TextScaled = true
 TextBox.ClearTextOnFocus = false
 TextBox.Parent = Frame
 
+TextBox:GetPropertyChangedSignal("Text"):Connect(function()
+    local clave = TextBox.Text
+    if clave ~= "" then
+        local esValida, mensaje = verificarClave(clave)
+        if esValida then
+            TextBox.Text = "¡Clave válida!"
+            TextBox.TextColor3 = Color3.fromRGB(100, 255, 100)
+            KeyGui:Destroy()
+            scriptPrincipal()
+        else
+            TextBox.Text = ""
+            print("[Clave inválida]:", mensaje or "Clave no válida")
+        end
+    end
+end)
+
 local BotonUrl = Instance.new("TextButton")
 BotonUrl.Size = UDim2.new(0.7, 0, 0.15, 0)
-BotonUrl.Position = UDim2.new(0.15, 0, 0.45, 0)
+BotonUrl.Position = UDim2.new(0.15, 0, 0.65, 0)
 BotonUrl.Text = "Generar URL de Clave"
 BotonUrl.Font = Enum.Font.GothamBold
 BotonUrl.TextScaled = true
@@ -1544,121 +1653,15 @@ BotonUrl.BackgroundColor3 = Color3.fromRGB(0, 122, 204)
 BotonUrl.BorderSizePixel = 0
 BotonUrl.Parent = Frame
 
-local BotonVerificar = Instance.new("TextButton")
-BotonVerificar.Size = UDim2.new(0.7, 0, 0.15, 0)
-BotonVerificar.Position = UDim2.new(0.15, 0, 0.65, 0)
-BotonVerificar.Text = "Verificar Clave"
-BotonVerificar.Font = Enum.Font.GothamBold
-BotonVerificar.TextScaled = true
-BotonVerificar.TextColor3 = Color3.fromRGB(255, 255, 255)
-BotonVerificar.BackgroundColor3 = Color3.fromRGB(0, 204, 122)
-BotonVerificar.BorderSizePixel = 0
-BotonVerificar.Parent = Frame
-
-local function generarLink()
-    local identifier = "roblox-client-" .. game.Players.LocalPlayer.UserId
-    local datos = {
-        service = 1951,
-        identifier = identifier
-    }
-
-    local success, response = pcall(function()
-        return http_request({
-            Url = "https://api.platoboost.com/public/start",
-            Method = "POST",
-            Headers = {
-                ["Content-Type"] = "application/json",
-                ["Accept"] = "application/json"
-            },
-            Body = HttpService:JSONEncode(datos)
-        })
-    end)
-
-    if success and response and response.StatusCode == 200 then
-        local data = HttpService:JSONDecode(response.Body)
-        if data.success then
-            return data.data.url
-        else
-            return "Error del servidor: " .. (data.message or "Mensaje de error no disponible")
-        end
-    else
-        return "Error en la solicitud: " .. tostring(response and response.StatusMessage or "Sin mensaje disponible")
-    end
-end
-
-local function verificarClave(clave)
-    local identifier = "roblox-client-" .. game.Players.LocalPlayer.UserId
-    local url = string.format(
-        "https://api.platoboost.com/public/whitelist/1951?identifier=%s&key=%s",
-        HttpService:UrlEncode(identifier),
-        HttpService:UrlEncode(clave)
-    )
-
-    local success, response = pcall(function()
-        return http_request({
-            Url = url,
-            Method = "GET",
-            Headers = {
-                ["Accept"] = "application/json"
-            }
-        })
-    end)
-
-    if success and response then
-        local statusCode = response.StatusCode
-        local responseBody
-        pcall(function()
-            responseBody = HttpService:JSONDecode(response.Body)
-        end)
-
-        if statusCode == 200 then
-            if responseBody and responseBody.success and responseBody.data and responseBody.data.valid then
-                guardarClaveGuardada(clave)
-                return true, "Clave válida"
-            else
-                return false, "Respuesta inesperada: " .. tostring(response.Body)
-            end
-        elseif statusCode == 400 then
-            return false, responseBody and responseBody.message or "Clave inválida"
-        else
-            return false, "Error desconocido. Código: " .. tostring(statusCode)
-        end
-    else
-        return false, "Error en la solicitud: " .. tostring(response and response.StatusMessage or "Sin mensaje")
-    end
-end
-
-
 BotonUrl.MouseButton1Click:Connect(function()
     TextBox.Text = "Generando link..."
     local linkGenerado = generarLink()
-    
     if string.sub(linkGenerado, 1, 4) == "http" then
         setclipboard(linkGenerado)
         TextBox.Text = "¡Link generado y copiado!"
         TextBox.TextColor3 = Color3.fromRGB(100, 255, 100)
     else
         TextBox.Text = linkGenerado
-        TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
-    end
-end)
-
-BotonVerificar.MouseButton1Click:Connect(function()
-    local clave = TextBox.Text
-    if clave == "" then
-        TextBox.Text = "Por favor, introduce una clave"
-        TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
-        return
-    end
-
-    local esValida, mensaje = verificarClave(clave)
-    if esValida then
-        TextBox.Text = "¡Clave válida!"
-        TextBox.TextColor3 = Color3.fromRGB(100, 255, 100)
-        KeyGui:Destroy() -- Cierra el GUI
-        script() -- Ejecuta la función script()
-    else
-        TextBox.Text = mensaje or "Clave inválida"
         TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
     end
 end)
