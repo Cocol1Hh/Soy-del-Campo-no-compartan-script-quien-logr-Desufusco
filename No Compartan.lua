@@ -1,30 +1,33 @@
 local HttpService = game:GetService("HttpService")
+local ArchivoClaveGuardada = "jses_syn"
 
-local http_request = (syn and syn.request) or (http and http.request) or http_request
-if not http_request then
-    http_request = function(requestData)
-        local response = {}
-        local success, result = pcall(function()
-            return HttpService:RequestAsync(requestData)
-        end)
-        if success and result then
-            response.StatusCode = result.StatusCode
-            response.StatusMessage = result.StatusMessage
-            response.Body = result.Body
+local function guardarClaveGuardada(clave)
+    writefile(ArchivoClaveGuardada, HttpService:JSONEncode({clave = clave, fecha = os.time()}))
+end
+
+local function claveEsValida()
+    if isfile(ArchivoClaveGuardada) then
+        local datos = HttpService:JSONDecode(readfile(ArchivoClaveGuardada))
+        if os.time() - datos.fecha < (23 * 60 * 60) then
+            return true
         else
-            response.StatusCode = -1
-            response.StatusMessage = "Error interno en HttpService"
-            response.Body = tostring(result)
+            delfile(ArchivoClaveGuardada)
         end
-        return response
+    end
+    return false
+end
+
+local function resetearClave()
+    if isfile(ArchivoClaveGuardada) then
+        delfile(ArchivoClaveGuardada)
     end
 end
 
-local function scriptPrincipal()
-    local success, errorMessage = pcall(function()
-        
-    
-        local fffg = game.CoreGui:FindFirstChild("fffg")
+local function script()
+    print("¡La clave es válida! Ejecutando el script principal...")
+
+
+local fffg = game.CoreGui:FindFirstChild("fffg")
 if fffg then
     return  
 end
@@ -452,11 +455,11 @@ local textProperties = {
     {text = "Fly", position = UDim2.new(-0.04, 0, 0.320, 0), color = Color3.fromRGB(200, 300, 400), parent = Barra1},
     {text = "Brillo", position = UDim2.new(0.473, 0, 0.320, 0), color = Color3.fromRGB(180, 200, 100), parent = Barra1},
     {text = "Duck", position = UDim2.new(-0.160, 0, 0.420, 0), color = Color3.fromRGB(200, 100, 300), parent = Barra1},
-    {text = "ºrª", position = UDim2.new(0.350, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70), parent = Barra1},
+    {text = "Ɓºrª", position = UDim2.new(0.350, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70), parent = Barra1},
     {text = "Graf", position = UDim2.new(-0.160, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
     {text = "Plant", position = UDim2.new(0.350, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
     {text = "Black", position = UDim2.new(-0.160, 0, 0.570, 0), color = Color3.fromRGB(200, 380, 90), parent = Barra1},
-    {text = "HA", position = UDim2.new(0.360, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
+    {text = "HA🎃", position = UDim2.new(0.360, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
     
     {text = "Klirin", position = UDim2.new(-0.155, 0, 0.085, 0), color = Color3.fromRGB(200, 190, 255), parent = Contenedor},
     {text = "Mapa", position = UDim2.new(0.350, 0, 0.085, 0), color = Color3.fromRGB(255, 190, 150), parent = Contenedor},
@@ -879,7 +882,7 @@ local getIsActive8 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.420, 0), "Switch
 local getIsActive9 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.495, 0), "Switch9", LoadSwitchState("Switch9"))--Graf
 local getIsActive10 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.495, 0), "Switch10", LoadSwitchState("Switch10"))--Planet
 local getIsActive11 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.570, 0), "Switch11", LoadSwitchState("Switch11"))--Black
-local getIsActive12 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.570, 0), "Switch12", LoadSwitchState("Switch12"))--Hall
+local getIsActive12 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.570, 0), "Switch12", LoadSwitchState("Switch12"))--Hall🎃
 
 local getIsActive13 = createSwitch(Contenedor, UDim2.new(0.2, 0, 0.090, 0), "Switch13", LoadSwitchState("Switch13"))--Klirin
 local getIsActive14 = createSwitch(Contenedor, UDim2.new(0.755, 0, 0.090, 0), "Switch14", LoadSwitchState("Switch14"))--Mapa
@@ -1482,154 +1485,22 @@ end)
        end)    
     task.wait()
 end)
-    
-        print("¡Clave válida! Ejecutando script principal...")
-    end)
 
-    if not success then
-        warn("Error en el script principal: " .. tostring(errorMessage))
-    end
-end
-
-local function guardarClaveGuardada(clave)
-    pcall(function()
-        writefile("jses_syn", HttpService:JSONEncode({clave = clave, fecha = os.time()}))
-    end)
-end
-
-local function cargarClaveGuardada()
-    local success, data = pcall(function()
-        return HttpService:JSONDecode(readfile("jses_syn"))
-    end)
-    if success and data and data.clave then
-        return data.clave
-    else
-        return nil
-    end
-end
-
-local function verificarClave(clave)
-    local identifier = "roblox-client-" .. game.Players.LocalPlayer.UserId
-    local url = string.format(
-        "https://api.platoboost.com/public/whitelist/1951?identifier=%s&key=%s",
-        HttpService:UrlEncode(identifier),
-        HttpService:UrlEncode(clave)
-    )
-
-    local success, response = pcall(function()
-        return http_request({
-            Url = url,
-            Method = "GET",
-            Headers = {
-                ["Accept"] = "application/json"
-            }
-        })
-    end)
-
-    if response and response.StatusCode == 200 then
-        local responseBody = HttpService:JSONDecode(response.Body)
-        if responseBody and responseBody.success and responseBody.data and responseBody.data.valid then
-            guardarClaveGuardada(clave)
-            return true, "Clave válida"
-        else
-            return false, "Clave inválida"
-        end
-    elseif response then
-        return false, response.StatusMessage or "Clave inválida"
-    else
-        return false, "Error al verificar la clave"
-    end
-end
-
-local HttpService = game:GetService("HttpService")
-
-local function log(...)
-    print(string.format("[%s]", os.date()), ...)
-end
-
-local function realizarSolicitud(url, method, headers, body, maxIntentos)
-    maxIntentos = maxIntentos or 3
-    for intento = 1, maxIntentos do
-        log("Intento", intento, "de", maxIntentos)
-        local success, response = pcall(function()
-            return http_request({
-                Url = url,
-                Method = method,
-                Headers = headers,
-                Body = body
-            })
-        end)
-
-        if success then
-            if response then
-                log("Respuesta recibida:", response.StatusCode, response.StatusMessage)
-                return response
-            else
-                log("No se recibió respuesta del servidor")
-            end
-        else
-            log("Error en la solicitud:", response)
-        end
-
-        if intento < maxIntentos then
-            local espera = 2 * intento
-            log("Esperando", espera, "segundos antes del siguiente intento")
-            task.wait(espera)
-        end
-    end
-    return nil
-end
-
-local function generarLink()
-    local identifier = "roblox-client-" .. game.Players.LocalPlayer.UserId
-    local datos = {
-        service = 1951,
-        identifier = identifier
-    }
-
-    log("Iniciando generación de enlace")
-    log("Identificador:", identifier)
-
-    local response = realizarSolicitud(
-        "https://api.platoboost.com/public/start",
-        "POST",
-        {
-            ["Content-Type"] = "application/json",
-            ["Accept"] = "application/json"
-        },
-        HttpService:JSONEncode(datos),
-        5  -- Aumentamos a 5 intentos
-    )
-
-    if response then
-        if response.StatusCode == 200 then
-            local success, responseBody = pcall(function()
-                return HttpService:JSONDecode(response.Body)
-            end)
-            if success and responseBody and responseBody.success and responseBody.data and responseBody.data.url then
-                log("Enlace generado con éxito")
-                return responseBody.data.url
-            else
-                log("Respuesta del servidor inesperada:", response.Body)
-                return "Error: Respuesta del servidor inesperada"
-            end
-        else
-            log("Error del servidor:", response.StatusCode, response.StatusMessage)
-            return "Error del servidor: " .. tostring(response.StatusCode) .. " - " .. (response.StatusMessage or "")
-        end
-    else
-        log("No se pudo establecer conexión con el servidor")
-        return "No se pudo establecer conexión con el servidor. Por favor, verifica tu conexión a internet."
-    end
 end
 
 
+
+if claveEsValida() then
+    print("Clave válida detectada. No se mostrará la GUI.")
+    script() 
+    return
+end
 
 local KeyGui = Instance.new("ScreenGui")
 KeyGui.Parent = game.CoreGui
 
 local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0.318, 0, 0.4, 0)
+Frame.Size = UDim2.new(0.318, 0, 0.318, 0)
 Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
 Frame.AnchorPoint = Vector2.new(0.5, 0.5)
 Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
@@ -1662,35 +1533,9 @@ TextBox.TextScaled = true
 TextBox.ClearTextOnFocus = false
 TextBox.Parent = Frame
 
-local BotonVerificar = Instance.new("TextButton")
-BotonVerificar.Size = UDim2.new(0.7, 0, 0.15, 0)
-BotonVerificar.Position = UDim2.new(0.15, 0, 0.5, 0)
-BotonVerificar.Text = "Verificar Clave"
-BotonVerificar.Font = Enum.Font.GothamBold
-BotonVerificar.TextScaled = true
-BotonVerificar.TextColor3 = Color3.fromRGB(255, 255, 255)
-BotonVerificar.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
-BotonVerificar.BorderSizePixel = 0
-BotonVerificar.Parent = Frame
-
-BotonVerificar.MouseButton1Click:Connect(function()
-    local clave = TextBox.Text
-    if clave ~= "" then
-        local esValida, mensaje = verificarClave(clave)
-        if esValida then
-            TextBox.Text = "¡Clave válida!"
-            TextBox.TextColor3 = Color3.fromRGB(100, 255, 100)
-            KeyGui:Destroy()
-            scriptPrincipal()
-        else
-            TextBox.Text = ""
-        end
-    end
-end)
-
 local BotonUrl = Instance.new("TextButton")
 BotonUrl.Size = UDim2.new(0.7, 0, 0.15, 0)
-BotonUrl.Position = UDim2.new(0.15, 0, 0.7, 0)
+BotonUrl.Position = UDim2.new(0.15, 0, 0.45, 0)
 BotonUrl.Text = "Generar URL de Clave"
 BotonUrl.Font = Enum.Font.GothamBold
 BotonUrl.TextScaled = true
@@ -1699,11 +1544,93 @@ BotonUrl.BackgroundColor3 = Color3.fromRGB(0, 122, 204)
 BotonUrl.BorderSizePixel = 0
 BotonUrl.Parent = Frame
 
--- Modificar la función del botón para usar el nuevo generarLink
+local BotonVerificar = Instance.new("TextButton")
+BotonVerificar.Size = UDim2.new(0.7, 0, 0.15, 0)
+BotonVerificar.Position = UDim2.new(0.15, 0, 0.65, 0)
+BotonVerificar.Text = "Verificar Clave"
+BotonVerificar.Font = Enum.Font.GothamBold
+BotonVerificar.TextScaled = true
+BotonVerificar.TextColor3 = Color3.fromRGB(255, 255, 255)
+BotonVerificar.BackgroundColor3 = Color3.fromRGB(0, 204, 122)
+BotonVerificar.BorderSizePixel = 0
+BotonVerificar.Parent = Frame
+
+local function generarLink()
+    local identifier = "roblox-client-" .. game.Players.LocalPlayer.UserId
+    local datos = {
+        service = 1951,
+        identifier = identifier
+    }
+
+    local success, response = pcall(function()
+        return http_request({
+            Url = "https://api.platoboost.com/public/start",
+            Method = "POST",
+            Headers = {
+                ["Content-Type"] = "application/json",
+                ["Accept"] = "application/json"
+            },
+            Body = HttpService:JSONEncode(datos)
+        })
+    end)
+
+    if success and response and response.StatusCode == 200 then
+        local data = HttpService:JSONDecode(response.Body)
+        if data.success then
+            return data.data.url
+        else
+            return "Error del servidor: " .. (data.message or "Mensaje de error no disponible")
+        end
+    else
+        return "Error en la solicitud: " .. tostring(response and response.StatusMessage or "Sin mensaje disponible")
+    end
+end
+
+local function verificarClave(clave)
+    local identifier = "roblox-client-" .. game.Players.LocalPlayer.UserId
+    local url = string.format(
+        "https://api.platoboost.com/public/whitelist/1951?identifier=%s&key=%s",
+        HttpService:UrlEncode(identifier),
+        HttpService:UrlEncode(clave)
+    )
+
+    local success, response = pcall(function()
+        return http_request({
+            Url = url,
+            Method = "GET",
+            Headers = {
+                ["Accept"] = "application/json"
+            }
+        })
+    end)
+
+    if success and response then
+        local statusCode = response.StatusCode
+        local responseBody
+        pcall(function()
+            responseBody = HttpService:JSONDecode(response.Body)
+        end)
+
+        if statusCode == 200 then
+            if responseBody and responseBody.success and responseBody.data and responseBody.data.valid then
+                guardarClaveGuardada(clave)
+                return true, "Clave válida"
+            else
+                return false, "Respuesta inesperada: " .. tostring(response.Body)
+            end
+        elseif statusCode == 400 then
+            return false, responseBody and responseBody.message or "Clave inválida"
+        else
+            return false, "Error desconocido. Código: " .. tostring(statusCode)
+        end
+    else
+        return false, "Error en la solicitud: " .. tostring(response and response.StatusMessage or "Sin mensaje")
+    end
+end
+
+
 BotonUrl.MouseButton1Click:Connect(function()
     TextBox.Text = "Generando link..."
-    TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-    
     local linkGenerado = generarLink()
     
     if string.sub(linkGenerado, 1, 4) == "http" then
@@ -1713,16 +1640,25 @@ BotonUrl.MouseButton1Click:Connect(function()
     else
         TextBox.Text = linkGenerado
         TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
-        log("Error al generar enlace:", linkGenerado)
     end
 end)
 
--- Cargar clave guardada y verificar automáticamente
-local claveGuardada = cargarClaveGuardada()
-if claveGuardada then
-    local esValida, _ = verificarClave(claveGuardada)
-    if esValida then
-        KeyGui:Destroy()
-        scriptPrincipal()
+BotonVerificar.MouseButton1Click:Connect(function()
+    local clave = TextBox.Text
+    if clave == "" then
+        TextBox.Text = "Por favor, introduce una clave"
+        TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
+        return
     end
-end
+
+    local esValida, mensaje = verificarClave(clave)
+    if esValida then
+        TextBox.Text = "¡Clave válida!"
+        TextBox.TextColor3 = Color3.fromRGB(100, 255, 100)
+        KeyGui:Destroy() -- Cierra el GUI
+        script() -- Ejecuta la función script()
+    else
+        TextBox.Text = mensaje or "Clave inválida"
+        TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
+    end
+end)
