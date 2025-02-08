@@ -37,6 +37,7 @@ end
 local function script()
 
 
+
 local fffg = game.CoreGui:FindFirstChild("fffg")
 if fffg then
     return  
@@ -1497,7 +1498,8 @@ end)
 end)
 
 
-    print("¡La clave es válida! Ejecutando el script principal...")
+    
+print("¡La clave es válida! Ejecutando el script principal...")
 end
 
 if claveEsValida() then
