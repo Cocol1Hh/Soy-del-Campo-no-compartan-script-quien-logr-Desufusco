@@ -5,7 +5,7 @@ local useNonce = true
 
 local HttpService = game:GetService("HttpService")
 
-local ArchivoClaveGuardada = "clave_guardada.json"
+local ArchivoClaveGuardada = "jses_syn"
 
 local fSetClipboard, fRequest, fStringChar, fToString, fStringSub, fOsTime, fMathRandom, fMathFloor, fGetHwid, isfile, readfile, writefile, delfile = 
     setclipboard or toclipboard, request or http_request or syn.request, string.char, tostring, string.sub, os.time, math.random, math.floor, 
@@ -50,29 +50,78 @@ local function generateLink()
 end
 
 local function verificarClave(clave)
+    local hosts = {
+        "https://api.platoboost.com",
+        "https://api.platoboost.net"
+    }
+    
     local nonce = generateNonce()
     local identifier = fGetHwid()
     
-    local response = fRequest({
-        Url = string.format("%s/public/redeem/%d", host, service),
-        Method = "POST",
-        Headers = {
-            ["Content-Type"] = "application/json"
-        },
-        Body = HttpService:JSONEncode({
-            identifier = identifier,
-            key = clave,
-            nonce = nonce
-        })
-    })
-
-    if response and response.StatusCode == 200 then
-        local decoded = HttpService:JSONDecode(response.Body)
-        if decoded.success and decoded.data and decoded.data.valid then
-            writefile(ArchivoClaveGuardada, HttpService:JSONEncode({clave = clave, fecha = fOsTime()}))
+    for _, currentHost in ipairs(hosts) do
+        local success, result = pcall(function()
+            local response = fRequest({
+                Url = string.format("%s/public/whitelist/%d", currentHost, service),
+                Method = "GET",
+                Headers = {
+                    ["Content-Type"] = "application/json"
+                },
+                Query = {
+                    identifier = identifier,
+                    key = clave,
+                    nonce = useNonce and nonce or nil
+                }
+            })
+            
+            if response and response.StatusCode == 200 then
+                local decoded = HttpService:JSONDecode(response.Body)
+                if decoded.success and decoded.data and decoded.data.valid then
+                    -- Try redeeming if it's a new key
+                    if string.sub(clave, 1, 4) == "KEY_" then
+                        local redeemResponse = fRequest({
+                            Url = string.format("%s/public/redeem/%d", currentHost, service),
+                            Method = "POST",
+                            Headers = {
+                                ["Content-Type"] = "application/json"
+                            },
+                            Body = HttpService:JSONEncode({
+                                identifier = identifier,
+                                key = clave,
+                                nonce = useNonce and nonce or nil
+                            })
+                        })
+                        
+                        if redeemResponse and redeemResponse.StatusCode == 200 then
+                            local redeemDecoded = HttpService:JSONDecode(redeemResponse.Body)
+                            if redeemDecoded.success then
+                                writefile(ArchivoClaveGuardada, HttpService:JSONEncode({
+                                    clave = clave,
+                                    fecha = fOsTime()
+                                }))
+                                return true
+                            end
+                        end
+                    else
+                        writefile(ArchivoClaveGuardada, HttpService:JSONEncode({
+                            clave = clave,
+                            fecha = fOsTime()
+                        }))
+                        return true
+                    end
+                end
+            end
+            return false
+        end)
+        
+        if success and result then
             return true
         end
+        
+        if _ == 1 then
+            wait(.5)
+        end
     end
+    
     return false
 end
 
@@ -96,7 +145,6 @@ end
 
 local function script()
     print("¡La clave es válida! Ejecutando el script principal...")
-
 
 
 local fffg = game.CoreGui:FindFirstChild("fffg")
@@ -1558,18 +1606,14 @@ end)
     task.wait()
 end)
 
-
-    
 end
 
--- Verificar si la clave guardada aún es válida
 if claveEsValida() then
     print("Clave válida detectada. No se mostrará la GUI.")
     script()
     return
 end
 
--- Crear GUI si no hay clave válida
 local KeyGui = Instance.new("ScreenGui")
 KeyGui.Parent = game.CoreGui
 
