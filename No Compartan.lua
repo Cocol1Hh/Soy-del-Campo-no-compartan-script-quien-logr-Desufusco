@@ -1,16 +1,19 @@
 local service = 1951
-local secret = ""
 local host = "https://api.platoboost.com"
 local useNonce = true
 
 local HttpService = game:GetService("HttpService")
 
-local ArchivoClaveGuardada = "jses_syn"
+local ArchivoClaveGuardada = "clave_guardada.json"
 
 local fSetClipboard, fRequest, fStringChar, fToString, fStringSub, fOsTime, fMathRandom, fMathFloor, fGetHwid, isfile, readfile, writefile, delfile = 
     setclipboard or toclipboard, request or http_request or syn.request, string.char, tostring, string.sub, os.time, math.random, math.floor, 
     gethwid or function() return game:GetService("Players").LocalPlayer.UserId end, 
     isfile, readfile, writefile, delfile
+
+local function log(...)
+    print("[KeySystem]", ...)
+end
 
 local function generateNonce()
     local str = ""
@@ -20,30 +23,45 @@ local function generateNonce()
     return str
 end
 
+local function retryWithDelay(fn, attempts, delay)
+    for i = 1, attempts do
+        local success, result = pcall(fn)
+        if success and result then
+            return true, result
+        end
+        if i < attempts then
+            wait(delay)
+        end
+    end
+    return false
+end
+
 local function generateLink()
     local hosts = {"https://api.platoboost.com", "https://api.platoboost.net"}
     for _, currentHost in ipairs(hosts) do
         local endpoint = currentHost .. "/public/start"
         local body = { service = service, identifier = fGetHwid() }
 
-        local response = fRequest({
-            Url = endpoint,
-            Method = "POST",
-            Body = HttpService:JSONEncode(body),
-            Headers = {
-                ["Content-Type"] = "application/json"
-            }
-        })
+        local success, response = pcall(function()
+            return fRequest({
+                Url = endpoint,
+                Method = "POST",
+                Body = HttpService:JSONEncode(body),
+                Headers = {
+                    ["Content-Type"] = "application/json"
+                }
+            })
+        end)
 
-        if response and response.StatusCode == 200 then
+        if success and response and response.StatusCode == 200 then
             local decoded = HttpService:JSONDecode(response.Body)
             if decoded.success and decoded.data and decoded.data.url then
                 return decoded.data.url
             end
         elseif response and response.StatusCode == 429 then
-            print("Rate limited. Wait before retrying.")
+            log("Rate limited. Wait before retrying.")
         else
-            print("Failed to connect to: " .. currentHost)
+            log("Failed to connect to: " .. currentHost)
         end
     end
     return nil
@@ -57,78 +75,92 @@ local function verificarClave(clave)
     
     local nonce = generateNonce()
     local identifier = fGetHwid()
-    
-    for _, currentHost in ipairs(hosts) do
-        local success, result = pcall(function()
-            local response = fRequest({
-                Url = string.format("%s/public/whitelist/%d", currentHost, service),
-                Method = "GET",
-                Headers = {
-                    ["Content-Type"] = "application/json"
-                },
-                Query = {
-                    identifier = identifier,
-                    key = clave,
-                    nonce = useNonce and nonce or nil
-                }
-            })
-            
-            if response and response.StatusCode == 200 then
-                local decoded = HttpService:JSONDecode(response.Body)
-                if decoded.success and decoded.data and decoded.data.valid then
-                    -- Try redeeming if it's a new key
-                    if string.sub(clave, 1, 4) == "KEY_" then
-                        local redeemResponse = fRequest({
-                            Url = string.format("%s/public/redeem/%d", currentHost, service),
-                            Method = "POST",
-                            Headers = {
-                                ["Content-Type"] = "application/json"
-                            },
-                            Body = HttpService:JSONEncode({
-                                identifier = identifier,
-                                key = clave,
-                                nonce = useNonce and nonce or nil
-                            })
-                        })
-                        
-                        if redeemResponse and redeemResponse.StatusCode == 200 then
-                            local redeemDecoded = HttpService:JSONDecode(redeemResponse.Body)
-                            if redeemDecoded.success then
-                                writefile(ArchivoClaveGuardada, HttpService:JSONEncode({
-                                    clave = clave,
-                                    fecha = fOsTime()
-                                }))
-                                return true
-                            end
-                        end
-                    else
-                        writefile(ArchivoClaveGuardada, HttpService:JSONEncode({
-                            clave = clave,
-                            fecha = fOsTime()
-                        }))
-                        return true
-                    end
-                end
+    log("Verificando clave:", clave)
+    log("HWID:", identifier)
+
+    local function tryVerifyWithHost(host)
+        local whitelistUrl = string.format("%s/public/whitelist/%d", host, service)
+        local whitelistResponse = fRequest({
+            Url = whitelistUrl,
+            Method = "GET",
+            Headers = {
+                ["Content-Type"] = "application/json"
+            },
+            Query = {
+                identifier = identifier,
+                key = clave,
+                nonce = useNonce and nonce or nil
+            }
+        })
+
+        if whitelistResponse and whitelistResponse.StatusCode == 200 then
+            local success, decoded = pcall(function()
+                return HttpService:JSONDecode(whitelistResponse.Body)
+            end)
+
+            if success and decoded and decoded.success and decoded.data and decoded.data.valid then
+                log("Whitelist verificación exitosa")
+                return true
             end
-            return false
-        end)
+        end
+
+        local redeemUrl = string.format("%s/public/redeem/%d", host, service)
+        local redeemResponse = fRequest({
+            Url = redeemUrl,
+            Method = "POST",
+            Headers = {
+                ["Content-Type"] = "application/json"
+            },
+            Body = HttpService:JSONEncode({
+                identifier = identifier,
+                key = clave,
+                nonce = useNonce and nonce or nil
+            })
+        })
+
+        if redeemResponse and redeemResponse.StatusCode == 200 then
+            local success, decoded = pcall(function()
+                return HttpService:JSONDecode(redeemResponse.Body)
+            end)
+
+            if success and decoded and decoded.success then
+                log("Redeem verificación exitosa")
+                return true
+            end
+        end
+
+        return false
+    end
+
+    for _, host in ipairs(hosts) do
+        log("Intentando con host:", host)
         
+        local success, result = retryWithDelay(function()
+            return tryVerifyWithHost(host)
+        end, 3, 1)
+
         if success and result then
+            pcall(function()
+                writefile(ArchivoClaveGuardada, HttpService:JSONEncode({
+                    clave = clave,
+                    fecha = fOsTime()
+                }))
+            end)
+            
             return true
         end
-        
-        if _ == 1 then
-            wait(.5)
-        end
     end
-    
+
+    log("Verificación fallida con todos los hosts")
     return false
 end
 
 local function claveEsValida()
     if isfile(ArchivoClaveGuardada) then
-        local datos = HttpService:JSONDecode(readfile(ArchivoClaveGuardada))
-        if fOsTime() - datos.fecha < (23 * 60 * 60) then
+        local success, datos = pcall(function()
+            return HttpService:JSONDecode(readfile(ArchivoClaveGuardada))
+        end)
+        if success and datos and fOsTime() - datos.fecha < (23 * 60 * 60) then
             return true
         else
             delfile(ArchivoClaveGuardada)
@@ -144,8 +176,8 @@ local function resetearClave()
 end
 
 local function script()
-    print("¡La clave es válida! Ejecutando el script principal...")
-
+    log("¡La clave es válida! Ejecutando el script principal...")
+   
 
 local fffg = game.CoreGui:FindFirstChild("fffg")
 if fffg then
@@ -1606,14 +1638,44 @@ end)
     task.wait()
 end)
 
+
+    
+
 end
 
+local function verificarEstadoServicio()
+    for _, host in ipairs({"https://api.platoboost.com", "https://api.platoboost.net"}) do
+        local success, response = pcall(function()
+            return fRequest({
+                Url = host .. "/public/connectivity",
+                Method = "GET"
+            })
+        end)
+        
+        if success and response and response.StatusCode == 200 then
+            log("Servicio disponible en:", host)
+            return true
+        end
+    end
+    
+    log("Servicio no disponible en ningún host")
+    return false
+end
+
+-- Verificar si la clave guardada aún es válida
 if claveEsValida() then
-    print("Clave válida detectada. No se mostrará la GUI.")
+    log("Clave válida detectada. Ejecutando script principal.")
     script()
     return
 end
 
+-- Verificar el estado del servicio antes de mostrar la GUI
+if not verificarEstadoServicio() then
+    log("Servicio no disponible. No se puede mostrar la GUI.")
+    return
+end
+
+-- Crear GUI
 local KeyGui = Instance.new("ScreenGui")
 KeyGui.Parent = game.CoreGui
 
@@ -1683,9 +1745,19 @@ BotonVerificar.MouseButton1Click:Connect(function()
 
     TextBox.Text = "Verificando..."
     TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    
+    local success, result = pcall(function()
+        return verificarClave(clave)
+    end)
 
-    local success = verificarClave(clave)
-    if success then
+    if not success then
+        TextBox.Text = "Error en la verificación"
+        TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
+        log("Error en verificación:", result)
+        return
+    end
+
+    if result then
         TextBox.Text = "¡Clave aceptada!"
         TextBox.TextColor3 = Color3.fromRGB(100, 255, 100)
         wait(1)
