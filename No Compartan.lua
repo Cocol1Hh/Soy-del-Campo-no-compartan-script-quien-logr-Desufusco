@@ -1439,8 +1439,9 @@ task.spawn(function()
 end)
            
  task.spawn(function()
-    while task.wait() do        
-            if getIsActive13() then
+    while task.wait() do 
+      pcall(function()                   
+         if getIsActive13() then
             toggleNPC("Klirin", true)  
             else
             toggleNPC("Klirin", false)
@@ -1450,6 +1451,13 @@ end)
             else
             toggleNPC("Mapa", false)
             end    
+        end)
+      end
+ end)          
+ 
+ 
+ task.spawn(function()
+    while task.wait() do              
          if getIsActive10() then
             if yo() >= 150e6 and Fdata.Zeni.Value >= 15000 and game.PlaceId == 3311165597  then
                 game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
@@ -1459,7 +1467,7 @@ end)
                 game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
                 wait(5)
             end
-         end 
+         end
       end
  end)          
  
