@@ -1113,10 +1113,15 @@ function yo()
     return l
 end
 
+function player()
+    while (not lplr.Character) and (not lplr.Character:FindFirstChild("Humanoid")) and (not lplr.Character.Humanoid.Health > 0) do task.wait() end
+    return lplr.Character
+end
 
 function player()
 	return lplr.Character and lplr.Character.Humanoid and lplr.Character.Humanoid.Health > 0 and lplr.Character:FindFirstChild("HumanoidRootPart")
 end
+
 
 
 task.spawn(function()
@@ -1283,6 +1288,15 @@ task.spawn(function()
       end
   end)
   
+  task.spawn(function()
+    while task.wait() do
+        pcall(function()
+        FindChar().Humanoid:ChangeState(8)
+        FindChar().Humanoid:ChangeState(18)     
+         end)
+      end
+  end)
+  
 task.spawn(function()
     while task.wait() do
         pcall(function()
@@ -1363,8 +1377,8 @@ task.spawn(function()
 
 task.spawn(function() 
     while true do     
-    pcall(function()  
-    if data.Quest.Value == "" and getIsActive1() and player() then
+        pcall(function()  
+            if data.Quest.Value == "" and getIsActive1() and player() then
                 for i, npc in ipairs(npcList) do
                     local npcName, requisito, isActive = npc[1], npc[2], npc[3]
                     if isActive then
@@ -1374,21 +1388,20 @@ task.spawn(function()
                             if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
                                (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
                                 lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.4)  
-                                 pcall(function()
-                                  if getIsActive1() then    
-                                game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(npcInstance)
-                                   end
-                                end)
+                                local args = {
+                                    [1] = npcInstance
+                                }
+                                game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(unpack(args))                                
                                 break
-                                end
-                             end
-                         end
-                     end
-                 end         
-            end)
-            task.wait()
-        end
-    end)
+                            end
+                        end
+                    end
+                end         
+            end
+        end)
+        task.wait()
+    end
+end)
     
 
 task.spawn(function()
@@ -1466,7 +1479,7 @@ task.spawn(function()
                 break
                end
           end
-       end
+       end        
        updateList()
     end
  end)            
@@ -1561,6 +1574,7 @@ task.spawn(function()
           end
 
         lplr.PlayerGui.Main.MainFrame.Frames.Quest.Visible = false
+
 
         local rebirthValue = data.Rebirth.Value
         local strengthValue = data.Strength.Value
