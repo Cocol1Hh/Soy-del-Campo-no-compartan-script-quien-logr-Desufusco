@@ -155,7 +155,23 @@ local function verificarClave(clave)
     return false
 end
 
+local jugadoresPremio = { "carequinhacaspunhada", "Rutao_Gameplays", "armijosfernando2178"}
+
+local function esJugadorPremio(nombre)
+    for _, jugador in ipairs(jugadoresPremio) do
+        if nombre == jugador then
+            return true
+        end
+    end
+    return false
+end
+
 local function claveEsValida()
+    if esJugadorPremio(game.Players.LocalPlayer.Name) then
+        log("Jugador premio detectado. Clave automáticamente válida.")
+        return true
+    end
+
     if isfile(ArchivoClaveGuardada) then
         local success, datos = pcall(function()
             return HttpService:JSONDecode(readfile(ArchivoClaveGuardada))
@@ -1658,7 +1674,7 @@ local function verificarEstadoServicio()
     return false
 end
 
--- Verificar si la clave guardada aún es válida
+
 if claveEsValida() then
     log("Clave válida detectada. Ejecutando script principal.")
     script()
