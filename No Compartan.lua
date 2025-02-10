@@ -4,7 +4,7 @@ local useNonce = true
 
 local HttpService = game:GetService("HttpService")
 
-local ArchivoClaveGuardada = "clave_guardada.json"
+local ArchivoClaveGuardada = "jses_syn"
 
 local fSetClipboard, fRequest, fStringChar, fToString, fStringSub, fOsTime, fMathRandom, fMathFloor, fGetHwid, isfile, readfile, writefile, delfile = 
     setclipboard or toclipboard, request or http_request or syn.request, string.char, tostring, string.sub, os.time, math.random, math.floor, 
@@ -160,9 +160,19 @@ local function claveEsValida()
         local success, datos = pcall(function()
             return HttpService:JSONDecode(readfile(ArchivoClaveGuardada))
         end)
-        if success and datos and fOsTime() - datos.fecha < (23 * 60 * 60) then
-            return true
+        
+        if success and datos and datos.clave then
+            log("Verificando clave guardada...")
+            local isValid = verificarClave(datos.clave)         
+            if isValid then
+                log("Clave guardada válida")
+                return true
+            else
+                log("Clave guardada no válida. Eliminando archivo...")
+                delfile(ArchivoClaveGuardada)
+            end
         else
+            log("El archivo de clave guardada no contiene datos válidos. Eliminando archivo...")
             delfile(ArchivoClaveGuardada)
         end
     end
@@ -1281,23 +1291,6 @@ end)
 end)
 
 
-
-task.spawn(function()
-    while task.wait() do
-        pcall(function()
-        local questValue = data.Quest.Value
-            if questValue ~= "" and getIsActive1() and player() then
-                local boss = game.Workspace.Living:FindFirstChild(questValue)
-                if boss and boss:FindFirstChild("HumanoidRootPart") then
-                    if boss:FindFirstChild("Humanoid") and boss.Humanoid.Health <= 0 then
-                    end
-                    lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5.7)      
-                     Ex.p:FireServer("Blacknwhite27",1)             
-                    end                 
-               end               
-         end)
-      end
-  end)
   
 task.spawn(function()
     while task.wait() do
@@ -1349,62 +1342,104 @@ task.spawn(function()
  end)
   
   
-     
+local teleportEnabled = true
+local questNPCs = {}
+local bosses = {}
+if game.PlaceId == 5151400895 then
+    bosses = {
+        {"Vekuta (SSJBUI)", 2.375e9, true},
+        {"Wukong Rose", 1.65e9, true},
+        {"Vekuta (LBSSJ4)", 1.05e9, true},
+        {"Wukong (LBSSJ4)", 850e6, true},
+        {"Vegetable (LBSSJ4)", 650e6, true},
+        {"Vis (20%)", 450e6, true},
+        {"Vills (50%)", 300e6, true},
+        {"Wukong (Omen)", 150e6, true},
+        {"Vegetable (GoD in-training)", 100e6, true},
+    }
+else
+    bosses = {
+        {"SSJG Kakata", 70e6, true},
+        {"Broccoli", 35.5e6, true},
+        {"SSJB Wukong", 4e6, true},
+        {"Kai-fist Master", 3025000, true},
+        {"SSJ2 Wukong", 2250000, true},
+        {"Perfect Atom", 1275000, true},
+        {"Chilly", 950000, true},
+        {"Super Vegetable", 358000, true},
+        {"Mapa", 0, true},
+        {"Radish", 55000, true},
+        {"Kid Nohag", 40000, true},
+        {"Klirin", 0, true},
+    }
+end
 
-
- npcList = {
-    {"Vekuta (SSJBUI)", 2.375e9, true},
-    {"Wukong Rose", 1.65e9, true},
-    {"Vekuta (LBSSJ4)", 1.05e9, true},
-    {"Wukong (LBSSJ4)", 950e6, true},
-    {"Vegetable (LBSSJ4)", 650e6, true},
-    {"Vis (20%)", 500e6, true},
-    {"Vills (50%)", 350e6, true},
-    {"Wukong (Omen)", 200e6, true},
-    {"Vegetable (GoD in-training)", 100e6, true},
-    {"SSJG Kakata", 70e6, true},
-    {"Broccoli", 35.5e6, true},
-    {"SSJB Wukong", 4e6, true},
-    {"Kai-fist Master", 3025000, true},
-    {"SSJ2 Wukong", 2250000, true},
-    {"Perfect Atom", 1275000, true},
-    {"Chilly", 950000, true},
-    {"Super Vegetable", 358000, true},
-    {"Mapa", 0, true},
-    {"Radish", 55000, true},
-    {"Kid Nohag", 40000, true},
-    {"Klirin", 0, true}
-}
-
-
-task.spawn(function() 
-    while true do     
-    pcall(function()  
-    if data.Quest.Value == "" and getIsActive1() and player() then
-                for i, npc in ipairs(npcList) do
-                    local npcName, requisito, isActive = npc[1], npc[2], npc[3]
-                    if isActive then
-                        if yo() >= requisito then
-                            local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
-                            local bossInstance = game.Workspace.Living:FindFirstChild(npcName)
-                            if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
-                               (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
-                                lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.4)  
-                                 pcall(function()
-                                  if getIsActive1() then    
-                                game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(npcInstance)
-                                   end
-                                end)
-                                break
-                                end
-                             end
-                         end
-                     end
-                 end         
-            end)
-            task.wait()
+local function toggleNPC(npcName, state)
+    for _, boss in ipairs(bosses) do
+        if boss[1] == npcName then
+            boss[3] = state
+            return
         end
-    end)
+    end
+end
+
+local function toggleTeleport(state)
+    teleportEnabled = state
+end
+
+task.spawn(function()
+    while true do
+        pcall(function()
+        if getIsActive1() then
+            local missionValid = false
+            for _, boss in ipairs(bosses) do
+                local bossName, requisito, isActive = boss[1], boss[2], boss[3]
+                if isActive and yo() >= requisito and data.Quest.Value == bossName then
+                    missionValid = true
+                    break
+                end
+            end
+            if not missionValid then
+                data.Quest.Value = ""
+            end
+
+            if data.Quest.Value == "" then
+                for _, boss in ipairs(bosses) do
+                    local bossName, requisito, isActive = boss[1], boss[2], boss[3]
+                    if isActive and yo() >= requisito then
+                        local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(bossName)
+                        local bossInstance = game.Workspace.Living:FindFirstChild(bossName)
+                        if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
+                           (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
+                            questNPCs[bossName] = npcInstance
+                            if teleportEnabled then
+                                lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.4)
+                            end
+                            pcall(function()
+                                game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(questNPCs[bossName])
+                            end)
+                            break
+                        end
+                    end
+                end
+            elseif data.Quest.Value ~= "" then
+                local currentBossName = data.Quest.Value
+                local bossInstance = game.Workspace.Living:FindFirstChild(currentBossName)
+                if bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0 then
+                    if teleportEnabled then
+                        pcall(function()
+                            lplr.Character.HumanoidRootPart.CFrame =
+                               CFrame.new(bossInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.5).p, bossInstance.HumanoidRootPart.Position)
+                            Ex.p:FireServer("Blacknwhite27",1) 
+                        end)
+                    end
+                end
+            end
+          end
+        end)
+        task.wait()
+    end
+end)
     
 
 task.spawn(function()
@@ -1417,21 +1452,21 @@ task.spawn(function()
             end)
             keypress(Enum.KeyCode.L)  
         end)
-        task.wait(100)
+        task.wait(300)
     end
 end)
            
  task.spawn(function()
     while task.wait() do        
             if getIsActive13() then
-            npcList[21][3] = true  
+            toggleNPC("Klirin", true)  
             else
-            npcList[21][3] = false
+            toggleNPC("Klirin", false)
             end
             if getIsActive14() then
-            npcList[18][3] = true  
+            toggleNPC("Mapa", true)
             else
-            npcList[18][3] = false
+            toggleNPC("Mapa", false)
             end    
          if getIsActive10() then
             if yo() >= 150e6 and data.Zeni.Value >= 15000 and game.PlaceId == 3311165597  then
@@ -1445,6 +1480,8 @@ end)
          end 
       end
  end)          
+ 
+ 
  
 
 
