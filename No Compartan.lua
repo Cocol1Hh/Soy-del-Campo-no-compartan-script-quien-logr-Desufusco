@@ -55,8 +55,8 @@ local function generateLink()
 
         if success and response and response.StatusCode == 200 then
             local decoded = HttpService:JSONDecode(response.Body)
-            if decoded.success and decoded.Fdata and decoded.Fdata.url then
-                return decoded.Fdata.url
+            if decoded.success and decoded.data and decoded.data.url then
+                return decoded.data.url
             end
         elseif response and response.StatusCode == 429 then
             log("Rate limited. Wait before retrying.")
@@ -98,7 +98,7 @@ local function verificarClave(clave)
                 return HttpService:JSONDecode(whitelistResponse.Body)
             end)
 
-            if success and decoded and decoded.success and decoded.Fdata and decoded.Fdata.valid then
+            if success and decoded and decoded.success and decoded.data and decoded.data.valid then
                 log("Whitelist verificación exitosa")
                 return true
             end
@@ -211,9 +211,8 @@ local HttpService = game:GetService("HttpService")--Barra
 local Lighting = game:GetService("Lighting")--Barra
 local UserInputService = game:GetService("UserInputService")--Barra
 local lplr = game.Players.LocalPlayer
-local Fdata = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(lplr.UserId)
+local data = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(lplr.UserId)
 local Ex = game:GetService("ReplicatedStorage").Package.Events
-local KeyFile = "jses_syn"
 
 Fernando.Name = "fffg"
 Fernando.Parent = game.CoreGui
@@ -810,7 +809,7 @@ local function loadServerData()
             return httpService:JSONDecode(game:HttpGetAsync("https://games.roblox.com/v1/games/" .. _ .. "/servers/Public?limit=100"))
         end)
         if success and serverData then
-            allServerData[worldId] = serverData.Fdata
+            allServerData[worldId] = serverData.data
         end
     end
 end
@@ -842,8 +841,8 @@ local function updateWorldInfo()
             return httpService:JSONDecode(game:HttpGetAsync("https://games.roblox.com/v1/games/" .. worldId .. "/servers/Public?sortOrder=Asc&limit=100"))
         end)       
         if success and serverData then
-            local worldServers, worldPlayers = #serverData.Fdata, 0
-            for _, server in ipairs(serverData.Fdata) do
+            local worldServers, worldPlayers = #serverData.data, 0
+            for _, server in ipairs(serverData.data) do
                 worldPlayers = worldPlayers + server.playing
             end
             infoText = infoText .. worldName .. ": " .. worldServers .. " Servs, " .. worldPlayers .. " Jug.\n"
@@ -860,7 +859,7 @@ local function getServers()
     local success, serverData = pcall(function()
         return httpService:JSONDecode(game:HttpGetAsync("https://games.roblox.com/v1/games/" .. worldId .. "/servers/Public?sortOrder=Asc&limit=100"))
     end)
-    return success and serverData.Fdata or {}
+    return success and serverData.data or {}
 end
 local function teleportToServer(serverId)
     game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, serverId, lplr)
@@ -1104,7 +1103,7 @@ local sts = {"Strength", "Speed", "Defense", "Energy"}
 function yo()
     local l = math.huge
     for _, v in pairs(sts) do
-        local stat = Fdata:FindFirstChild(v)
+        local stat = data:FindFirstChild(v)
         if not stat then return end
         local st = stat.Value
         if st < l then
@@ -1117,11 +1116,6 @@ end
 
 function player()
 	return lplr.Character and lplr.Character.Humanoid and lplr.Character.Humanoid.Health > 0 and lplr.Character:FindFirstChild("HumanoidRootPart")
-end
-
-function FindChar()
-    while (not lplr.Character) and (not lplr.Character:FindFirstChild("Humanoid")) and (not lplr.Character.Humanoid.Health > 0) do task.wait() end
-    return lplr.Character
 end
 
 
@@ -1190,13 +1184,13 @@ local function invokeMove(move)
 end
 
 task.spawn(function()
-    Fdata.Quest.Value = ""
+    data.Quest.Value = ""
     while wait() do
         pcall(function()
             if getIsActive3() and player() then
-                local boss = game.Workspace.Living:FindFirstChild(Fdata.Quest.Value)
+                local boss = game.Workspace.Living:FindFirstChild(data.Quest.Value)
                 local Ki = lplr.Character.Stats.Ki
-                if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 and Fdata.Quest.Value ~= "" then
+                if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 and data.Quest.Value ~= "" then
                     for _, move in pairs(moves) do
                         if not lplr.Status:FindFirstChild(move.name) and yo() >= move.condition and Ki.Value > Ki.MaxValue * 0.11 then
                             task.spawn(function()
@@ -1254,7 +1248,7 @@ end)
     while true do
         pcall(function()
         local boss = game.Workspace.Living:FindFirstChild("Halloween Boss")
-            if game.PlaceId ~= 5151400895 and Fdata.Quest.Value == "" and getIsActive12() and boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0  and yo() >= 5e7 then
+            if game.PlaceId ~= 5151400895 and data.Quest.Value == "" and getIsActive12() and boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0  and yo() >= 5e7 then
                         lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)                        
                         if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
                             lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)                 
@@ -1271,6 +1265,23 @@ end)
 end)
 
 
+
+task.spawn(function()
+    while task.wait() do
+        pcall(function()
+        local questValue = data.Quest.Value
+            if questValue ~= "" and getIsActive1() and player() then
+                local boss = game.Workspace.Living:FindFirstChild(questValue)
+                if boss and boss:FindFirstChild("HumanoidRootPart") then
+                    if boss:FindFirstChild("Humanoid") and boss.Humanoid.Health <= 0 then
+                    end
+                    lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5.7)      
+                     Ex.p:FireServer("Blacknwhite27",1)             
+                    end                 
+               end               
+         end)
+      end
+  end)
   
 task.spawn(function()
     while task.wait() do
@@ -1311,7 +1322,7 @@ task.spawn(function()
                     Ex.block:InvokeServer(true)
                 end
 
-                local rebirthValue = Fdata.Rebirth.Value
+                local rebirthValue = data.Rebirth.Value
                 local rebirthThreshold = (rebirthValue * 3e6) + 2e6
                 if yo() >= rebirthThreshold and yo() < (rebirthThreshold * 2) and getIsActive5() then
                     Ex.reb:InvokeServer()
@@ -1322,106 +1333,62 @@ task.spawn(function()
  end)
   
   
-
-local teleportEnabled = true
-
-local questNPCs = {}
-local bosses = {}
-if game.PlaceId == 5151400895 then
-    bosses = {
-        {"Vekuta (SSJBUI)", 1.375e9, true},
-        {"Wukong Rose", 1.25e9, true},
-        {"Vekuta (LBSSJ4)", 1.05e9, true},
-        {"Wukong (LBSSJ4)", 675e6, true},
-        {"Vegetable (LBSSJ4)", 450e6, true},
-        {"Vis (20%)", 250e6, true},
-        {"Vills (50%)", 150e6, true},
-        {"Wukong (Omen)", 75e6, true},
-        {"Vegetable (GoD in-training)", 50e6, true},
-    }
-else
-    bosses = {
-        {"SSJG Kakata", 39e6, true},
-        {"Broccoli", 33e6, true},
-        {"SSJB Wukong", 2e6, true},
-        {"Kai-fist Master", 1625000, true},
-        {"SSJ2 Wukong", 1250000, true},
-        {"Perfect Atom", 875000, true},
-        {"Chilly", 550000, true},
-        {"Super Vegetable", 188000, true},
-        {"Top X Fighter", 115000, true},
-        {"Mapa", 75000, true},
-        {"Radish", 45000, true},
-        {"Kid Nohag", 20000, true},
-        {"Klirin", 0, true},
-    }
-end
+     
 
 
-task.spawn(function()
-    while true do
-        pcall(function()
-        if getIsActive1() then
-            local missionValid = false
-            for _, boss in ipairs(bosses) do
-                local bossName, requisito, isActive = boss[1], boss[2], boss[3]
-                if isActive and yo() >= requisito and Fdata.Quest.Value == bossName then
-                    missionValid = true
-                    break
-                end
-            end
-            if not missionValid then
-                Fdata.Quest.Value = ""
-            end            
-            if Fdata.Quest.Value == "" then
-                for _, boss in ipairs(bosses) do
-                    local bossName, requisito, isActive = boss[1], boss[2], boss[3]
-                    if isActive and yo() >= requisito then
-                        local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(bossName)
-                        local bossInstance = game.Workspace.Living:FindFirstChild(bossName)
-                        if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
-                           (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
-                            questNPCs[bossName] = npcInstance
-                            if teleportEnabled then
-                                lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.4)
-                            end
-                            pcall(function()
-                                game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(questNPCs[bossName])
-                            end)
-                            break
-                        end
-                    end
-                end
-            elseif Fdata.Quest.Value ~= "" then
-                local currentBossName = Fdata.Quest.Value
-                local bossInstance = game.Workspace.Living:FindFirstChild(currentBossName)
-                if (not bossInstance) then
-                    pcall(function()
-                        lplr.Character.HumanoidRootPart.CFrame = part.CFrame
-                    end)
-                end
-                if bossInstance and bossInstance:FindFirstChild("HumanoidRootPart") and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0 then
-                    if teleportEnabled then
-                        pcall(function()
-                            lplr.Character.HumanoidRootPart.CFrame =
-                                CFrame.new(bossInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.5).p, bossInstance.HumanoidRootPart.Position) 
-                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)                               
-                        end)
-                    end
-                    task.spawn(function()
-                        for _, blast in pairs(FindChar().Effects:GetChildren()) do
-                            if blast.Name == "Blast" then
-                                blast.CFrame = bossInstance.HumanoidRootPart.CFrame
-                            end
-                        end                       
-                    end)
-                end
-            end
-          end
-        end)
-        task.wait()
-    end
-end)
+ npcList = {
+    {"Vekuta (SSJBUI)", 2.375e9, true},
+    {"Wukong Rose", 1.65e9, true},
+    {"Vekuta (LBSSJ4)", 1.05e9, true},
+    {"Wukong (LBSSJ4)", 950e6, true},
+    {"Vegetable (LBSSJ4)", 650e6, true},
+    {"Vis (20%)", 500e6, true},
+    {"Vills (50%)", 350e6, true},
+    {"Wukong (Omen)", 200e6, true},
+    {"Vegetable (GoD in-training)", 100e6, true},
+    {"SSJG Kakata", 70e6, true},
+    {"Broccoli", 35.5e6, true},
+    {"SSJB Wukong", 4e6, true},
+    {"Kai-fist Master", 3025000, true},
+    {"SSJ2 Wukong", 2250000, true},
+    {"Perfect Atom", 1275000, true},
+    {"Chilly", 950000, true},
+    {"Super Vegetable", 358000, true},
+    {"Mapa", 0, true},
+    {"Radish", 55000, true},
+    {"Kid Nohag", 40000, true},
+    {"Klirin", 0, true}
+}
+
+
+task.spawn(function() 
+    while true do     
+    pcall(function()  
+    if data.Quest.Value == "" and getIsActive1() and player() then
+                for i, npc in ipairs(npcList) do
+                    local npcName, requisito, isActive = npc[1], npc[2], npc[3]
+                    if isActive then
+                        if yo() >= requisito then
+                            local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
+                            local bossInstance = game.Workspace.Living:FindFirstChild(npcName)
+                            if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
+                               (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
+                                lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.4)  
+                                 pcall(function()
+                                  if getIsActive1() then    
+                                game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(npcInstance)
+                                   end
+                                end)
+                                break
+                                end
+                             end
+                         end
+                     end
+                 end         
+            end)
+            task.wait()
+        end
+    end)
     
 
 task.spawn(function()
@@ -1434,32 +1401,24 @@ task.spawn(function()
             end)
             keypress(Enum.KeyCode.L)  
         end)
-        task.wait(300)
+        task.wait(100)
     end
 end)
            
  task.spawn(function()
-    while task.wait() do 
-      pcall(function()                   
-         if getIsActive13() then
-            toggleNPC("Klirin", true)  
+    while task.wait() do        
+            if getIsActive13() then
+            npcList[21][3] = true  
             else
-            toggleNPC("Klirin", false)
+            npcList[21][3] = false
             end
             if getIsActive14() then
-            toggleNPC("Mapa", true)
+            npcList[18][3] = true  
             else
-            toggleNPC("Mapa", false)
+            npcList[18][3] = false
             end    
-        end)
-      end
- end)          
- 
- 
- task.spawn(function()
-    while task.wait() do              
          if getIsActive10() then
-            if yo() >= 150e6 and Fdata.Zeni.Value >= 15000 and game.PlaceId == 3311165597  then
+            if yo() >= 150e6 and data.Zeni.Value >= 15000 and game.PlaceId == 3311165597  then
                 game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
                 wait(5)
             end
@@ -1467,11 +1426,9 @@ end)
                 game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
                 wait(5)
             end
-         end
+         end 
       end
  end)          
- 
- 
  
 
 
@@ -1501,11 +1458,11 @@ end)
 
 task.spawn(function()
     while task.wait(.4) do
-   if Fdata.Quest.Value ~= "" and player() and game.PlaceId == 3311165597 then
+   if data.Quest.Value ~= "" and player() and game.PlaceId == 3311165597 then
          wait(2)
        for _, npc in ipairs(game.Workspace.Others.NPCs:GetChildren()) do
           if npc:FindFirstChild("HumanoidRootPart") and (npc.HumanoidRootPart.Position - lplr.Character.HumanoidRootPart.Position).Magnitude <= 500 and npc.Name ~= "Halloween NPC" then
-              Fdata.Quest.Value = ""
+              data.Quest.Value = ""
                 break
                end
           end
@@ -1514,7 +1471,7 @@ task.spawn(function()
     end
  end)            
  
- local Q = Fdata:WaitForChild("Quest")
+ local Q = data:WaitForChild("Quest")
 local notified = false
 local function NotyQ()
     if Q.Value ~= "" and not notified then
@@ -1534,8 +1491,8 @@ game.ReplicatedStorage.Datas[lplr.UserId].Quest.Changed:Connect(function()
 end)
 
 task.spawn(function()
-    if Fdata:FindFirstChild("Allignment") then
-        local alignment = Fdata.Allignment.Value
+    if data:FindFirstChild("Allignment") then
+        local alignment = data.Allignment.Value
         if alignment == "Evil" then
             ligaLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
             ligaLabel.TextStrokeColor3 = Color3.fromRGB(255, 0, 0)
@@ -1574,7 +1531,7 @@ task.spawn(function()
         local fpsValue = math.floor(game:GetService("Stats").Workspace["Heartbeat"]:GetValue())
         Fps.Text = "FPS: " .. tostring(fpsValue)
          
-        local questValue = Fdata.Quest.Value or ""
+        local questValue = data.Quest.Value or ""
         local Trf = lplr.Status.Transformation.Value
        questLabel.Text = "Mission: " .. questValue .. " | Form: " .. Trf
             
@@ -1589,8 +1546,8 @@ task.spawn(function()
             local maxMastery = 332526
             local currentMastery = 0
             local transformation = lplr.Status.Transformation.Value
-            if Fdata:FindFirstChild(transformation) then
-                currentMastery = Fdata[transformation].Value
+            if data:FindFirstChild(transformation) then
+                currentMastery = data[transformation].Value
             end
             if currentMastery > 0 then
                 masteryLabel.Text = string.format("%d (%.1f%%)", currentMastery, (currentMastery / maxMastery) * 100)
@@ -1605,8 +1562,8 @@ task.spawn(function()
 
         lplr.PlayerGui.Main.MainFrame.Frames.Quest.Visible = false
 
-        local rebirthValue = Fdata.Rebirth.Value
-        local strengthValue = Fdata.Strength.Value
+        local rebirthValue = data.Rebirth.Value
+        local strengthValue = data.Strength.Value
         local nextRebirth = (rebirthValue * 3e6) + 2e6
         local additionalStrength = lplr.Character and lplr.Character:FindFirstChild("Stats") and lplr.Character.Stats:FindFirstChild("Strength") and lplr.Character.Stats.Strength.Value or 0
         statusLabel.Text = string.format(
@@ -1616,7 +1573,6 @@ task.spawn(function()
             formatNumber(additionalStrength),
             formatNumber(rebirthValue))    
             
-           
            if getIsActive9() then
             for _, obj in pairs(game.Workspace:GetDescendants()) do
             if obj.Name == "Effects" or obj:IsA("ParticleEmitter") then
@@ -1626,7 +1582,7 @@ task.spawn(function()
         end
            
                updateTimer() 
-              local currentRebirthValue = Fdata.Rebirth.Value
+              local currentRebirthValue = data.Rebirth.Value
         if currentRebirthValue > previousRebirthValue then
             game.ReplicatedStorage.RebirthTimeValue.Value = tick()
             previousRebirthValue = currentRebirthValue
