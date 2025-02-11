@@ -633,7 +633,7 @@ local textProperties = {
     {text = "Mapa", position = UDim2.new(0.350, 0, 0.085, 0), color = Color3.fromRGB(255, 190, 150), parent = Contenedor},
     {text = "Tp", position = UDim2.new(-0.160, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3},
     {text = "Actk", position = UDim2.new(0.350, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3},
-    {text = "Fijar", position = UDim2.new(-0.160, 0, 0.345, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3},
+    {text = "Copy", position = UDim2.new(-0.160, 0, 0.345, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3},
     {text = "Camr", position = UDim2.new(0.350, 0, 0.345, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3},
 }
 
@@ -1129,7 +1129,7 @@ function yo()
     return l
 end
 
-function player()
+function FindChar()
     while (not lplr.Character) and (not lplr.Character:FindFirstChild("Humanoid")) and (not lplr.Character.Humanoid.Health > 0) do task.wait() end
     return lplr.Character
 end
@@ -1286,6 +1286,87 @@ end)
 end)
 
 
+local function copiarInformacionJugador()
+    local jugador = selectedPlayer
+    if jugador then
+        local data = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(jugador.UserId)
+        local nombre = jugador.Name
+        local apodo = jugador.DisplayName
+        local fuerza = formatNumber(data.Strength.Value)
+        local zeni = formatNumber(data.Zeni.Value)
+        local rebirth = data.Rebirth.Value
+
+        local vida = "No disponible"
+        if jugador.Character and jugador.Character:FindFirstChild("Humanoid") then
+            vida = formatNumber(jugador.Character.Humanoid.Health)
+        end
+
+        local maxMastery = 332526
+        local transformaciones = {
+            "Divine Rose Prominence",
+            "Astral Instinct",
+            "Ultra Ego",
+            "SSJBUI",
+            "Beast",
+            "LSSJ4"
+        }
+        local maestrias = {}
+
+        for _, transformacion in ipairs(transformaciones) do
+            local currentMastery = 0
+            if data:FindFirstChild(transformacion) then
+                currentMastery = data[transformacion].Value
+            end
+            local masteryText = "Sin Maestría"
+            if currentMastery > 0 then
+                masteryText = string.format("%d (%.1f%%)", currentMastery, (currentMastery / maxMastery) * 100)
+            end
+            table.insert(maestrias, string.format("%s: %s", transformacion, masteryText))
+        end
+
+        local texto = string.format(
+            "Nombre: %s\nApodo: %s\nFuerza: %s\nVida: %s\nZenis: %s\nRebirth: %s\n\nMaestrías:\n%s",
+            nombre, apodo, fuerza, vida, zeni, rebirth, table.concat(maestrias, "\n")
+        )
+
+        if setclipboard then
+            setclipboard(texto)
+        end
+    end
+end
+
+local wasActive17 = false
+task.spawn(function()
+    while task.wait(1) do
+        local isActive17 = getIsActive17()
+        if isActive17 and not wasActive17 then
+            copiarInformacionJugador()
+        end
+        wasActive17 = isActive17
+    end
+end)
+
+
+function camera()
+    if getIsActive18() then
+    local playerToView = selectedPlayer
+    if playerToView and playerToView.Character then
+        local humanoid = playerToView.Character:FindFirstChild("Humanoid")
+        if humanoid then
+            workspace.CurrentCamera.CameraSubject = humanoid 
+        end
+    else
+        local localPlayer = Players.LocalPlayer
+        if localPlayer and localPlayer.Character then
+            local humanoid = localPlayer.Character:FindFirstChild("Humanoid")
+            if humanoid then
+                workspace.CurrentCamera.CameraSubject = humanoid
+            end
+        end
+    end
+  end
+end
+
 
 task.spawn(function()
     while task.wait() do
@@ -1308,8 +1389,9 @@ task.spawn(function()
     while task.wait() do
         pcall(function()
         FindChar().Humanoid:ChangeState(8)
-        FindChar().Humanoid:ChangeState(18)     
-         end)
+        FindChar().Humanoid:ChangeState(18)    
+    camera() 
+         end)         
       end
   end)
   
@@ -1459,7 +1541,31 @@ end)
       end
  end)          
  
+ 
+local Players = game:GetService("Players")
+local selectedPlayer = nil -- Variable para almacenar el jugador seleccionado
 
+-- Función para obtener el jugador seleccionado
+local function gli()
+    return selectedPlayer
+end
+
+-- Evento para observar al jugador seleccionado
+game:GetService("RunService").RenderStepped:Connect(function()
+    local playerToView = gli() -- Obtener el jugador seleccionado
+    if playerToView and playerToView.Character then
+        local humanoid = playerToView.Character:FindFirstChild("Humanoid")
+        if humanoid then
+            game.Workspace.CurrentCamera.CameraSubject = humanoid
+        end
+    else
+        -- Si no hay jugador seleccionado, volver a la cámara del jugador local
+        local localPlayer = Players.LocalPlayer
+        if localPlayer.Character then
+            game.Workspace.CurrentCamera.CameraSubject = localPlayer.Character:FindFirstChild("Humanoid")
+        end
+    end
+end)
 
 task.spawn(function()
     while wait(.4) do
@@ -1548,7 +1654,6 @@ end)
 
 
 
- 
 
 task.spawn(function()
     while wait(1) do
