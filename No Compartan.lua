@@ -1372,7 +1372,7 @@ task.spawn(function()
     while task.wait() do
         pcall(function()
         local questValue = data.Quest.Value
-            if questValue ~= "" and getIsActive1() and player() then
+            if questValue ~= "" and getIsActive1() or getIsActive6() and player() then
                 local boss = game.Workspace.Living:FindFirstChild(questValue)
                 if boss and boss:FindFirstChild("HumanoidRootPart") then
                     if boss:FindFirstChild("Humanoid") and boss.Humanoid.Health <= 0 then
@@ -1395,6 +1395,7 @@ task.spawn(function()
       end
   end)
   
+local lastTeleport = false  
 task.spawn(function()
     while task.wait() do
         pcall(function()
@@ -1416,11 +1417,16 @@ task.spawn(function()
                 humanoid:ChangeState(11)
                 rootPart.Velocity = Vector3.zero
             end
-
             if getIsActive11() and player() then
+                local currentGameHour = math.floor(game.Lighting.ClockTime)
+                if currentGameHour == 1 and not lastTeleport then
+                    rootPart.CFrame = CFrame.new(848.1, 362.7, 2219.8)
+                    lastTeleport = true
+                elseif currentGameHour ~= 1 then
+                    lastTeleport = false
+                end
                 local gokuBlack = game.Workspace.Living:FindFirstChild("Goku Black")
                 local bossPosition = Vector3.new(848.1, 362.7, 2219.8)
-
                 if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack.Humanoid.Health > 0 then
                     local distance = (gokuBlack.HumanoidRootPart.Position - bossPosition).Magnitude
                     if distance <= 900 then
@@ -1428,12 +1434,10 @@ task.spawn(function()
                     end
                 end
             end
-
             if player() then
                 if lplr.Status.Blocking.Value ~= true and getIsActive4() then
                     Ex.block:InvokeServer(true)
-                end
-
+                end                
                 local rebirthValue = data.Rebirth.Value
                 local rebirthThreshold = (rebirthValue * 3e6) + 2e6
                 if yo() >= rebirthThreshold and yo() < (rebirthThreshold * 2) and getIsActive5() then
@@ -1444,9 +1448,33 @@ task.spawn(function()
     end
  end)
   
-  
-     
+task.spawn(function()
+    while true do
+        pcall(function()
+            if getIsActive6() then
+                local currentGameHour = math.floor(game.Lighting.ClockTime)
+                local currentMinutes = math.floor((game.Lighting.ClockTime - currentGameHour) * 60)
 
+                if (currentGameHour == 1 and currentMinutes >= 5) or (currentGameHour > 1 and currentGameHour < 1) or (currentGameHour == 5 and currentMinutes < 40) then
+                    if data.Quest.Value == "" then
+                        lplr.Character.HumanoidRootPart.CFrame = game.Workspace.Others.NPCs["Kid Nohag"].HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
+                        game.ReplicatedStorage.Package.Events.Qaction:InvokeServer(game.Workspace.Others.NPCs["Kid Nohag"])
+                    end
+
+                    local boss = game.Workspace.Living:FindFirstChild("Oozaru")
+                    if boss and boss:FindFirstChild("HumanoidRootPart") then
+                        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
+                    end
+                end
+
+                if currentGameHour == 5 and currentMinutes == 40 and data.Quest.Value == "Kid Nohag" then
+                    data.Quest.Value = ""
+                end
+            end
+        end)
+        task.wait()
+    end
+end)
 
  npcList = {
     {"Vekuta (SSJBUI)", 2.375e9, true},
@@ -1476,7 +1504,22 @@ task.spawn(function()
 task.spawn(function() 
     while true do     
         pcall(function()  
-            if data.Quest.Value == "" and getIsActive1() and player() then
+        local currentGameHour = math.floor(game.Lighting.ClockTime)            
+            local currentMinutes = math.floor((game.Lighting.ClockTime - currentGameHour) * 60)
+         if  getIsActive1() then
+         Multi()
+           end         
+            if getIsActive6() and (((currentGameHour == 5 and currentMinutes >= 40) or (currentGameHour > 5 and currentGameHour < 8) or (currentGameHour == 8 and currentMinutes <= 22)) or
+                ((currentGameHour == 12 and currentMinutes >= 22) or (currentGameHour == 0))) then
+                Multi()
+            end
+        end)
+        task.wait()
+    end
+end)
+    
+function Multi()
+if data.Quest.Value == "" and player() then
                 for i, npc in ipairs(npcList) do
                     local npcName, requisito, isActive = npc[1], npc[2], npc[3]
                     if isActive then
@@ -1496,11 +1539,7 @@ task.spawn(function()
                     end
                 end         
             end
-        end)
-        task.wait()
-    end
-end)
-    
+end
 
 task.spawn(function()
     while true do
