@@ -402,7 +402,7 @@ Fps.Parent = Barra1
 
 local VS = Instance.new("TextLabel")
 VS.Parent = Barra1
-VS.Text = "V [0.6]"
+VS.Text = "V [0.7]"
 VS.Size = UDim2.new(0, 100, 0, 10)
 VS.Position = UDim2.new(0.783, 0, 0.009, 0)
 VS.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -1386,7 +1386,7 @@ task.spawn(function()
   end)
   
   task.spawn(function()
-    while task.wait(.7) do
+    while task.wait() do
         pcall(function()
         FindChar().Humanoid:ChangeState(8)
         FindChar().Humanoid:ChangeState(18)    
@@ -1420,14 +1420,14 @@ task.spawn(function()
             if getIsActive11() and player() then
                 local currentGameHour = math.floor(game.Lighting.ClockTime)
                 if currentGameHour == 1 and not lastTeleport then
-                    rootPart.CFrame = CFrame.new(428.1, 282.7, 862.1)
+                    rootPart.CFrame = CFrame.new(848.1, 362.7, 2219.8)
                     lastTeleport = true
                 elseif currentGameHour ~= 1 then
                     lastTeleport = false
                 end
                 local gokuBlack = game.Workspace.Living:FindFirstChild("Goku Black")
                 local bossPosition = Vector3.new(848.1, 362.7, 2219.8)
-                if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack.Humanoid.Health > 0 then
+                if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack.Humanoid.Health > 0 and lplr.Status.Transformation.Value ~= "None" then
                     local distance = (gokuBlack.HumanoidRootPart.Position - bossPosition).Magnitude
                     if distance <= 900 then
                         rootPart.CFrame = gokuBlack.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
@@ -1454,8 +1454,8 @@ task.spawn(function()
             if getIsActive6() then
                 local currentGameHour = math.floor(game.Lighting.ClockTime)
                 local currentMinutes = math.floor((game.Lighting.ClockTime - currentGameHour) * 60)
-
-                if (currentGameHour == 1 and currentMinutes >= 5) or (currentGameHour > 1 and currentGameHour < 5) or (currentGameHour == 5 and currentMinutes < 40) then
+                
+                if (currentGameHour == 1 and currentMinutes >= 2) or (currentGameHour > 1 and currentGameHour < 5) or (currentGameHour == 5 and currentMinutes < 40) then
                     if data.Quest.Value == "" then
                         lplr.Character.HumanoidRootPart.CFrame = game.Workspace.Others.NPCs["Kid Nohag"].HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
                         game.ReplicatedStorage.Package.Events.Qaction:InvokeServer(game.Workspace.Others.NPCs["Kid Nohag"])
@@ -1509,7 +1509,8 @@ task.spawn(function()
          if  getIsActive1() then
          Multi()
            end         
-            if getIsActive6() and ((currentGameHour == 5 and currentMinutes >= 40) or (currentGameHour > 5 and currentGameHour < 8) or (currentGameHour == 8 and currentMinutes <= 30)) then
+            if getIsActive6() and (((currentGameHour == 5 and currentMinutes >= 40) or (currentGameHour > 5 and currentGameHour < 8) or (currentGameHour == 8 and currentMinutes <= 22)) or
+                ((currentGameHour == 12 and currentMinutes >= 22) or (currentGameHour == 0))) then
                 Multi()
             end
         end)
@@ -1533,11 +1534,11 @@ if data.Quest.Value == "" and player() then
                                 }
                                 game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(unpack(args))                                
                                 break
-                            end
-                        end
-                    end
-                end         
-            end
+                         end
+                   end
+              end
+         end         
+    end
 end
 
 task.spawn(function()
@@ -1550,7 +1551,7 @@ task.spawn(function()
             end)
             keypress(Enum.KeyCode.L)  
         end)
-        task.wait(100)
+        task.wait(300)
     end
 end)
            
@@ -1580,24 +1581,30 @@ end)
  end)          
  
  
-local selectedPlayer = nil 
-function Oserbar()
-   while wait(.5) do
-    local playerToView = selectedPlayer 
+local Players = game:GetService("Players")
+local selectedPlayer = nil -- Variable para almacenar el jugador seleccionado
+
+-- Función para obtener el jugador seleccionado
+local function gli()
+    return selectedPlayer
+end
+
+-- Evento para observar al jugador seleccionado
+game:GetService("RunService").RenderStepped:Connect(function()
+    local playerToView = gli() -- Obtener el jugador seleccionado
     if playerToView and playerToView.Character then
         local humanoid = playerToView.Character:FindFirstChild("Humanoid")
         if humanoid then
             game.Workspace.CurrentCamera.CameraSubject = humanoid
         end
-    else       
-        local localPlayer = game:GetService("Players").LocalPlayer
+    else
+        -- Si no hay jugador seleccionado, volver a la cámara del jugador local
+        local localPlayer = Players.LocalPlayer
         if localPlayer.Character then
             game.Workspace.CurrentCamera.CameraSubject = localPlayer.Character:FindFirstChild("Humanoid")
         end
-     end
-  end
-end
-task.spawn(Oserbar)
+    end
+end)
 
 task.spawn(function()
     while wait(.4) do
@@ -1785,11 +1792,7 @@ end)
 --fin de todo \/
        end)    
     task.wait()
-end)
-
-
-    
-
+  end)
 end
 
 local function verificarEstadoServicio()
@@ -1818,7 +1821,7 @@ if claveEsValida() then
     return
 end
 
--- Verificar el estado del servicio antes de mostrar la GUI
+
 if not verificarEstadoServicio() then
     log("Servicio no disponible. No se puede mostrar la GUI.")
     return
