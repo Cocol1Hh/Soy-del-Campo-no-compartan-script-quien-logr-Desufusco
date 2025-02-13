@@ -155,7 +155,7 @@ local function verificarClave(clave)
     return false
 end
 
-local jugadoresPremio = { "carequinhacaspunhada", "Rutao_Gameplays", "armijosfernando2178", "Danielsan134341", "Zerincee", "fernanfloP091o}
+local jugadoresPremio = { "carequinhacaspunhada", "Rutao_Gameplays", "armijosfernando2178", "Danielsan134341", "Zerincee", "fernanfloP091o"}
 
 local function esJugadorPremio(nombre)
     for _, jugador in ipairs(jugadoresPremio) do
