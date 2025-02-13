@@ -1509,14 +1509,17 @@ task.spawn(function()
          if  getIsActive1() then
          Multi()
            end         
-            if getIsActive6() and (((currentGameHour == 5 and currentMinutes >= 40) or (currentGameHour > 5 and currentGameHour < 8) or (currentGameHour == 8 and currentMinutes <= 22)) or
-                ((currentGameHour == 12 and currentMinutes >= 22) or (currentGameHour == 0))) then
+            if getIsActive6() and (
+                ((currentGameHour == 12 and currentMinutes >= 10) or (currentGameHour > 12) or (currentGameHour == 0 or currentGameHour == 1 and currentMinutes <= 1)) or 
+                ((currentGameHour == 5 and currentMinutes >= 40) or (currentGameHour > 5 and currentGameHour < 8) or (currentGameHour == 8 and currentMinutes <= 22))
+            ) then
                 Multi()
             end
         end)
         task.wait()
     end
 end)
+
     
 function Multi()
 if data.Quest.Value == "" and player() then
@@ -1581,30 +1584,24 @@ end)
  end)          
  
  
-local Players = game:GetService("Players")
-local selectedPlayer = nil -- Variable para almacenar el jugador seleccionado
-
--- Función para obtener el jugador seleccionado
-local function gli()
-    return selectedPlayer
-end
-
--- Evento para observar al jugador seleccionado
-game:GetService("RunService").RenderStepped:Connect(function()
-    local playerToView = gli() -- Obtener el jugador seleccionado
+local selectedPlayer = nil 
+function Oserbar()
+   while wait(.5) do
+    local playerToView = selectedPlayer 
     if playerToView and playerToView.Character then
         local humanoid = playerToView.Character:FindFirstChild("Humanoid")
         if humanoid then
             game.Workspace.CurrentCamera.CameraSubject = humanoid
         end
-    else
-        -- Si no hay jugador seleccionado, volver a la cámara del jugador local
-        local localPlayer = Players.LocalPlayer
+    else       
+        local localPlayer = game:GetService("Players").LocalPlayer
         if localPlayer.Character then
             game.Workspace.CurrentCamera.CameraSubject = localPlayer.Character:FindFirstChild("Humanoid")
         end
-    end
-end)
+     end
+  end
+end
+task.spawn(Oserbar)
 
 task.spawn(function()
     while wait(.4) do
