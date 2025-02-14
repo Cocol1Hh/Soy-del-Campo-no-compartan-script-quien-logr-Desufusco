@@ -3,12 +3,13 @@ local host = "https://api.platoboost.com"
 local useNonce = true
 
 local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
 
 local ArchivoClaveGuardada = "jses_syn"
 
 local fSetClipboard, fRequest, fStringChar, fToString, fStringSub, fOsTime, fMathRandom, fMathFloor, fGetHwid, isfile, readfile, writefile, delfile = 
     setclipboard or toclipboard, request or http_request or syn.request, string.char, tostring, string.sub, os.time, math.random, math.floor, 
-    gethwid or function() return game:GetService("Players").LocalPlayer.UserId end, 
+    function() return Players.LocalPlayer.UserId end, 
     isfile, readfile, writefile, delfile
 
 local function log(...)
@@ -36,11 +37,22 @@ local function retryWithDelay(fn, attempts, delay)
     return false
 end
 
+local function generateUniqueIdentifier()
+    return tostring(Players.LocalPlayer.UserId) .. "_" .. tostring(fOsTime()) .. "_" .. tostring(fMathRandom(1000000, 9999999))
+end
+
 local function generateLink()
     local hosts = {"https://api.platoboost.com", "https://api.platoboost.net"}
+    local uniqueIdentifier = generateUniqueIdentifier()
+    
     for _, currentHost in ipairs(hosts) do
         local endpoint = currentHost .. "/public/start"
-        local body = { service = service, identifier = fGetHwid() }
+        local body = { 
+            service = service, 
+            identifier = uniqueIdentifier,
+            timestamp = fOsTime(),
+            random = fMathRandom()
+        }
 
         local success, response = pcall(function()
             return fRequest({
@@ -56,7 +68,7 @@ local function generateLink()
         if success and response and response.StatusCode == 200 then
             local decoded = HttpService:JSONDecode(response.Body)
             if decoded.success and decoded.data and decoded.data.url then
-                return decoded.data.url
+                return decoded.data.url, uniqueIdentifier
             end
         elseif response and response.StatusCode == 429 then
             log("Rate limited. Wait before retrying.")
@@ -64,32 +76,35 @@ local function generateLink()
             log("Failed to connect to: " .. currentHost)
         end
     end
-    return nil
+    return nil, nil
 end
 
-local function verificarClave(clave)
+local function verificarClave(clave, identifier)
     local hosts = {
         "https://api.platoboost.com",
         "https://api.platoboost.net"
     }
     
     local nonce = generateNonce()
-    local identifier = fGetHwid()
     log("Verificando clave:", clave)
-    log("HWID:", identifier)
+    log("Identifier:", identifier)
 
     local function tryVerifyWithHost(host)
-        local whitelistUrl = string.format("%s/public/whitelist/%d", host, service)
+        local whitelistUrl = string.format(
+            "%s/public/whitelist/%d?identifier=%s&key=%s%s",
+            host,
+            service,
+            HttpService:UrlEncode(identifier),
+            HttpService:UrlEncode(clave),
+            useNonce and "&nonce=" .. nonce or ""
+        )
+
         local whitelistResponse = fRequest({
             Url = whitelistUrl,
             Method = "GET",
             Headers = {
-                ["Content-Type"] = "application/json"
-            },
-            Query = {
-                identifier = identifier,
-                key = clave,
-                nonce = useNonce and nonce or nil
+                ["Content-Type"] = "application/json",
+                ["User-Agent"] = "Roblox/WinHttp"
             }
         })
 
@@ -104,12 +119,12 @@ local function verificarClave(clave)
             end
         end
 
-        local redeemUrl = string.format("%s/public/redeem/%d", host, service)
         local redeemResponse = fRequest({
-            Url = redeemUrl,
+            Url = string.format("%s/public/redeem/%d", host, service),
             Method = "POST",
             Headers = {
-                ["Content-Type"] = "application/json"
+                ["Content-Type"] = "application/json",
+                ["User-Agent"] = "Roblox/WinHttp"
             },
             Body = HttpService:JSONEncode({
                 identifier = identifier,
@@ -137,13 +152,14 @@ local function verificarClave(clave)
         
         local success, result = retryWithDelay(function()
             return tryVerifyWithHost(host)
-        end, 3, 1)
+        end, 5, 2)
 
         if success and result then
             pcall(function()
                 writefile(ArchivoClaveGuardada, HttpService:JSONEncode({
                     clave = clave,
-                    fecha = fOsTime()
+                    fecha = fOsTime(),
+                    identifier = identifier
                 }))
             end)
             
@@ -155,7 +171,7 @@ local function verificarClave(clave)
     return false
 end
 
-local jugadoresPremio = { "carequinhacaspunhada", "Rutao_Gameplays", "armijosfernando2178", "Danielsan134341", "Zerincee", "fernanfloP091o"}
+local jugadoresPremio = { "carequinhacaspunhada", "Rutao_Gameplays", "armijosfernao2178", "Danielsan134341", "Zerincee", "fernanfloP091o"}
 
 local function esJugadorPremio(nombre)
     for _, jugador in ipairs(jugadoresPremio) do
@@ -167,7 +183,7 @@ local function esJugadorPremio(nombre)
 end
 
 local function claveEsValida()
-    if esJugadorPremio(game.Players.LocalPlayer.Name) then
+    if esJugadorPremio(Players.LocalPlayer.Name) then
         log("Jugador premio detectado. Clave automáticamente válida.")
         return true
     end
@@ -177,9 +193,9 @@ local function claveEsValida()
             return HttpService:JSONDecode(readfile(ArchivoClaveGuardada))
         end)
         
-        if success and datos and datos.clave then
+        if success and datos and datos.clave and datos.identifier then
             log("Verificando clave guardada...")
-            local isValid = verificarClave(datos.clave)         
+            local isValid = verificarClave(datos.clave, datos.identifier)         
             if isValid then
                 log("Clave guardada válida")
                 return true
@@ -195,11 +211,7 @@ local function claveEsValida()
     return false
 end
 
-local function resetearClave()
-    if isfile(ArchivoClaveGuardada) then
-        delfile(ArchivoClaveGuardada)
-    end
-end
+
 
 local function script()
     log("¡La clave es válida! Ejecutando el script principal...")
@@ -564,6 +576,16 @@ Selct.BorderSizePixel = 0
 Selct.ScrollBarThickness = 6
 Selct.CanvasSize = UDim2.new(0, 0, 0, 400)
 Selct.ScrollingDirection = Enum.ScrollingDirection.Y
+
+
+local restKey = Instance.new("TextButton")
+restKey.Size = UDim2.new(0.120, 0, 0.03, 0)
+restKey.Position = UDim2.new(0.640, 0, 0.03, 0)
+restKey.Text = "RKey"
+restKey.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+restKey.TextColor3 = Color3.fromRGB(255, 255, 255)
+restKey.Parent = Barra1
+
 
 
 local forms = {"Divine Rose Prominence", "Astral Instinct", "Ultra Ego", "SSJBUI", "Beast", "LSSJ4"}
@@ -1088,6 +1110,14 @@ searchButton.MouseButton1Click:Connect(function()
 end)
 
 
+restKey.MouseButton1Click:Connect(function()
+    if isfile(ArchivoClaveGuardada) then
+        delfile(ArchivoClaveGuardada)
+    end
+    print("Clave reseteada")
+end)
+
+
 
 --Casi fin del interrutor /\
 
@@ -1349,14 +1379,14 @@ end)
 
 function camera()
     if getIsActive18() then
+    local localPlayer = game:GetService("Players").LocalPlayer
     local playerToView = selectedPlayer
     if playerToView and playerToView.Character then
         local humanoid = playerToView.Character:FindFirstChild("Humanoid")
         if humanoid then
             workspace.CurrentCamera.CameraSubject = humanoid 
         end
-    else
-        local localPlayer = Players.LocalPlayer
+    else       
         if localPlayer and localPlayer.Character then
             local humanoid = localPlayer.Character:FindFirstChild("Humanoid")
             if humanoid then
@@ -1582,26 +1612,6 @@ end)
          end 
       end
  end)          
- 
- 
-local selectedPlayer = nil 
-function Oserbar()
-   while wait(.5) do
-    local playerToView = selectedPlayer 
-    if playerToView and playerToView.Character then
-        local humanoid = playerToView.Character:FindFirstChild("Humanoid")
-        if humanoid then
-            game.Workspace.CurrentCamera.CameraSubject = humanoid
-        end
-    else       
-        local localPlayer = game:GetService("Players").LocalPlayer
-        if localPlayer.Character then
-            game.Workspace.CurrentCamera.CameraSubject = localPlayer.Character:FindFirstChild("Humanoid")
-        end
-     end
-  end
-end
-task.spawn(Oserbar)
 
 task.spawn(function()
     while wait(.4) do
@@ -1811,126 +1821,129 @@ local function verificarEstadoServicio()
     return false
 end
 
+local function mostrarGUI()
+    local KeyGui = Instance.new("ScreenGui")
+    KeyGui.Parent = game.CoreGui
+
+    local Frame = Instance.new("Frame")
+    Frame.Size = UDim2.new(0.318, 0, 0.318, 0)
+    Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+    Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+    Frame.BorderSizePixel = 0
+    Frame.Parent = KeyGui
+
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0.05, 0)
+    UICorner.Parent = Frame
+
+    local Title = Instance.new("TextLabel")
+    Title.Size = UDim2.new(0.95, 0, 0.15, 0)
+    Title.Position = UDim2.new(0.025, 0, 0.05, 0)
+    Title.BackgroundTransparency = 1
+    Title.TextColor3 = Color3.fromRGB(220, 220, 220)
+    Title.TextScaled = true
+    Title.Font = Enum.Font.GothamBold
+    Title.Text = "🔐 Sistema de Claves"
+    Title.Parent = Frame
+
+    local TextBox = Instance.new("TextBox")
+    TextBox.Size = UDim2.new(0.9, 0, 0.13, 0)
+    TextBox.Position = UDim2.new(0.05, 0, 0.28, 0)
+    TextBox.PlaceholderText = "Introduce tu clave aquí"
+    TextBox.Font = Enum.Font.Gotham
+    TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TextBox.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+    TextBox.BorderSizePixel = 0
+    TextBox.TextScaled = true
+    TextBox.ClearTextOnFocus = false
+    TextBox.Parent = Frame
+
+    local BotonVerificar = Instance.new("TextButton")
+    BotonVerificar.Size = UDim2.new(0.4, 0, 0.15, 0)
+    BotonVerificar.Position = UDim2.new(0.05, 0, 0.65, 0)
+    BotonVerificar.Text = "Verificar Clave"
+    BotonVerificar.Font = Enum.Font.GothamBold
+    BotonVerificar.TextScaled = true
+    BotonVerificar.TextColor3 = Color3.fromRGB(255, 255, 255)
+    BotonVerificar.BackgroundColor3 = Color3.fromRGB(0, 204, 122)
+    BotonVerificar.BorderSizePixel = 0
+    BotonVerificar.Parent = Frame
+
+    local BotonCopiar = Instance.new("TextButton")
+    BotonCopiar.Size = UDim2.new(0.4, 0, 0.15, 0)
+    BotonCopiar.Position = UDim2.new(0.55, 0, 0.65, 0)
+    BotonCopiar.Text = "Generar Link"
+    BotonCopiar.Font = Enum.Font.GothamBold
+    BotonCopiar.TextScaled = true
+    BotonCopiar.TextColor3 = Color3.fromRGB(255, 255, 255)
+    BotonCopiar.BackgroundColor3 = Color3.fromRGB(0, 122, 204)
+    BotonCopiar.BorderSizePixel = 0
+    BotonCopiar.Parent = Frame
+
+    local currentIdentifier = nil
+
+    BotonVerificar.MouseButton1Click:Connect(function()
+        local clave = TextBox.Text
+        if clave == "" then
+            TextBox.Text = "Por favor, introduce una clave"
+            TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
+            return
+        end
+
+        TextBox.Text = "Verificando..."
+        TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+        
+        local success, result = pcall(function()
+            return verificarClave(clave, currentIdentifier)
+        end)
+
+        if not success then
+            TextBox.Text = "Error en la verificación"
+            TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
+            log("Error en verificación:", result)
+            return
+        end
+
+        if result then
+            TextBox.Text = "¡Clave aceptada!"
+            TextBox.TextColor3 = Color3.fromRGB(100, 255, 100)
+            wait(1)
+            Frame.Visible = false
+            script()
+        else
+            TextBox.Text = "Clave inválida"
+            TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
+        end
+    end)
+
+    BotonCopiar.MouseButton1Click:Connect(function()
+        TextBox.Text = "Generando link..."
+        TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+        
+        local link, identifier = generateLink()
+        if link then
+            currentIdentifier = identifier
+            TextBox.Text = "Link generado y copiado"
+            TextBox.TextColor3 = Color3.fromRGB(100, 255, 100)
+            if fSetClipboard then
+                fSetClipboard(link)
+            end
+        else
+            TextBox.Text = "No se pudo generar el link"
+            TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
+        end
+    end)
+end
+
 
 if claveEsValida() then
     log("Clave válida detectada. Ejecutando script principal.")
     script()
-    return
-end
-
-
-if not verificarEstadoServicio() then
-    log("Servicio no disponible. No se puede mostrar la GUI.")
-    return
-end
-
--- Crear GUI
-local KeyGui = Instance.new("ScreenGui")
-KeyGui.Parent = game.CoreGui
-
-local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0.318, 0, 0.318, 0)
-Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
-Frame.AnchorPoint = Vector2.new(0.5, 0.5)
-Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
-Frame.BorderSizePixel = 0
-Frame.Parent = KeyGui
-
-local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0.05, 0)
-UICorner.Parent = Frame
-
-local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(0.95, 0, 0.15, 0)
-Title.Position = UDim2.new(0.025, 0, 0.05, 0)
-Title.BackgroundTransparency = 1
-Title.TextColor3 = Color3.fromRGB(220, 220, 220)
-Title.TextScaled = true
-Title.Font = Enum.Font.GothamBold
-Title.Text = "🔐 Sistema de Claves"
-Title.Parent = Frame
-
-local TextBox = Instance.new("TextBox")
-TextBox.Size = UDim2.new(0.9, 0, 0.13, 0)
-TextBox.Position = UDim2.new(0.05, 0, 0.28, 0)
-TextBox.PlaceholderText = "Introduce tu clave aquí"
-TextBox.Font = Enum.Font.Gotham
-TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-TextBox.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
-TextBox.BorderSizePixel = 0
-TextBox.TextScaled = true
-TextBox.ClearTextOnFocus = false
-TextBox.Parent = Frame
-
-local BotonVerificar = Instance.new("TextButton")
-BotonVerificar.Size = UDim2.new(0.4, 0, 0.15, 0)
-BotonVerificar.Position = UDim2.new(0.05, 0, 0.65, 0)
-BotonVerificar.Text = "Verificar Clave"
-BotonVerificar.Font = Enum.Font.GothamBold
-BotonVerificar.TextScaled = true
-BotonVerificar.TextColor3 = Color3.fromRGB(255, 255, 255)
-BotonVerificar.BackgroundColor3 = Color3.fromRGB(0, 204, 122)
-BotonVerificar.BorderSizePixel = 0
-BotonVerificar.Parent = Frame
-
-local BotonCopiar = Instance.new("TextButton")
-BotonCopiar.Size = UDim2.new(0.4, 0, 0.15, 0)
-BotonCopiar.Position = UDim2.new(0.55, 0, 0.65, 0)
-BotonCopiar.Text = "Generar Link"
-BotonCopiar.Font = Enum.Font.GothamBold
-BotonCopiar.TextScaled = true
-BotonCopiar.TextColor3 = Color3.fromRGB(255, 255, 255)
-BotonCopiar.BackgroundColor3 = Color3.fromRGB(0, 122, 204)
-BotonCopiar.BorderSizePixel = 0
-BotonCopiar.Parent = Frame
-
-BotonVerificar.MouseButton1Click:Connect(function()
-    local clave = TextBox.Text
-    if clave == "" then
-        TextBox.Text = "Por favor, introduce una clave"
-        TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
-        return
-    end
-
-    TextBox.Text = "Verificando..."
-    TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-    
-    local success, result = pcall(function()
-        return verificarClave(clave)
-    end)
-
-    if not success then
-        TextBox.Text = "Error en la verificación"
-        TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
-        log("Error en verificación:", result)
-        return
-    end
-
-    if result then
-        TextBox.Text = "¡Clave aceptada!"
-        TextBox.TextColor3 = Color3.fromRGB(100, 255, 100)
-        wait(1)
-        KeyGui:Destroy()
-        script()
+else
+    if verificarEstadoServicio() then
+        mostrarGUI()
     else
-        TextBox.Text = "Clave inválida"
-        TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
+        log("Servicio no disponible. No se puede mostrar la GUI.")
     end
-end)
-
-BotonCopiar.MouseButton1Click:Connect(function()
-    TextBox.Text = "Generando link..."
-    TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-    
-    local link = generateLink()
-    if link then
-        TextBox.Text = "Link generado y copiado"
-        TextBox.TextColor3 = Color3.fromRGB(100, 255, 100)
-        if fSetClipboard then
-            fSetClipboard(link)
-        end
-    else
-        TextBox.Text = "No se pudo generar el link"
-        TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
-    end
-end)
+end
