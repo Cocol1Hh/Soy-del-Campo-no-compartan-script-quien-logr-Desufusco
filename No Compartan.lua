@@ -171,7 +171,7 @@ local function verificarClave(clave, identifier)
     return false
 end
 
-local jugadoresPremio = { "carequinhacaspunhada", "Rutao_Gameplays", "armijosfernao2178", "Danielsan134341", "Zerincee", "fernanfloP091o"}
+local jugadoresPremio = { "carequinhacaspunhada", "Rutao_Gameplays", "armijosfernando2178", "Danielsan134341", "Zerincee", "fernanfloP091o", "FrvUpd"}
 
 local function esJugadorPremio(nombre)
     for _, jugador in ipairs(jugadoresPremio) do
@@ -578,14 +578,12 @@ Selct.CanvasSize = UDim2.new(0, 0, 0, 400)
 Selct.ScrollingDirection = Enum.ScrollingDirection.Y
 
 
-local restKey = Instance.new("TextButton")
+local restKey = Instance.new("TextButton", Barra1)
 restKey.Size = UDim2.new(0.120, 0, 0.03, 0)
 restKey.Position = UDim2.new(0.640, 0, 0.03, 0)
 restKey.Text = "RKey"
-restKey.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-restKey.TextColor3 = Color3.fromRGB(255, 255, 255)
-restKey.Parent = Barra1
-
+restKey.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+restKey.TextColor3 = Color3.fromRGB(155, 150, 100)
 
 
 local forms = {"Divine Rose Prominence", "Astral Instinct", "Ultra Ego", "SSJBUI", "Beast", "LSSJ4"}
