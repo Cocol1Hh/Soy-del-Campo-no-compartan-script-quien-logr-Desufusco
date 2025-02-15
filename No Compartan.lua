@@ -623,7 +623,7 @@ local textProperties = {
     {text = "Fly", position = UDim2.new(-0.04, 0, 0.320, 0), color = Color3.fromRGB(200, 300, 400), parent = Barra1},
     {text = "Brillo", position = UDim2.new(0.473, 0, 0.320, 0), color = Color3.fromRGB(180, 200, 100), parent = Barra1},
     {text = "Duck", position = UDim2.new(-0.160, 0, 0.420, 0), color = Color3.fromRGB(200, 100, 300), parent = Barra1},
-    {text = "Ɓºrª", position = UDim2.new(0.350, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70), parent = Barra1},
+    {text = "Farm2", position = UDim2.new(0.350, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70), parent = Barra1},
     {text = "Graf", position = UDim2.new(-0.160, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
     {text = "Plant", position = UDim2.new(0.350, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
     {text = "Black", position = UDim2.new(-0.160, 0, 0.570, 0), color = Color3.fromRGB(200, 380, 90), parent = Barra1},
@@ -651,15 +651,50 @@ for _, props in pairs(textProperties) do
 end
  --Fin del color txt/\
  
---Codeg Para Button Minimizar = Maximizar
+local HttpService = game:GetService("HttpService")
+local switchName = "PanelState"
 local currentPanel = 1
 local isMinimized = true
 local clickCount = 0
 
--- Botón para cambiar entre cuadros
-local currentPanel = 1
-local isMinimized = true
-local clickCount = 0
+local function SaveMinimizedState(state)
+    writefile(switchName.."_Minimized.json", HttpService:JSONEncode({Minimized = state, LastModified = os.time()}))
+end
+
+local function LoadMinimizedState()
+    if isfile(switchName.."_Minimized.json") then
+        local data = HttpService:JSONDecode(readfile(switchName.."_Minimized.json"))
+        return data.Minimized
+    end
+    return true  -- Por defecto minimizado si no hay guardado previo
+end
+
+isMinimized = LoadMinimizedState()
+local function UpdateVisibility()
+    if isMinimized then
+        Cuadro1.Visible = false
+        Cuadro2.Visible = false
+        Cuadro3.Visible = false
+        Mix.Text = "+"
+    else
+        if currentPanel == 1 then
+            Cuadro1.Visible = true
+            Cuadro2.Visible = false
+            Cuadro3.Visible = false
+        elseif currentPanel == 2 then
+            Cuadro1.Visible = false
+            Cuadro2.Visible = true
+            Cuadro3.Visible = false
+        else
+            Cuadro1.Visible = false
+            Cuadro2.Visible = false
+            Cuadro3.Visible = true
+        end
+        Mix.Text = "×"
+    end
+end
+
+UpdateVisibility()
 
 Siguiente.MouseButton1Click:Connect(function()
     if not isMinimized then
@@ -685,21 +720,8 @@ end)
 
 Mix.MouseButton1Click:Connect(function()
     isMinimized = not isMinimized
-    if isMinimized then
-        Cuadro1.Visible = false
-        Cuadro2.Visible = false
-        Cuadro3.Visible = false
-        Mix.Text = "+"
-    else
-        if currentPanel == 1 then
-            Cuadro1.Visible = true
-        elseif currentPanel == 2 then
-            Cuadro2.Visible = true
-        else
-            Cuadro3.Visible = true
-        end
-        Mix.Text = "×"
-    end
+    SaveMinimizedState(isMinimized)
+    UpdateVisibility()
 end)
 
 --Aki ya es del interrutor <: \/
@@ -1087,6 +1109,11 @@ searchButton.MouseButton1Click:Connect(function()
     end
 end)
 
+button.MouseButton1Click:Connect(function()
+    lplr.Character.Humanoid:ChangeState(15)
+end)
+
+
 
 
 --Casi fin del interrutor /\
@@ -1127,6 +1154,23 @@ function yo()
         end
     end
     return l
+end
+
+getgenv().Stats = {}
+local stats = getgenv().Stats
+local planet = "Earth"
+
+-- Verify player 
+function checkplr()
+    found = false
+    for i,v in pairs(stats) do
+        if v[1] == lplr.Name then
+            found = false
+            return v
+        end
+    end
+    local table = {lplr.Name, math.huge, math.huge, }
+    if not found then return table end
 end
 
 function FindChar()
@@ -1377,8 +1421,7 @@ task.spawn(function()
                 if boss and boss:FindFirstChild("HumanoidRootPart") then
                     if boss:FindFirstChild("Humanoid") and boss.Humanoid.Health <= 0 then
                     end
-                    lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5.7)      
-                     Ex.p:FireServer("Blacknwhite27",1)             
+                    lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5.7)                        
                     end                 
                end               
          end)
@@ -1391,6 +1434,10 @@ task.spawn(function()
         FindChar().Humanoid:ChangeState(8)
         FindChar().Humanoid:ChangeState(18)    
     camera() 
+    if getIsActive4() and data.Quest.value ~= "" then
+    Ex.p:FireServer("Blacknwhite27",1)    
+     Ex.p:FireServer("Blacknwhite27",2)                      
+               end
          end)         
       end
   end)
@@ -1417,17 +1464,10 @@ task.spawn(function()
                 humanoid:ChangeState(11)
                 rootPart.Velocity = Vector3.zero
             end
-            if getIsActive11() and player() then
-                local currentGameHour = math.floor(game.Lighting.ClockTime)
-                if currentGameHour == 1 and not lastTeleport then
-                    rootPart.CFrame = CFrame.new(848.1, 362.7, 2219.8)
-                    lastTeleport = true
-                elseif currentGameHour ~= 1 then
-                    lastTeleport = false
-                end
+         if getIsActive11() and player() then
                 local gokuBlack = game.Workspace.Living:FindFirstChild("Goku Black")
                 local bossPosition = Vector3.new(848.1, 362.7, 2219.8)
-                if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack.Humanoid.Health > 0 and lplr.Status.Transformation.Value ~= "None" then
+                if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack.Humanoid.Health > 0 then
                     local distance = (gokuBlack.HumanoidRootPart.Position - bossPosition).Magnitude
                     if distance <= 900 then
                         rootPart.CFrame = gokuBlack.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
@@ -1545,21 +1585,37 @@ task.spawn(function()
     end
 end)
 
-
-
 task.spawn(function()
     while true do
         pcall(function()
             local bb = game:service 'VirtualUser'
-            game:service 'Players'.LocalPlayer.Idled:connect(function()
+           game:service 'Players'.LocalPlayer.Idled:connect(function()
         bb:CaptureController()
         bb:ClickButton2(Vector2.new())
+        task.wait(2)
             end)
             keypress(Enum.KeyCode.L)  
         end)
-        task.wait(300)
+        task.wait(100)
     end
 end)
+
+local GC = getconnections or get_signal_cons
+if GC then
+	for i,v in pairs(GC(lplr.Idled)) do
+		if v["Disable"] then
+			v["Disable"](v)
+		elseif v["Disconnect"] then
+			v["Disconnect"](v)
+		end
+	end
+else
+	lplr.Idled:Connect(function()
+		local VirtualUser = game:GetService("VirtualUser")
+		VirtualUser:CaptureController()
+		VirtualUser:ClickButton2(Vector2.new())
+	end)
+end
            
  task.spawn(function()
     while task.wait() do        
@@ -1788,6 +1844,149 @@ task.spawn(function()
     end
 end)
 
+
+local questNPCs = game.Workspace.Others.NPCs
+if questNPCs:FindFirstChild("Vegetable (GoD in-training)") then
+    planet = "Bills"
+end
+Farming = true
+Boss = nil
+CanAttack = true
+
+
+local bosses = {} -- Fight every boss at the lowest possible
+if planet == "Bills" then
+    bosses = {
+        {"Vekuta (SSJBUI)",1.375e9},
+        {"Wukong Rose",1.25e9},
+        {"Vekuta (LBSSJ4)",1.05e9},
+        {"Wukong (LBSSJ4)",675e6},
+        {"Vegetable (LBSSJ4)",450e6},
+        {"Vis (20%)",250e6},
+        {"Vills (50%)",150e6},
+        {"Wukong (Omen)",75e6},
+        {"Vegetable (GoD in-training)",50e6},
+    }
+else
+    bosses = {
+        {"SSJG Kakata",39e6},
+        {"Broccoli",33e6},
+        {"SSJB Wukong",2e6},
+        {"Kai-fist Master",1625000},
+        {"SSJ2 Wukong",1250000},
+        {"Perfect Atom",875000},
+        {"Chilly",550000},
+        {"Super Vegetable",188000},
+        {"Top X Fighter",115000},
+        {"Mapa",75000},
+        {"Radish",45000},
+        {"Kid Nohag",20000},
+        {"Klirin",0},
+    }
+end
+
+
+local questbosses = game.Workspace.Living
+function findboss(questname) -- Finds the bossmodel
+    local bossname = questname
+    if questname == "Top X Fighter" then
+        bossname = "X Fighter Master"
+    end
+    if 
+     questbosses:FindFirstChild(bossname) and
+     questbosses[bossname]:FindFirstChild("HumanoidRootPart") and 
+     questbosses[bossname]:FindFirstChild("Humanoid")
+    then -- If the boss isn't deleted
+        local boss = questbosses[bossname]
+        return boss
+    end
+end
+
+local part = Instance.new("Part")
+part.Parent = Workspace
+part.Position = Vector3.new(0,20000,0)
+part.Anchored = true
+part.Transparency = .9
+
+
+local mobs = {"X Fighter","Evil Saya"}
+canvolley = true
+task.spawn(function() -- Move/Attack
+    while true do
+        if Farming and getIsActive8() then
+            if _G.Key ~= r then
+                return
+            end
+            task.spawn(function() 
+            	pcall(function()
+	                lplr.Character.Humanoid:ChangeState(11)
+	                lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
+	                if (not Boss) and #game.Players:GetChildren() > 1 then 
+	                    pcall(function()
+	                        lplr.Character.HumanidoRootPart.CFrame = part.CFrame
+	                    end)
+	                end
+	                pcall(function()
+	                    lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Boss.HumanoidRootPart.CFrame * CFrame.new(0,0,4.5).p, Boss.HumanoidRootPart.Position)
+	                end)
+	                if Boss then
+	                    task.spawn(function()
+	                        for i,blast in pairs(FindChar().Effects:GetChildren()) do
+	                            if blast.Name == "Blast" then
+	                                blast.CFrame = Boss.HumanoidRootPart.CFrame
+	                            end
+	                        end
+	                    end)
+	                end               
+                end)
+            end)
+        end
+        task.wait()
+    end
+end)
+
+task.spawn(function() -- Pick quest
+    while true and yo() < checkplr()[3] do
+        if Farming and getIsActive8()  then
+            --while not CanAttack do wait() end
+            if data.Quest.Value == "" or not Boss then
+                for i,boss in pairs(bosses) do
+                    if data.Rebirth.Value >= 2000 and boss[1] == "Mapa" then
+                        boss[2] = 0
+                    end
+                    if yo()/2 >= boss[2] and game.Workspace.Living:FindFirstChild(boss[1]) and game.Workspace.Living[boss[1]]:FindFirstChild("Humanoid") and game.Workspace.Living[boss[1]].Humanoid.Health > 0 then
+                    if data.Quest.Value ~= boss[1] then
+              local npc = game.Workspace.Others.NPCs:FindFirstChild(boss[1])  -- Cambié Boss por boss[1] para encontrar el NPC correcto
+                 if npc then
+                     lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
+                          wait() 
+                          end
+                        pcall(function()
+                          game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(questNPCs[boss[1]])
+                            end) 
+                          end
+                        if data.Quest.Value == boss[1] then
+                            Boss = game.Workspace.Living[boss[1]]
+                            if CanAttack ~= false then -- Sets if it's not nil                            
+                                CanAttack = true
+                            end
+                        else
+                            task.wait(.01)
+                            Boss = nil
+                        end
+                        task.wait(.01)
+                        break 
+                    end
+                end
+            elseif game.Workspace.Living:FindFirstChild(data.Quest.Value)  then
+                Boss = game.Workspace.Living[data.Quest.Value]
+            else data.Quest.Value = ""
+                wait(.01)
+            end
+        end
+        task.wait()
+    end
+end)  
 
 --fin de todo \/
        end)    
