@@ -1854,7 +1854,7 @@ Boss = nil
 CanAttack = true
 
 
-local bosses = {} -- Fight every boss at the lowest possible
+local bosses = {} 
 if planet == "Bills" then
     bosses = {
         {"Vekuta (SSJBUI)",1.375e9},
@@ -1902,12 +1902,6 @@ function findboss(questname) -- Finds the bossmodel
     end
 end
 
-local part = Instance.new("Part")
-part.Parent = Workspace
-part.Position = Vector3.new(0,20000,0)
-part.Anchored = true
-part.Transparency = .9
-
 
 local mobs = {"X Fighter","Evil Saya"}
 canvolley = true
@@ -1919,8 +1913,6 @@ task.spawn(function() -- Move/Attack
             end
             task.spawn(function() 
             	pcall(function()
-	                lplr.Character.Humanoid:ChangeState(11)
-	                lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
 	                if (not Boss) and #game.Players:GetChildren() > 1 then 
 	                    pcall(function()
 	                        lplr.Character.HumanidoRootPart.CFrame = part.CFrame
@@ -1945,13 +1937,13 @@ task.spawn(function() -- Move/Attack
     end
 end)
 
-task.spawn(function() -- Pick quest
+task.spawn(function() 
     while true and yo() < checkplr()[3] do
         if Farming and getIsActive8()  then
             --while not CanAttack do wait() end
             if data.Quest.Value == "" or not Boss then
                 for i,boss in pairs(bosses) do
-                    if data.Rebirth.Value >= 2000 and boss[1] == "Mapa" then
+                    if data.Rebirth.Value >= 1500 and boss[1] == "Mapa" then
                         boss[2] = 0
                     end
                     if yo()/2 >= boss[2] and game.Workspace.Living:FindFirstChild(boss[1]) and game.Workspace.Living[boss[1]]:FindFirstChild("Humanoid") and game.Workspace.Living[boss[1]].Humanoid.Health > 0 then
