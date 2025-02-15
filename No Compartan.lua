@@ -1503,10 +1503,8 @@ npcList = {
 }
 
 
-task.spawn(function() 
-    while true do     
-        pcall(function()  
-            if data.Quest.Value == "" and getIsActive1() and player() then
+function Multi()
+if data.Quest.Value == "" and player() then
                 for i, npc in ipairs(npcList) do
                     local npcName, requisito, isActive = npc[1], npc[2], npc[3]
                     if isActive then
@@ -1521,38 +1519,32 @@ task.spawn(function()
                                 }
                                 game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(unpack(args))                                
                                 break
-                            end
-                        end
-                    end
-                end         
-            end
-        end)
-        task.wait()
+                         end
+                   end
+              end
+         end         
     end
-end)
-    
-local boss = {"SSJG Kakata", "Broccoli", 0}
+end
+
 task.spawn(function() 
     while true do     
-        pcall(function()          
-           local currentGameHour = math.floor(game.Lighting.ClockTime)            
+        pcall(function()  
+        local currentGameHour = math.floor(game.Lighting.ClockTime)            
             local currentMinutes = math.floor((game.Lighting.ClockTime - currentGameHour) * 60)
+         if  getIsActive1() then
+         Multi()
+           end         
             if getIsActive6() and (
                 ((currentGameHour == 12 and currentMinutes >= 10) or (currentGameHour > 12) or (currentGameHour == 0 or currentGameHour == 1 and currentMinutes <= 1)) or 
                 ((currentGameHour == 5 and currentMinutes >= 40) or (currentGameHour > 5 and currentGameHour < 8) or (currentGameHour == 8 and currentMinutes <= 22))
             ) then
-                if yo() >= boss[3] and data.Quest.Value == "" then
-                    local currentBoss = game.Workspace.Living:FindFirstChild(boss[1])
-                    local target = currentBoss and currentBoss.Humanoid.Health <= 0 and game.Workspace.Others.NPCs:FindFirstChild(boss[2]) or game.Workspace.Others.NPCs:FindFirstChild(boss[1])
-                    if target then
-                        lplr.Character.HumanoidRootPart.CFrame = target.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)                        
-                    end
-                end
+                Multi()
             end
         end)
         task.wait()
     end
 end)
+
 
 
 task.spawn(function()
