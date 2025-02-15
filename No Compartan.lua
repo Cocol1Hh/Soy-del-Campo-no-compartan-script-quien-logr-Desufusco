@@ -1522,6 +1522,7 @@ end)
 
     
 function Multi()
+pcall(function()  
 if data.Quest.Value == "" and player() then
                 for i, npc in ipairs(npcList) do
                     local npcName, requisito, isActive = npc[1], npc[2], npc[3]
@@ -1542,6 +1543,7 @@ if data.Quest.Value == "" and player() then
               end
          end         
     end
+    end)
 end
 
 task.spawn(function()
