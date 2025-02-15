@@ -1501,25 +1501,6 @@ end)
 }
 
 
-task.spawn(function() 
-    while true do     
-        pcall(function()  
-        local currentGameHour = math.floor(game.Lighting.ClockTime)            
-            local currentMinutes = math.floor((game.Lighting.ClockTime - currentGameHour) * 60)
-         if  getIsActive1() then
-         Multi()
-           end         
-            if getIsActive6() and (
-                ((currentGameHour == 12 and currentMinutes >= 10) or (currentGameHour > 12) or (currentGameHour == 0 or currentGameHour == 1 and currentMinutes <= 1)) or 
-                ((currentGameHour == 5 and currentMinutes >= 40) or (currentGameHour > 5 and currentGameHour < 8) or (currentGameHour == 8 and currentMinutes <= 22))
-            ) then
-                Multi()
-            end
-        end)
-        task.wait()
-    end
-end)
-
     
 function Multi()
 pcall(function()  
@@ -1545,6 +1526,26 @@ if data.Quest.Value == "" and player() then
     end
     end)
 end
+
+task.spawn(function() 
+    while true do     
+        pcall(function()          
+         if  getIsActive1() then
+         Multi()
+           end         
+           local currentGameHour = math.floor(game.Lighting.ClockTime)            
+            local currentMinutes = math.floor((game.Lighting.ClockTime - currentGameHour) * 60)
+            if getIsActive6() and (
+                ((currentGameHour == 12 and currentMinutes >= 10) or (currentGameHour > 12) or (currentGameHour == 0 or currentGameHour == 1 and currentMinutes <= 1)) or 
+                ((currentGameHour == 5 and currentMinutes >= 40) or (currentGameHour > 5 and currentGameHour < 8) or (currentGameHour == 8 and currentMinutes <= 22))
+            ) then
+                Multi()
+            end
+        end)
+        task.wait()
+    end
+end)
+
 
 task.spawn(function()
     while true do
