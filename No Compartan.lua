@@ -234,25 +234,23 @@ Fernando.Name = "fffg"
 Fernando.Parent = game.CoreGui
 
 
-local function formatNumber(number)
-    local suffixes = {"", "K", "M", "B", "T", "QD"}
-    local suffixIndex = 1
+local suffixes = {'', 'K', 'M', 'B', 'T', 'qd', 'Qn'}
+function formatNumber(number)
     local isNegative = number < 0
     number = math.abs(number)
-    while number >= 1000 and suffixIndex < #suffixes do
-        number = number / 1000
-        suffixIndex = suffixIndex + 1
+    for i = 1, #suffixes do
+        if number < 10^(i * 3) then
+            local divisor = 10^((i - 1) * 3)
+            local formatted = math.floor((number / divisor) * 100) / 100
+            return (isNegative and "-" or "") .. formatted .. suffixes[i]
+        end
     end
-    local formattedNumber
-    if number >= 100 then
-        formattedNumber = string.format("%.0f", number) -- Sin decimales para números grandes
-    elseif number >= 10 then
-        formattedNumber = string.format("%.1f", number) -- Un decimal para números medianos
-    else
-        formattedNumber = string.format("%.2f", number) -- Dos decimales para números pequeños
-    end
-    formattedNumber = formattedNumber:gsub("%.?0+$", "")
-    return (isNegative and "-" or "") .. formattedNumber .. suffixes[suffixIndex]
+    return (isNegative and "-" or "") .. formatNumberWithCommas(number)
+end
+
+function formatNumberWithCommas(n)
+    n = tostring(n)
+    return n:reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
 end
 
 Frame.Parent = Fernando
@@ -1148,16 +1146,13 @@ end)
 
 task.spawn(function()
     pcall(function()
-local sts = {"Strength", "Speed", "Defense", "Energy"}
+local sts = {"Strength","Speed","Defense","Energy"}
 function yo()
     local l = math.huge
-    for _, v in pairs(sts) do
-        local stat = data:FindFirstChild(v)
-        if not stat then return end
-        local st = stat.Value
-        if st < l then
-            l = st
-        end
+    for i,v in pairs(sts) do
+        if not data:FindFirstChild(v) then return end
+        local st = data[v]
+        if st.Value < l then l = st.Value end
     end
     return l
 end
@@ -1484,20 +1479,17 @@ task.spawn(function()
         pcall(function()
             if getIsActive6() then
                 local currentGameHour = math.floor(game.Lighting.ClockTime)
-                local currentMinutes = math.floor((game.Lighting.ClockTime - currentGameHour) * 60)
-                
+                local currentMinutes = math.floor((game.Lighting.ClockTime - currentGameHour) * 60)            
                 if (currentGameHour == 1 and currentMinutes >= 2) or (currentGameHour > 1 and currentGameHour < 5) or (currentGameHour == 5 and currentMinutes < 40) then
                     if data.Quest.Value == "" then
                         lplr.Character.HumanoidRootPart.CFrame = game.Workspace.Others.NPCs["Kid Nohag"].HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
                         game.ReplicatedStorage.Package.Events.Qaction:InvokeServer(game.Workspace.Others.NPCs["Kid Nohag"])
                     end
-
                     local boss = game.Workspace.Living:FindFirstChild("Oozaru")
                     if boss and boss:FindFirstChild("HumanoidRootPart") then
                         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
                     end
                 end
-
                 if currentGameHour == 5 and currentMinutes == 40 and data.Quest.Value == "Kid Nohag" then
                     data.Quest.Value = ""
                 end
@@ -1599,12 +1591,7 @@ task.spawn(function()
         bb:ClickButton2(Vector2.new())
             end)
             keypress(Enum.KeyCode.L)  
-        end)
-        task.wait(100)
-    end
-end)
-
-local GC = getconnections or get_signal_cons
+            local GC = getconnections or get_signal_cons
 if GC then
 	for i,v in pairs(GC(lplr.Idled)) do
 		if v["Disable"] then
@@ -1620,6 +1607,12 @@ else
 		VirtualUser:ClickButton2(Vector2.new())
 	end)
 end
+        end)
+        task.wait(100)
+    end
+end)
+
+
            
  task.spawn(function()
     while task.wait() do        
@@ -1848,7 +1841,7 @@ task.spawn(function()
                local yDirection = 0
                 if humanoid.WalkSpeed >= 32 then
                     if humanoid.Jump then
-                        yDirection = speed * 0.30
+                        yDirection = speed * 0.35
                     end          
                     if moveDir.Magnitude > 0 or yDirection ~= 0 then
                         hum.CFrame = hum.CFrame + Vector3.new(moveDir.X, yDirection, moveDir.Z) * speed
