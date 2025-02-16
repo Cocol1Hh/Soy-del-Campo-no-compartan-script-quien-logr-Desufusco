@@ -1619,6 +1619,7 @@ end
            
  task.spawn(function()
     while task.wait() do        
+    pcall(function()
             if getIsActive13() then
             npcList[21][3] = true  
             else
@@ -1639,6 +1640,7 @@ end
                 wait(5)
             end
          end 
+         end)
       end
  end)          
  
