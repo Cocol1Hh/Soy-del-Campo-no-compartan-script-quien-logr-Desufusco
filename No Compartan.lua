@@ -236,18 +236,24 @@ Fernando.Parent = game.CoreGui
 
 local function formatNumber(number)
     local suffixes = {"", "K", "M", "B", "T", "QD"}
-    local suffix_index = 1
-    while math.abs(number) >= 1000 and suffix_index < #suffixes do
-        number = number / 1000.0
-        suffix_index = suffix_index + 1
+    local suffixIndex = 1
+    local isNegative = number < 0
+    number = math.abs(number)
+    while number >= 1000 and suffixIndex < #suffixes do
+        number = number / 1000
+        suffixIndex = suffixIndex + 1
     end
-    local formatted_number = string.format("%.2f", number)
-    if math.floor(number) == number then
-        formatted_number = string.format("%d", number)
+    local formattedNumber
+    if number >= 100 then
+        formattedNumber = string.format("%.0f", number) -- Sin decimales para números grandes
+    elseif number >= 10 then
+        formattedNumber = string.format("%.1f", number) -- Un decimal para números medianos
+    else
+        formattedNumber = string.format("%.2f", number) -- Dos decimales para números pequeños
     end
-    return formatted_number .. suffixes[suffix_index]
+    formattedNumber = formattedNumber:gsub("%.?0+$", "")
+    return (isNegative and "-" or "") .. formattedNumber .. suffixes[suffixIndex]
 end
-
 
 Frame.Parent = Fernando
 Frame.BackgroundTransparency = 1
