@@ -1402,6 +1402,10 @@ end
         FindChar().Humanoid:ChangeState(8)
         FindChar().Humanoid:ChangeState(18)    
     camera() 
+    if getIsActive4() and data.Quest.value ~= "" then
+    Ex.p:FireServer("Blacknwhite27",1)    
+     Ex.p:FireServer("Blacknwhite27",2)                      
+               end
          end)         
       end
   end)
