@@ -1418,21 +1418,6 @@ function camera()
 end
 
 
-task.spawn(function()
-    while task.wait() do
-        pcall(function()
-        local questValue = data.Quest.Value
-            if questValue ~= "" and getIsActive1() or getIsActive6() and player() then
-                local boss = game.Workspace.Living:FindFirstChild(questValue)
-                if boss and boss:FindFirstChild("HumanoidRootPart") then
-                    if boss:FindFirstChild("Humanoid") and boss.Humanoid.Health <= 0 then
-                    end
-                    lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5.7)                        
-                    end                 
-               end               
-         end)
-      end
-  end)
   
   task.spawn(function()
     while task.wait() do
@@ -1525,13 +1510,13 @@ end)
  
     
 npcList = {
-    {"Vekuta (SSJBUI)", 2.375e9, true},
-    {"Wukong Rose", 1.65e9, true},
-    {"Vekuta (LBSSJ4)", 1.05e9, true},
-    {"Wukong (LBSSJ4)", 950e6, true},
-    {"Vegetable (LBSSJ4)", 650e6, true},
-    {"Vis (20%)", 500e6, true},
-    {"Vills (50%)", 350e6, true},
+    {"Vekuta (SSJBUI)", 1.575e9, true},
+    {"Wukong Rose", 1.05e9, true},
+    {"Vekuta (LBSSJ4)", 850e6, true},
+    {"Wukong (LBSSJ4)", 690e6, true},
+    {"Vegetable (LBSSJ4)", 490e6, true},
+    {"Vis (20%)", 390e6, true},
+    {"Vills (50%)", 300e6, true},
     {"Wukong (Omen)", 200e6, true},
     {"Vegetable (GoD in-training)", 100e6, true},
     {"SSJG Kakata", 70e6, true},
@@ -1550,28 +1535,42 @@ npcList = {
 
 
 function Multi()
-if data.Quest.Value == "" and player() then
+pcall(function()
                 for i, npc in ipairs(npcList) do
                     local npcName, requisito, isActive = npc[1], npc[2], npc[3]
                     if isActive then
                         if yo() >= requisito then
                             local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
+                            local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
                             local bossInstance = game.Workspace.Living:FindFirstChild(npcName)
                             if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
                                (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
+                               if data.Quest.Value == "" and player() then
                                 lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.4)  
                                 local args = {
                                     [1] = npcInstance
                                 }
-                                game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(unpack(args))                                
+                                game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(unpack(args))        
+                                end
+                              lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Jefe.HumanoidRootPart.CFrame * CFrame.new(0,0,4.5).p, Jefe.HumanoidRootPart.Position)
+                              if Jefe then
+	                    task.spawn(function()
+	                        for i,blast in pairs(FindChar().Effects:GetChildren()) do
+	                            if blast.Name == "Blast" then
+	                                blast.CFrame = Jefe.HumanoidRootPart.CFrame
+	                                       end
+	                                   end
+	                                end)
+	                              end
                                 break
                          end
                    end
               end
          end         
-    end
+      end)
 end
-
+    
+   
 task.spawn(function() 
     while true do     
         pcall(function()  
@@ -1598,7 +1597,6 @@ task.spawn(function()
            game:service 'Players'.LocalPlayer.Idled:connect(function()
         bb:CaptureController()
         bb:ClickButton2(Vector2.new())
-        task.wait(2)
             end)
             keypress(Enum.KeyCode.L)  
         end)
