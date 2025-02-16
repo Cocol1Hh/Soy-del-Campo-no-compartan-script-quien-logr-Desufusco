@@ -1843,15 +1843,24 @@ end)
 task.spawn(function()
     while flying do
         pcall(function()
-            local hum = lplr.Character and lplr.Character:FindFirstChild("Humanoid")
-            if hum and hum.MoveDirection.Magnitude > 0 then
-                lplr.Character:TranslateBy(hum.MoveDirection * speed)
+            local hum = lplr.Character and lplr.Character:FindFirstChild("HumanoidRootPart")
+            local humanoid = lplr.Character and lplr.Character:FindFirstChild("Humanoid")
+            if hum and humanoid then
+                local moveDir = humanoid.MoveDirection
+               local yDirection = 0
+                if humanoid.WalkSpeed >= 32 then
+                    if humanoid.Jump then
+                        yDirection = speed * 0.30
+                    end          
+                    if moveDir.Magnitude > 0 or yDirection ~= 0 then
+                        hum.CFrame = hum.CFrame + Vector3.new(moveDir.X, yDirection, moveDir.Z) * speed
+                    end
+                end
             end
         end)
         task.wait()
     end
 end)
-
 
 local questNPCs = game.Workspace.Others.NPCs
 if questNPCs:FindFirstChild("Vegetable (GoD in-training)") then
