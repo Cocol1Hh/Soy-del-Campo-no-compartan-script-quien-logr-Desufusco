@@ -1533,6 +1533,7 @@ end)
 
     
 function Multi()
+pcall(function()
                 for i, npc in ipairs(npcList) do
                     local npcName, requisito, isActive = npc[1], npc[2], npc[3]
                     if isActive then
@@ -1564,6 +1565,7 @@ function Multi()
                    end
               end
          end         
+      end)
 end
 
 task.spawn(function()
