@@ -1199,78 +1199,13 @@ task.spawn(function()
         end
      end)
      
-    
-     
 
-local moves = {
-    {name = "Wolf Fang Fist", condition = 5000},
-    {name = "Meteor Crash", condition = 40000},
-    {name = "High Power Rush", condition = 100000},
-    {name = "Mach Kick", condition = 125000},
-    {name = "Spirit Barrage", condition = 60e6},
-    {name = "God Slicer", condition = 60e6}
-}
 
 local Mel = { 
     "Super Dragon Fist", "God Slicer", "Spirit Barrage", "Mach Kick", "Wolf Fang Fist", 
     "High Power Rush", "Meteor Strike", "Meteor Charge", "Spirit Breaking Cannon", 
     "Vital Strike", "Flash Kick", "Vanish Strike", "Uppercut", "Sledgehammer", "Rock Impact"
 }
-
-local Atck = { 
-    "Super Dragon Fist", "God Slicer", "Spirit Barrage", "Mach Kick", "Wolf Fang Fist", 
-    "High Power Rush", "Meteor Strike"
-}
-
-local function invokeMove(move)
-    Ex.mel:InvokeServer(move, "Blacknwhite27")
-    Ex.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, "Blacknwhite27")
-    Ex.block:InvokeServer(true)
-    if game.PlaceId ~= 5151400895 and yo() <= 80e9 then
-        Ex.cha:InvokeServer("Blacknwhite27")
-    end
-end
-
-task.spawn(function()
-    data.Quest.Value = ""
-    while wait() do
-        pcall(function()
-            if getIsActive3() and player() then
-                local boss = game.Workspace.Living:FindFirstChild(data.Quest.Value)
-                local Ki = lplr.Character.Stats.Ki
-                if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 and data.Quest.Value ~= "" then
-                    for _, move in pairs(moves) do
-                        if not lplr.Status:FindFirstChild(move.name) and yo() >= move.condition and Ki.Value > Ki.MaxValue * 0.11 then
-                            task.spawn(function()
-                                invokeMove(move.name)
-                            end)
-                        end
-                    end
-                end
-            end           
-            local bossPosition = Vector3.new(848.1, 362.7, 2219.8)
-            local dat = (game.PlaceId == 5151400895) and game.Workspace.Living:FindFirstChild(lplr.Name) or lplr
-            local distance = (game.Workspace.Living:FindFirstChild("Goku Black").HumanoidRootPart.Position - bossPosition).Magnitude
-            if getIsActive11() and game.Workspace.Living:FindFirstChild("Goku Black") and game.Workspace.Living["Goku Black"]:FindFirstChild("Humanoid") and game.Workspace.Living["Goku Black"].Humanoid.Health > 0 and distance <= 900 then
-                if dat:FindFirstChild("Status") then
-                    for _, Atck in ipairs(Atck) do
-                        if not dat.Status:FindFirstChild(Atck) then
-                            task.spawn(function()
-                                game:GetService("ReplicatedStorage").Package.Events.mel:InvokeServer(Atck, "Blacknwhite27")
-                                Ex.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, "Blacknwhite27")
-                                Ex.block:InvokeServer(true)
-                                if game.PlaceId ~= 5151400895 and yo() <= 80e9 then
-                                    Ex.cha:InvokeServer("Blacknwhite27")
-                                end
-                            end)
-                        end
-                    end
-                end
-            end
-        end)
-    end
-end)
-
 task.spawn(function()
     while wait() do
         pcall(function()
@@ -1280,7 +1215,7 @@ task.spawn(function()
                     for _, Mel in ipairs(Mel) do
                         if not dat.Status:FindFirstChild(Mel) then
                             task.spawn(function()
-                                invokeMove(Mel)
+                                Ex.mel:InvokeServer(Mel, "Blacknwhite27")
                             end)
                         end
                     end
@@ -1291,7 +1226,7 @@ task.spawn(function()
 end)
 
 
- task.spawn(function()
+task.spawn(function()
  lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)                        
     while true do
         pcall(function()
@@ -1311,7 +1246,6 @@ end)
         task.wait()
     end
 end)
-
 
 local function copiarInformacionJugador()
     local jugador = selectedPlayer
@@ -1402,15 +1336,41 @@ end
         FindChar().Humanoid:ChangeState(8)
         FindChar().Humanoid:ChangeState(18)    
     camera() 
-    if getIsActive4() and data.Quest.value ~= "" then
-    Ex.p:FireServer("Blacknwhite27",1)    
-     Ex.p:FireServer("Blacknwhite27",2)                      
-               end
          end)         
       end
   end)
   
-local lastTeleport = false  
+
+task.spawn(function()
+    while true do
+        pcall(function()
+            if getIsActive6() then
+                local currentGameHour = math.floor(game.Lighting.ClockTime)
+                local currentMinutes = math.floor((game.Lighting.ClockTime - currentGameHour) * 60)              
+                if (currentGameHour == 1 and currentMinutes >= 2) or (currentGameHour > 1 and currentGameHour < 5) or (currentGameHour == 5 and currentMinutes < 40) then
+                    if data.Quest.Value == "" then
+                        lplr.Character.HumanoidRootPart.CFrame = game.Workspace.Others.NPCs["Kid Nohag"].HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
+                        game.ReplicatedStorage.Package.Events.Qaction:InvokeServer(game.Workspace.Others.NPCs["Kid Nohag"])
+                    end
+                    local boss = game.Workspace.Living:FindFirstChild("Oozaru")
+                    if boss and boss:FindFirstChild("HumanoidRootPart") then
+                        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
+                    end
+                end
+                if currentGameHour == 5 and currentMinutes == 40 and data.Quest.Value == "Kid Nohag" then
+                    data.Quest.Value = ""
+                end
+            end
+        end)
+        task.wait()
+    end
+end)
+
+local Mel = { 
+    "Super Dragon Fist", "Wolf Fang Fist", "Meteor Crash", "Spirit Barrage", "God Slicer", 
+    "High Power Rush", "Mach Kick"
+}
+local Black = false
 task.spawn(function()
     while task.wait() do
         pcall(function()
@@ -1427,28 +1387,33 @@ task.spawn(function()
             if ki.Value < ki.MaxValue * 0.25 and player() and getIsActive4() and yo() <= 800e9 then
                 Ex.cha:InvokeServer("Blacknwhite27")
             end
-
-            if getIsActive4() then
-                humanoid:ChangeState(11)
-                rootPart.Velocity = Vector3.zero
-            end
+            
             if getIsActive11() and player() then
-                local currentGameHour = math.floor(game.Lighting.ClockTime)
-                if currentGameHour == 1 and not lastTeleport then
-                    rootPart.CFrame = CFrame.new(848.1, 362.7, 2219.8)
-                    lastTeleport = true
-                elseif currentGameHour ~= 1 then
-                    lastTeleport = false
-                end
                 local gokuBlack = game.Workspace.Living:FindFirstChild("Goku Black")
                 local bossPosition = Vector3.new(848.1, 362.7, 2219.8)
-                if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack.Humanoid.Health > 0 and lplr.Status.Transformation.Value ~= "None" then
+                if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack.Humanoid.Health > 0 then
                     local distance = (gokuBlack.HumanoidRootPart.Position - bossPosition).Magnitude
                     if distance <= 900 then
                         rootPart.CFrame = gokuBlack.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
+                        Black = true
+                   else
+                        Black = false
                     end
                 end
             end
+       
+    for _, attack in ipairs(Mel) do
+    if  Black == true or Hallowen == true then
+        task.spawn(function()
+            game.ReplicatedStorage.Package.Events.mel:InvokeServer(attack, "Blacknwhite27")
+        end)            
+        end
+    end
+    
+            if getIsActive4() then
+                humanoid:ChangeState(11)
+                rootPart.Velocity = Vector3.zero
+            end           
             if player() then
                 if lplr.Status.Blocking.Value ~= true and getIsActive4() then
                     Ex.block:InvokeServer(true)
@@ -1462,34 +1427,6 @@ task.spawn(function()
         end)
     end
  end)
-  
-task.spawn(function()
-    while true do
-        pcall(function()
-            if getIsActive6() then
-                local currentGameHour = math.floor(game.Lighting.ClockTime)
-                local currentMinutes = math.floor((game.Lighting.ClockTime - currentGameHour) * 60)
-                
-                if (currentGameHour == 1 and currentMinutes >= 2) or (currentGameHour > 1 and currentGameHour < 5) or (currentGameHour == 5 and currentMinutes < 40) then
-                    if data.Quest.Value == "" then
-                        lplr.Character.HumanoidRootPart.CFrame = game.Workspace.Others.NPCs["Kid Nohag"].HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
-                        game.ReplicatedStorage.Package.Events.Qaction:InvokeServer(game.Workspace.Others.NPCs["Kid Nohag"])
-                    end
-
-                    local boss = game.Workspace.Living:FindFirstChild("Oozaru")
-                    if boss and boss:FindFirstChild("HumanoidRootPart") then
-                        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
-                    end
-                end
-
-                if currentGameHour == 5 and currentMinutes == 40 and data.Quest.Value == "Kid Nohag" then
-                    data.Quest.Value = ""
-                end
-            end
-        end)
-        task.wait()
-    end
-end)
 
  npcList = {
     {"Vekuta (SSJBUI)", 2.375e9, true},
@@ -1515,26 +1452,6 @@ end)
     {"Klirin", 0, true}
 }
 
-
-task.spawn(function() 
-    while true do     
-        pcall(function()  
-        local currentGameHour = math.floor(game.Lighting.ClockTime)            
-            local currentMinutes = math.floor((game.Lighting.ClockTime - currentGameHour) * 60)
-         if  getIsActive1() then
-         Multi()
-           end         
-            if getIsActive6() and (
-                ((currentGameHour == 12 and currentMinutes >= 10) or (currentGameHour > 12) or (currentGameHour == 0 or currentGameHour == 1 and currentMinutes <= 1)) or 
-                ((currentGameHour == 5 and currentMinutes >= 40) or (currentGameHour > 5 and currentGameHour < 8) or (currentGameHour == 8 and currentMinutes <= 22))
-            ) then
-                Multi()
-            end
-        end)
-        task.wait()
-    end
-end)
-
     
 function Multi()
 pcall(function()
@@ -1547,7 +1464,7 @@ pcall(function()
                             local bossInstance = game.Workspace.Living:FindFirstChild(npcName)
                             if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
                                (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
-                               if data.Quest.Value == "" and player() then
+                               if data.Quest.Value == "" and player() and Black == false then
                                 lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.4)  
                                 local args = {
                                     [1] = npcInstance
@@ -1568,9 +1485,79 @@ pcall(function()
                          end
                    end
               end
-         end         
-      end)
+         end 
+         task.spawn(function() 
+          local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
+           if yo() >= 40000 and data.Quest.Value ~= ""  and not lplr.Status:FindFirstChild("Invincible") and Jefe.Humanoid.Health > 0 and getIsActive3() or  getIsActive6() then                                    
+                                     local thrp = Jefe:WaitForChild("HumanoidRootPart",1)
+                                    local stats = yo()
+                                    local moves = {}
+                                    local attacked = false
+                                    if stats >= 5000 then
+                                        table.insert(moves, "Wolf Fang Fist")
+                                    end
+                                    if stats >= 40000 then
+                                        table.insert(moves, "Meteor Crash")
+                                    end
+                                    if stats >= 100000 then
+                                        table.insert(moves, "High Power Rush")
+                                    end
+                                    if stats >= 125000 then
+                                        table.insert(moves, "Mach Kick")
+                                    end
+                                    if stats >= 60e6 then
+                                        if data.Allignment.Value == "Good" then
+                                            table.insert(moves, "Spirit Barrage")
+                                        else
+                                            table.insert(moves, "God Slicer")
+                                        end
+                                    end
+                                    for i,move in pairs(moves) do
+                                        if not lplr.Status:FindFirstChild(move) then
+                                            spawn(function()
+                                                game:GetService("ReplicatedStorage").Package.Events.mel:InvokeServer(move,"Blacknwhite27")                                        
+                                            end)
+                                            attacked = true
+                                        end
+                                    end
+                                    if yo() > 10000 and canvolley then
+                                        canvolley = false
+                                        game.ReplicatedStorage.Package.Events.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, "Blacknwhite27")                                       
+                                        attacked = true
+                                        spawn(function()
+                                            wait(.01)
+                                            canvolley = true
+                                        end)
+                                    end
+                                    if attacked and getIsActive4() then
+                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
+                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
+                                    end
+                            end              
+                       end)
+           end)
 end
+
+task.spawn(function() 
+    while true do     
+        pcall(function()  
+        local currentGameHour = math.floor(game.Lighting.ClockTime)            
+            local currentMinutes = math.floor((game.Lighting.ClockTime - currentGameHour) * 60)
+         if  getIsActive1() then
+         Multi()
+           end         
+            if getIsActive6() and (
+                ((currentGameHour == 12 and currentMinutes >= 10) or (currentGameHour > 12) or (currentGameHour == 0 or currentGameHour == 1 and currentMinutes <= 1)) or 
+                ((currentGameHour == 5 and currentMinutes >= 40) or (currentGameHour > 5 and currentGameHour < 8) or (currentGameHour == 8 and currentMinutes <= 22))
+            ) then
+                Multi()
+            end
+        end)
+        task.wait()
+    end
+end)
+  
+
 
 task.spawn(function()
     while true do
@@ -1822,9 +1809,19 @@ end)
 task.spawn(function()
     while flying do
         pcall(function()
-            local hum = lplr.Character and lplr.Character:FindFirstChild("Humanoid")
-            if hum and hum.MoveDirection.Magnitude > 0 then
-                lplr.Character:TranslateBy(hum.MoveDirection * speed)
+            local hum = lplr.Character and lplr.Character:FindFirstChild("HumanoidRootPart")
+            local humanoid = lplr.Character and lplr.Character:FindFirstChild("Humanoid")
+            if hum and humanoid then
+                local moveDir = humanoid.MoveDirection
+               local yDirection = 0
+                if humanoid.WalkSpeed >= 32 then
+                    if humanoid.Jump then
+                        yDirection = speed * 0.35
+                    end          
+                    if moveDir.Magnitude > 0 or yDirection ~= 0 then
+                        hum.CFrame = hum.CFrame + Vector3.new(moveDir.X, yDirection, moveDir.Z) * speed
+                    end
+                end
             end
         end)
         task.wait()
