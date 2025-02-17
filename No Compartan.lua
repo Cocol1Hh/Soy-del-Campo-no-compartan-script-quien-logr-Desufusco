@@ -1528,15 +1528,24 @@ pcall(function()
                                             wait(.01)
                                             canvolley = true
                                         end)
-                                    end
-                                    if attacked and getIsActive4() then
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
-                                    end
+                                    end                                  
                             end              
                        end)
            end)
 end
+
+
+task.spawn(function() 
+    while true do     
+        pcall(function()  
+        if getIsActive4() and data.Quest.Value ~= "" then
+                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
+                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
+                                    end
+          end)
+        task.wait()
+    end
+end)
 
 task.spawn(function() 
     while true do     
