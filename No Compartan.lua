@@ -1336,6 +1336,10 @@ end
         FindChar().Humanoid:ChangeState(8)
         FindChar().Humanoid:ChangeState(18)    
     camera() 
+          if getIsActive4() and data.Quest.Value ~= "" then
+                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
+                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
+                                    end
          end)         
       end
   end)
@@ -1534,19 +1538,6 @@ pcall(function()
            end)
 end
 
-
-task.spawn(function() 
-    while true do     
-        pcall(function()  
-        if getIsActive4() and data.Quest.Value ~= "" then
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
-                                    end
-          end)
-        task.wait()
-    end
-end)
-
 task.spawn(function() 
     while true do     
         pcall(function()  
@@ -1568,35 +1559,13 @@ end)
   
 
 
-task.spawn(function()
-    while true do
-        pcall(function()
-            local bb = game:service 'VirtualUser'
-           game:service 'Players'.LocalPlayer.Idled:connect(function()
-        bb:CaptureController()
-        bb:ClickButton2(Vector2.new())
-            end)
-            keypress(Enum.KeyCode.L)  
-            local GC = getconnections or get_signal_cons
-if GC then
-	for i,v in pairs(GC(lplr.Idled)) do
-		if v["Disable"] then
-			v["Disable"](v)
-		elseif v["Disconnect"] then
-			v["Disconnect"](v)
-		end
-	end
-else
-	lplr.Idled:Connect(function()
-		local VirtualUser = game:GetService("VirtualUser")
-		VirtualUser:CaptureController()
-		VirtualUser:ClickButton2(Vector2.new())
-	end)
-end
-        end)
-        task.wait(100)
-    end
+local vu = game:GetService("VirtualUser")
+game:GetService("Players").LocalPlayer.Idled:Connect(function()
+    vu:CaptureController()
+    vu:ClickButton2(Vector2.new())
 end)
+
+
            
  task.spawn(function()
     while task.wait() do       
