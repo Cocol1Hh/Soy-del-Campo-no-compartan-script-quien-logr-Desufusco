@@ -235,7 +235,7 @@ Fernando.Parent = game.CoreGui
 
 
 local suffixes = {'', 'K', 'M', 'B', 'T', 'qd', 'Qn'}
-function formatNumber(number)
+local function formatNumber(number)
     local isNegative = number < 0
     number = math.abs(number)
     for i = 1, #suffixes do
@@ -245,14 +245,8 @@ function formatNumber(number)
             return (isNegative and "-" or "") .. formatted .. suffixes[i]
         end
     end
-    return (isNegative and "-" or "") .. formatNumberWithCommas(number)
+    return (isNegative and "-" or "") .. tostring(number):reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
 end
-
-function formatNumberWithCommas(n)
-    n = tostring(n)
-    return n:reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
-end
-
 
 Frame.Parent = Fernando
 Frame.BackgroundTransparency = 1
@@ -953,6 +947,98 @@ if selectedForm then
     end
 end
 
+--Radar
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local function createTag(head)
+    local tag = Instance.new("BillboardGui")
+    tag.Name = "StatsTag"
+    tag.Adornee = head
+    tag.Size = UDim2.new(0, 120, 0, 30)
+    tag.StudsOffset = Vector3.new(0, 2.5, 0)
+    tag.AlwaysOnTop = true
+    tag.Parent = head
+    
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(1, 0, 0.6, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.TextColor3 = Color3.new(1, 1, 1)
+    textLabel.TextScaled = true
+    textLabel.Font = Enum.Font.SourceSansBold
+    textLabel.TextStrokeTransparency = 0
+    textLabel.Parent = tag
+    
+    local healthBarFrame = Instance.new("Frame")
+    healthBarFrame.Name = "HealthBarFrame"
+    healthBarFrame.Size = UDim2.new(1, 0, 0.1, 0)
+    healthBarFrame.Position = UDim2.new(0, 0, 0.7, 0)
+    healthBarFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+    healthBarFrame.BorderSizePixel = 0
+    healthBarFrame.Parent = tag
+    
+    local healthBar = Instance.new("Frame")
+    healthBar.Name = "HealthBar"
+    healthBar.Size = UDim2.new(1, 0, 1, 0)
+    healthBar.BackgroundColor3 = Color3.new(0, 1, 0)
+    healthBar.BorderSizePixel = 0
+    healthBar.Parent = healthBarFrame
+    
+    local kiBarFrame = Instance.new("Frame")
+    kiBarFrame.Name = "KiBarFrame"
+    kiBarFrame.Size = UDim2.new(1, 0, 0.1, 0)
+    kiBarFrame.Position = UDim2.new(0, 0, 0.85, 0)
+    kiBarFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+    kiBarFrame.BorderSizePixel = 0
+    kiBarFrame.Parent = tag
+    
+    local kiBar = Instance.new("Frame")
+    kiBar.Name = "KiBar"
+    kiBar.Size = UDim2.new(1, 0, 1, 0)
+    kiBar.BackgroundColor3 = Color3.new(0, 0.7, 1)
+    kiBar.BorderSizePixel = 0
+    kiBar.Parent = kiBarFrame
+
+    return tag, textLabel, healthBar, kiBar
+end
+
+local function updateTag(player)
+    local character = player.Character
+    if not character then return end
+
+    local head = character:FindFirstChild("Head")
+    local stats = character:FindFirstChild("Stats")
+    if not head or not stats then return end
+
+    local data = ReplicatedStorage:FindFirstChild("Datas") and ReplicatedStorage.Datas:FindFirstChild(player.UserId)
+    local kiStat = stats:FindFirstChild("Ki")
+    local humanoid = character:FindFirstChild("Humanoid")
+    if not data or not kiStat or not humanoid then return end
+
+    local strength = data:FindFirstChild("Strength") and data.Strength.Value or 0
+    local health = humanoid.Health
+    local maxHealth = humanoid.MaxHealth
+    local rebirth = data:FindFirstChild("Rebirth") and data.Rebirth.Value or 0
+    local kiValue = kiStat.Value
+    local maxKi = kiStat.MaxValue or 1
+
+    local tag = head:FindFirstChild("StatsTag")
+    local textLabel, healthBar, kiBar
+    if not tag then
+        tag, textLabel, healthBar, kiBar = createTag(head)
+    else
+        textLabel = tag:FindFirstChildOfClass("TextLabel")
+        healthBar = tag.HealthBarFrame.HealthBar
+        kiBar = tag.KiBarFrame.KiBar
+    end
+
+    if textLabel and healthBar and kiBar then
+        textLabel.Text = string.format("F: %s / R: %s", formatNumber(strength), formatNumber(rebirth))
+        healthBar.Size = UDim2.new(math.clamp(health / maxHealth, 0, 1), 0, 1, 0)
+        kiBar.Size = UDim2.new(math.clamp(kiValue / maxKi, 0, 1), 0, 1, 0)
+    end
+end
+
 
 --Tp Players
 local getIsActive15 = createSwitch(Barra3, UDim2.new(0.2, 0, 0.275, 0), "Switch15", LoadSwitchState("Switch15"))--Tp
@@ -1018,8 +1104,6 @@ end
 local function updateList()
     Kill:ClearAllChildren()
     local playerList = {}
-    
-    
     for _, player in ipairs(game.Players:GetPlayers()) do
         table.insert(playerList, {player = player, strength = getStat(player, "Strength")})
     end
@@ -1048,6 +1132,47 @@ local function updateList()
 end
 
 Kill:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateList)
+
+
+--Radar
+local function updateAllTags()
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= Players.LocalPlayer then
+            updateTag(player)
+        end
+    end
+end
+
+RunService.Heartbeat:Connect(function()
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= Players.LocalPlayer then
+            local character = player.Character
+            if character then
+                local head = character:FindFirstChild("Head")
+                if head then
+                    local tag = head:FindFirstChild("StatsTag")
+                    if tag then
+                        local distance = (workspace.CurrentCamera.CFrame.Position - head.Position).Magnitude
+                        local scale = math.clamp(distance / 30, 1.5, 2)
+                        tag.Size = UDim2.new(0, 100 * scale, 0, 25 * scale)
+                    end
+                end
+            end
+        end
+    end
+end)
+
+local function onPlayerAdded(player)
+    player.CharacterAdded:Connect(function()
+        updateTag(player)
+    end)
+end
+
+for _, player in ipairs(Players:GetPlayers()) do
+    onPlayerAdded(player)
+end
+
+Players.PlayerAdded:Connect(onPlayerAdded)
 
 
 local getIsActive1 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.120, 0), "Switch1", LoadSwitchState("Switch1"))--Farm
@@ -1226,21 +1351,20 @@ task.spawn(function()
 end)
 
 
-task.spawn(function()
- lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)                        
+local CalB = false
+task.spawn(function()              
+lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)          
     while true do
         pcall(function()
-        local boss = game.Workspace.Living:FindFirstChild("Halloween Boss")
-            if game.PlaceId ~= 5151400895 and data.Quest.Value == "" and getIsActive12() and boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0  and yo() >= 5e7 then
-                        lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)                        
-                        if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
-                            lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)                 
-                          spawn(function()                  
-                           Ex.p:FireServer("Blacknwhite27",1)    
-                           Ex.mel:InvokeServer("Wolf Fang Fist", "Blacknwhite27") 
-                           Ex.mel:InvokeServer("High Power Rush", "Blacknwhite27")        
-                       end)                
-                    end
+            local boss = game.Workspace.Living:FindFirstChild("Halloween Boss")
+            if game.PlaceId ~= 5151400895 and data.Quest.Value == "" and getIsActive12() and boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 and yo() >= 3e7 then
+                CalB = true
+                lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)                        
+                if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
+                    lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)                 
+                end
+            else
+                CalB = false
             end
         end)
         task.wait()
@@ -1336,10 +1460,10 @@ end
         FindChar().Humanoid:ChangeState(8)
         FindChar().Humanoid:ChangeState(18)    
     camera() 
-          if getIsActive4() and data.Quest.Value ~= "" then
+          if getIsActive4() and data.Quest.Value ~= "" or CalB == true then
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
-                                    end
+                     end
          end)         
       end
   end)
@@ -1370,10 +1494,7 @@ task.spawn(function()
     end
 end)
 
-local Mel = { 
-    "Super Dragon Fist", "Wolf Fang Fist", "Meteor Crash", "Spirit Barrage", "God Slicer", 
-    "High Power Rush", "Mach Kick"
-}
+
 local Black = false
 task.spawn(function()
     while task.wait() do
@@ -1393,30 +1514,24 @@ task.spawn(function()
             end
             
             if getIsActive11() and player() then
-                local gokuBlack = game.Workspace.Living:FindFirstChild("Goku Black")
+            local gokuBlack = game.Workspace.Living:FindFirstChild("Goku Black")
                 local bossPosition = Vector3.new(848.1, 362.7, 2219.8)
-                if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack.Humanoid.Health > 0 then
-                    local distance = (gokuBlack.HumanoidRootPart.Position - bossPosition).Magnitude
-                    if distance <= 900 then
-                        rootPart.CFrame = gokuBlack.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
-                        Black = true
-                   else
-                        Black = false
-                    end
-                end
-            end
-       
-    for _, attack in ipairs(Mel) do
-    if  Black == true or Hallowen == true then
-        task.spawn(function()
-            game.ReplicatedStorage.Package.Events.mel:InvokeServer(attack, "Blacknwhite27")
-        end)            
+             if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack.Humanoid.Health > 0 then
+              local distance = (gokuBlack.HumanoidRootPart.Position - bossPosition).Magnitude
+            if distance <= 900 then
+               rootPart.CFrame = gokuBlack.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
+              Black = true
         end
+         else
+        Black = false
     end
-    
+       else
+    Black = false
+end
+      
             if getIsActive4() then
-                humanoid:ChangeState(11)
-                rootPart.Velocity = Vector3.zero
+                lplr.Character.Humanoid:ChangeState(11)
+	                lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
             end           
             if player() then
                 if lplr.Status.Blocking.Value ~= true and getIsActive4() then
@@ -1457,18 +1572,20 @@ task.spawn(function()
 }
 
     
-function Multi()
+task.spawn(function()
+while true do
 pcall(function()
+if  getIsActive1() and player() and CalB == false then
                 for i, npc in ipairs(npcList) do
                     local npcName, requisito, isActive = npc[1], npc[2], npc[3]
                     if isActive then
                         if yo() >= requisito then
                             local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
                             local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
-                            local bossInstance = game.Workspace.Living:FindFirstChild(npcName)
+                            local bossInstance = game.Workspace.Living:FindFirstChild(npcName)                  
                             if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
                                (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
-                               if data.Quest.Value == "" and player() and Black == false then
+                               if data.Quest.Value == "" then
                                 lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.4)  
                                 local args = {
                                     [1] = npcInstance
@@ -1490,10 +1607,19 @@ pcall(function()
                    end
               end
          end 
-         task.spawn(function() 
+         end
+     end)
+     task.wait()
+    end
+end)
+
+         
+canvolley = true        
+ task.spawn(function() 
+ while true do
+ pcall(function()
           local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
-           if yo() >= 40000 and data.Quest.Value ~= ""  and not lplr.Status:FindFirstChild("Invincible") and Jefe.Humanoid.Health > 0 and getIsActive3() or  getIsActive6() then                                    
-                                     local thrp = Jefe:WaitForChild("HumanoidRootPart",1)
+           if yo() >= 40000 and data.Quest.Value ~= ""  and not lplr.Status:FindFirstChild("Invincible") and Jefe.Humanoid.Health > 0 and getIsActive3() or Black == true or CalB == true then                                    
                                     local stats = yo()
                                     local moves = {}
                                     local attacked = false
@@ -1535,29 +1661,36 @@ pcall(function()
                                     end                                  
                             end              
                        end)
-           end)
-end
-
+                       task.wait()
+                   end
+             end)
+      
+  local boss = {"SSJG Kakata", "Broccoli", 1e8}               
 task.spawn(function() 
     while true do     
         pcall(function()  
+        local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
         local currentGameHour = math.floor(game.Lighting.ClockTime)            
             local currentMinutes = math.floor((game.Lighting.ClockTime - currentGameHour) * 60)
-         if  getIsActive1() then
-         Multi()
-           end         
             if getIsActive6() and (
                 ((currentGameHour == 12 and currentMinutes >= 10) or (currentGameHour > 12) or (currentGameHour == 0 or currentGameHour == 1 and currentMinutes <= 1)) or 
                 ((currentGameHour == 5 and currentMinutes >= 40) or (currentGameHour > 5 and currentGameHour < 8) or (currentGameHour == 8 and currentMinutes <= 22))
             ) then
-                Multi()
+                 if yo()>= boss[3] and data.Quest.Value == "" then
+                local currentBoss = game.Workspace.Living:FindFirstChild(boss[1])
+                local target = currentBoss and currentBoss.Humanoid.Health <= 0 and game.Workspace.Others.NPCs:FindFirstChild(boss[2]) or game.Workspace.Others.NPCs:FindFirstChild(boss[1])
+                if target then
+                    lplr.Character.HumanoidRootPart.CFrame = target.HumanoidRootPart.CFrame  * CFrame.new(0, 0, 4)                  
+                    game.ReplicatedStorage.Package.Events.Qaction:InvokeServer(target)
+                    end
+                end
+                lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Jefe.HumanoidRootPart.CFrame * CFrame.new(0,0,4.5).p, Jefe.HumanoidRootPart.Position)
             end
         end)
         task.wait()
     end
 end)
-  
-
+      
 
 local vu = game:GetService("VirtualUser")
 game:GetService("Players").LocalPlayer.Idled:Connect(function()
@@ -1565,8 +1698,6 @@ game:GetService("Players").LocalPlayer.Idled:Connect(function()
     vu:ClickButton2(Vector2.new())
 end)
 
-
-           
  task.spawn(function()
     while task.wait() do       
 pcall(function() 
@@ -1653,6 +1784,14 @@ task.spawn(function()
     end
  end)            
  
+ 
+ 
+task.spawn(function()
+    while task.wait(.9) do
+   updateAllTags()
+    end
+ end)            
+ 
  local Q = data:WaitForChild("Quest")
 local notified = false
 local function NotyQ()
@@ -1698,8 +1837,6 @@ game:GetService("UserInputService").InputBegan:Connect(function()
     afkTime = 0
     afkLabel.Text = "Tiempo AFK: 0s"
 end)
-
-
 
 
 task.spawn(function()
@@ -1779,6 +1916,7 @@ task.spawn(function()
             hasReinitialized = false
           end
            saveRebirthData()
+           
                 end                                                      
          end)        
     end
