@@ -1672,7 +1672,7 @@ task.spawn(function()
         local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
         local currentGameHour = math.floor(game.Lighting.ClockTime)            
             local currentMinutes = math.floor((game.Lighting.ClockTime - currentGameHour) * 60)
-            if getIsActive6() and (
+            if not getIsActive1()  and getIsActive6() and (
                 ((currentGameHour == 12 and currentMinutes >= 10) or (currentGameHour > 12) or (currentGameHour == 0 or currentGameHour == 1 and currentMinutes <= 1)) or 
                 ((currentGameHour == 5 and currentMinutes >= 40) or (currentGameHour > 5 and currentGameHour < 8) or (currentGameHour == 8 and currentMinutes <= 22))
             ) then
