@@ -1147,6 +1147,23 @@ task.spawn(function()
 end)
 
 
+task.spawn(function()
+    while task.wait() do
+        pcall(function()
+        local questValue = data.Quest.Value
+            if questValue ~= "" and getIsActive1() and player() then
+                local boss = game.Workspace.Living:FindFirstChild(questValue)
+                if boss and boss:FindFirstChild("HumanoidRootPart") then
+                    if boss:FindFirstChild("Humanoid") and boss.Humanoid.Health <= 0 then
+                    end
+                    lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5.7)      
+                     Ex.p:FireServer("Blacknwhite27",1)             
+                    end                 
+               end               
+         end)
+      end
+  end)
+
  npcList = {
     {"Vekuta (SSJBUI)", 2.375e9, true},
     {"Wukong Rose", 1.65e9, true},
@@ -1180,7 +1197,6 @@ pcall(function()
                     if isActive then
                         if yo() >= requisito then
                             local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
-                            local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
                             local bossInstance = game.Workspace.Living:FindFirstChild(npcName)                  
                             if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
                                (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
@@ -1191,7 +1207,7 @@ pcall(function()
                                 }
                                 game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(unpack(args))        
                                 end
-                              lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Jefe.HumanoidRootPart.CFrame * CFrame.new(0,0,4.5).p, Jefe.HumanoidRootPart.Position)                           
+                              
                                 break
                          end
                    end
