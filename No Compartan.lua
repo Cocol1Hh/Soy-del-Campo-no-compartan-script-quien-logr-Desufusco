@@ -1355,23 +1355,7 @@ task.spawn(function()
         end)
     end
  end)
- 
- task.spawn(function()
-    while task.wait() do
-        pcall(function()
-        local questValue = data.Quest.Value
-            if questValue ~= "" and getIsActive1() and player() then
-                local boss = game.Workspace.Living:FindFirstChild(questValue)
-                if boss and boss:FindFirstChild("HumanoidRootPart") then
-                    if boss:FindFirstChild("Humanoid") and boss.Humanoid.Health <= 0 then
-                    end
-                    lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5.7)      
-                     Ex.p:FireServer("Blacknwhite27",1)             
-                    end                 
-               end               
-         end)
-      end
-  end)
+
 
  npcList = {
     {"Vekuta (SSJBUI)", 2.375e9, true},
