@@ -1365,7 +1365,7 @@ task.spawn(function()
                 end                
                 local rebirthValue = data.Rebirth.Value
                 local rebirthThreshold = (rebirthValue * 3e6) + 2e6
-                if yo() >= rebirthThreshold and yo() < (rebirthThreshold * 2) and getIsActive5() then
+                if yo() >= rebirthThreshold and yo() < (rebirthThreshold * 2) and getIsActive3() then
                     Ex.reb:InvokeServer()
                 end
             end
