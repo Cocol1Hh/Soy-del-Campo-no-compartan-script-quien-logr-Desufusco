@@ -396,21 +396,18 @@ end)
 local textProperties = {
     {text = "Farm", position = UDim2.new(-0.155, 0, 0.115, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra1},
     {text = "Form", position = UDim2.new(0.350, 0, 0.115, 0), color = Color3.fromRGB(0, 255, 0), parent = Barra1},
-    {text = "Atck", position = UDim2.new(-0.160, 0, 0.195, 0), color = Color3.fromRGB(0, 255, 255), parent = Barra1},
-    {text = "Puch", position = UDim2.new(0.360, 0, 0.195, 0), color = Color3.fromRGB(0, 0, 255), parent = Barra1},
-    {text = "Reb", position = UDim2.new(-0.160, 0, 0.270, 0), color = Color3.fromRGB(255, 255, 0), parent = Barra1},
-    {text = "Ozaru", position = UDim2.new(0.350, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 255), parent = Barra1},
+    {text = "Reb", position = UDim2.new(-0.160, 0, 0.195, 0), color = Color3.fromRGB(0, 255, 255), parent = Barra1},
+    {text = "Ozaru", position = UDim2.new(0.360, 0, 0.195, 0), color = Color3.fromRGB(0, 0, 255), parent = Barra1},
+    {text = "Black", position = UDim2.new(-0.160, 0, 0.270, 0), color = Color3.fromRGB(255, 255, 0), parent = Barra1},
+    {text = "HA🎃", position = UDim2.new(0.350, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 255), parent = Barra1},
     {text = "Fly", position = UDim2.new(-0.04, 0, 0.320, 0), color = Color3.fromRGB(200, 300, 400), parent = Barra1},
     {text = "Brillo", position = UDim2.new(0.473, 0, 0.320, 0), color = Color3.fromRGB(180, 200, 100), parent = Barra1},
     {text = "Duck", position = UDim2.new(-0.160, 0, 0.420, 0), color = Color3.fromRGB(200, 100, 300), parent = Barra1},
     {text = "Farm2", position = UDim2.new(0.350, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70), parent = Barra1},
     {text = "Graf", position = UDim2.new(-0.160, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
     {text = "Plant", position = UDim2.new(0.350, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
-    {text = "Black", position = UDim2.new(-0.160, 0, 0.570, 0), color = Color3.fromRGB(200, 380, 90), parent = Barra1},
-    {text = "HA🎃", position = UDim2.new(0.360, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
-    
-    {text = "Klirin", position = UDim2.new(-0.155, 0, 0.085, 0), color = Color3.fromRGB(200, 190, 255), parent = Contenedor},
-    {text = "Mapa", position = UDim2.new(0.350, 0, 0.085, 0), color = Color3.fromRGB(255, 190, 150), parent = Contenedor},
+    {text = "Mapa", position = UDim2.new(-0.160, 0, 0.570, 0), color = Color3.fromRGB(200, 380, 90), parent = Barra1},
+    {text = "Klirin", position = UDim2.new(0.360, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
     {text = "Tp", position = UDim2.new(-0.160, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3},
     {text = "Actk", position = UDim2.new(0.350, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3},
     {text = "Copy", position = UDim2.new(-0.160, 0, 0.345, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3},
@@ -1002,19 +999,16 @@ Players.PlayerAdded:Connect(onPlayerAdded)
 
 local getIsActive1 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.120, 0), "Switch1", LoadSwitchState("Switch1"))--Farm
 local getIsActive2 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.115, 0), "Switch2", LoadSwitchState("Switch2"))--Form
-local getIsActive3 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.2, 0), "Switch3", LoadSwitchState("Switch3"))--Atack
-local getIsActive4 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.195, 0), "Switch4", LoadSwitchState("Switch4"))--Puch
-local getIsActive5 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.275, 0), "Switch5", LoadSwitchState("Switch5"))--Rebirth
-local getIsActive6 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.275, 0), "Switch6", LoadSwitchState("Switch6"))--Ozaru
+local getIsActive3 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.2, 0), "Switch3", LoadSwitchState("Switch3"))--Rebirth
+local getIsActive4 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.195, 0), "Switch4", LoadSwitchState("Switch4"))--Ozaru
+local getIsActive5 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.275, 0), "Switch5", LoadSwitchState("Switch5"))--Black
+local getIsActive6 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.275, 0), "Switch6", LoadSwitchState("Switch6"))--Hallowen🎃
 local getIsActive7 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.420, 0), "Switch7", LoadSwitchState("Switch7"))--Duck
 local getIsActive8 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.420, 0), "Switch8", LoadSwitchState("Switch8"))--Bºrª
 local getIsActive9 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.495, 0), "Switch9", LoadSwitchState("Switch9"))--Graf
 local getIsActive10 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.495, 0), "Switch10", LoadSwitchState("Switch10"))--Planet
-local getIsActive11 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.570, 0), "Switch11", LoadSwitchState("Switch11"))--Black
-local getIsActive12 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.570, 0), "Switch12", LoadSwitchState("Switch12"))--Hall🎃
-
-local getIsActive13 = createSwitch(Contenedor, UDim2.new(0.2, 0, 0.090, 0), "Switch13", LoadSwitchState("Switch13"))--Klirin
-local getIsActive14 = createSwitch(Contenedor, UDim2.new(0.755, 0, 0.090, 0), "Switch14", LoadSwitchState("Switch14"))--Mapa
+local getIsActive11 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.570, 0), "Switch11", LoadSwitchState("Switch11"))--Mapa
+local getIsActive12 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.570, 0), "Switch12", LoadSwitchState("Switch12"))--Klirin
 
 local getIsActive16 = createSwitch(Barra3, UDim2.new(0.740, 0, 0.275, 0), "Switch16", LoadSwitchState("Switch16"))--Atakes
 
@@ -1182,11 +1176,17 @@ lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)
     while true do
         pcall(function()
             local boss = game.Workspace.Living:FindFirstChild("Halloween Boss")
-            if game.PlaceId ~= 5151400895 and data.Quest.Value == "" and getIsActive12() and boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 and yo() >= 3e7 then
+            if game.PlaceId ~= 5151400895 and data.Quest.Value == "" and getIsActive6() and boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 and yo() >= 3e7 then
                 CalB = true
                 lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)                        
                 if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
-                    lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)                 
+                    lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)     
+                     spawn(function()                  
+                           Ex.mel:InvokeServer("Wolf Fang Fist", "Blacknwhite27") 
+                           Ex.mel:InvokeServer("High Power Rush", "Blacknwhite27")        
+                           Ex.mel:InvokeServer("God Slicer", "Blacknwhite27")  
+                             Ex.mel:InvokeServer("Spirit Barrage", "Blacknwhite27")        
+                       end)                            
                 end
             else
                 CalB = false
@@ -1195,6 +1195,8 @@ lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)
         task.wait()
     end
 end)
+
+
 
 local function copiarInformacionJugador()
     local jugador = selectedPlayer
@@ -1285,7 +1287,7 @@ end
         FindChar().Humanoid:ChangeState(8)
         FindChar().Humanoid:ChangeState(18)    
     camera() 
-          if getIsActive4() and data.Quest.Value ~= "" or CalB == true then
+          if getIsActive1() or getIsActive4()  and data.Quest.Value ~= "" or CalB == true then
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
                      end
@@ -1297,7 +1299,7 @@ end
 task.spawn(function()
     while true do
         pcall(function()
-            if getIsActive6() then
+            if getIsActive4() then
                 local currentGameHour = math.floor(game.Lighting.ClockTime)
                 local currentMinutes = math.floor((game.Lighting.ClockTime - currentGameHour) * 60)              
                 if (currentGameHour == 1 and currentMinutes >= 2) or (currentGameHour > 1 and currentGameHour < 5) or (currentGameHour == 5 and currentMinutes < 40) then
@@ -1334,11 +1336,27 @@ task.spawn(function()
 
             if not (ki and humanoid and rootPart) then return end
 
-            if ki.Value < ki.MaxValue * 0.25 and player() and getIsActive4() and yo() <= 800e9 then
+            if ki.Value < ki.MaxValue * 0.25 and player() and getIsActive1() and yo() <= 800e9 then
                 Ex.cha:InvokeServer("Blacknwhite27")
             end
+            
+                    if getIsActive5() and player() then
+            local gokuBlack = game.Workspace.Living:FindFirstChild("Goku Black")
+                local bossPosition = Vector3.new(848.1, 362.7, 2219.8)
+             if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack.Humanoid.Health > 0 then
+              local distance = (gokuBlack.HumanoidRootPart.Position - bossPosition).Magnitude
+            if distance <= 900 then
+               rootPart.CFrame = gokuBlack.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
+              Black = true
+        end
+         else
+        Black = false
+    end
+       else
+    Black = false
+           end
             if player() then
-                if lplr.Status.Blocking.Value ~= true and getIsActive4() then
+                if lplr.Status.Blocking.Value ~= true and getIsActive1() then
                     Ex.block:InvokeServer(true)
                 end                
                 local rebirthValue = data.Rebirth.Value
@@ -1350,6 +1368,35 @@ task.spawn(function()
         end)
     end
  end)
+ 
+ local boss = {"SSJG Kakata", "Broccoli", 1e8}               
+task.spawn(function() 
+    while true do     
+        pcall(function()  
+        if not getIsActive1()  and getIsActive4() then
+        local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
+        local currentGameHour = math.floor(game.Lighting.ClockTime)            
+            local currentMinutes = math.floor((game.Lighting.ClockTime - currentGameHour) * 60)
+            if  (
+                ((currentGameHour == 12 and currentMinutes >= 10) or (currentGameHour > 12) or (currentGameHour == 0 or currentGameHour == 1 and currentMinutes <= 1)) or 
+                ((currentGameHour == 5 and currentMinutes >= 40) or (currentGameHour > 5 and currentGameHour < 8) or (currentGameHour == 8 and currentMinutes <= 22))
+            ) then
+                 if yo()>= boss[3] and data.Quest.Value == "" then
+                local currentBoss = game.Workspace.Living:FindFirstChild(boss[1])
+                local target = currentBoss and currentBoss.Humanoid.Health <= 0 and game.Workspace.Others.NPCs:FindFirstChild(boss[2]) or game.Workspace.Others.NPCs:FindFirstChild(boss[1])
+                if target then
+                    lplr.Character.HumanoidRootPart.CFrame = target.HumanoidRootPart.CFrame  * CFrame.new(0, 0, 4)                  
+                    game.ReplicatedStorage.Package.Events.Qaction:InvokeServer(target)
+                    end
+                end
+                lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Jefe.HumanoidRootPart.CFrame * CFrame.new(0,0,4.5).p, Jefe.HumanoidRootPart.Position)
+            end
+          end
+        end)
+        task.wait()
+    end
+end)
+      
 
 
  npcList = {
@@ -1380,6 +1427,7 @@ task.spawn(function()
 task.spawn(function()
 while true do
 pcall(function()
+if getIsActive1() then
                 for i, npc in ipairs(npcList) do
                     local npcName, requisito, isActive = npc[1], npc[2], npc[3]
                     if isActive then
@@ -1402,6 +1450,7 @@ pcall(function()
                    end
               end
          end 
+       end
      end)
      task.wait()
     end
@@ -1413,7 +1462,7 @@ canvolley = true
  while true do
  pcall(function()
           local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
-           if yo() >= 40000 and data.Quest.Value ~= ""  and not lplr.Status:FindFirstChild("Invincible") and Jefe.Humanoid.Health > 0 and getIsActive3() or Black == true or CalB == true then                                    
+           if yo() >= 40000 and data.Quest.Value ~= ""  and not lplr.Status:FindFirstChild("Invincible") and Jefe.Humanoid.Health > 0 and  getIsActive4() or getIsActive1() or Black == true  then                                    
                                     local stats = yo()
                                     local moves = {}
                                     local attacked = false
@@ -1428,6 +1477,9 @@ canvolley = true
                                     end
                                     if stats >= 125000 then
                                         table.insert(moves, "Mach Kick")
+                                    end
+                                    if stats >= 100e6 then
+                                        table.insert(moves, "Super Dragon Fist")
                                     end
                                     if stats >= 60e6 then
                                         if data.Allignment.Value == "Good" then
@@ -1470,12 +1522,12 @@ end)
  task.spawn(function()
     while task.wait() do       
 pcall(function() 
-            if getIsActive13() then
+            if getIsActive11() then
             npcList[21][3] = true  
             else
             npcList[21][3] = false
             end
-            if getIsActive14() then
+            if getIsActive12() then
             npcList[18][3] = true  
             else
             npcList[18][3] = false
