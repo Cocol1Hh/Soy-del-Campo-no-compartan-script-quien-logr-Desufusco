@@ -1287,7 +1287,11 @@ end
         FindChar().Humanoid:ChangeState(8)
         FindChar().Humanoid:ChangeState(18)    
     camera() 
-          if getIsActive1() or getIsActive4()  and data.Quest.Value ~= "" or CalB == true then
+          if getIsActive1()  and data.Quest.Value ~= ""  then
+                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
+                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
+                     end
+                     if getIsActive4()  and data.Quest.Value ~= ""  then
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
                      end
@@ -1437,7 +1441,7 @@ if getIsActive1() then
                             local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
                             if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
                                (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
-                               if getIsActive1() and player()  and data.Quest.Value == "" and CalB == false then
+                               if getIsActive1() and player()  and data.Quest.Value == ""  then
                                 lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.4)  
                                 local args = {
                                     [1] = npcInstance
@@ -1462,7 +1466,7 @@ canvolley = true
  while true do
  pcall(function()
           local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
-           if yo() >= 40000 and data.Quest.Value ~= ""  and not lplr.Status:FindFirstChild("Invincible") and Jefe.Humanoid.Health > 0 and  getIsActive4() or getIsActive1() or Black == true  then                                    
+           if yo() >= 40000 and data.Quest.Value ~= ""  and not lplr.Status:FindFirstChild("Invincible") and Jefe.Humanoid.Health > 0 and  getIsActive1() or Black == true  then                                    
                                     local stats = yo()
                                     local moves = {}
                                     local attacked = false
