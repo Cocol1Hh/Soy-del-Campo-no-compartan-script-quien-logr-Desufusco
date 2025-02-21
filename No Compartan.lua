@@ -729,6 +729,140 @@ if selectedForm then
 end
 
 --Radar
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+
+
+local function createTag(head)
+    local tag = Instance.new("BillboardGui")
+    tag.Name = "StatsTag"
+    tag.Adornee = head
+    tag.Size = UDim2.new(0, 140, 0, 60)
+    tag.StudsOffset = Vector3.new(0, 3, 0)
+    tag.AlwaysOnTop = true
+    tag.Parent = head
+
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Name = "NameLabel"
+    nameLabel.Size = UDim2.new(1, 0, 0.3, 0)
+    nameLabel.Position = UDim2.new(0, 0, 0, 0)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.TextColor3 = Color3.new(1, 1, 1)
+    nameLabel.TextScaled = true
+    nameLabel.Font = Enum.Font.SourceSansBold
+    nameLabel.TextStrokeTransparency = 0
+    nameLabel.Parent = tag
+
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Name = "StatsLabel"
+    textLabel.Size = UDim2.new(1, 0, 0.3, 0)
+    textLabel.Position = UDim2.new(0, 0, 0.3, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.TextColor3 = Color3.new(1, 1, 1)
+    textLabel.TextScaled = true
+    textLabel.Font = Enum.Font.SourceSansBold
+    textLabel.TextStrokeTransparency = 0
+    textLabel.Parent = tag
+
+    local healthBarFrame = Instance.new("Frame")
+    healthBarFrame.Name = "HealthBarFrame"
+    healthBarFrame.Size = UDim2.new(1, 0, 0.15, 0)
+    healthBarFrame.Position = UDim2.new(0, 0, 0.65, 0)
+    healthBarFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+    healthBarFrame.BorderSizePixel = 0
+    healthBarFrame.Parent = tag
+
+    local healthBar = Instance.new("Frame")
+    healthBar.Name = "HealthBar"
+    healthBar.Size = UDim2.new(1, 0, 1, 0)
+    healthBar.BackgroundColor3 = Color3.new(0, 1, 0)
+    healthBar.BorderSizePixel = 0
+    healthBar.Parent = healthBarFrame
+
+    local kiBarFrame = Instance.new("Frame")
+    kiBarFrame.Name = "KiBarFrame"
+    kiBarFrame.Size = UDim2.new(1, 0, 0.15, 0)
+    kiBarFrame.Position = UDim2.new(0, 0, 0.85, 0)
+    kiBarFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+    kiBarFrame.BorderSizePixel = 0
+    kiBarFrame.Parent = tag
+
+    local kiBar = Instance.new("Frame")
+    kiBar.Name = "KiBar"
+    kiBar.Size = UDim2.new(1, 0, 1, 0)
+    kiBar.BackgroundColor3 = Color3.new(0, 0.7, 1)
+    kiBar.BorderSizePixel = 0
+    kiBar.Parent = kiBarFrame
+    
+    local UICorner_Health = Instance.new("UICorner")
+    UICorner_Health.CornerRadius = UDim.new(0, 10)
+    UICorner_Health.Parent = healthBar
+    local UICorner_Ki = Instance.new("UICorner")
+    UICorner_Ki.CornerRadius = UDim.new(0, 10)
+    UICorner_Ki.Parent = kiBar
+
+    return tag, nameLabel, textLabel, healthBar, kiBar
+end
+
+local function updateTag(player)
+    if player == Players.LocalPlayer then return end  
+
+    local character = player.Character
+    if not character then return end
+
+    local head = character:FindFirstChild("Head")
+    local stats = character:FindFirstChild("Stats")
+    if not head or not stats then return end
+
+    local data = ReplicatedStorage:FindFirstChild("Datas") and ReplicatedStorage.Datas:FindFirstChild(player.UserId)
+    local kiStat = stats:FindFirstChild("Ki")
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if not data or not kiStat or not humanoid then return end
+
+    local strength = data:FindFirstChild("Strength") and data.Strength.Value or 0
+    local rebirth = data:FindFirstChild("Rebirth") and data.Rebirth.Value or 0
+    local health = humanoid.Health
+    local maxHealth = humanoid.MaxHealth
+    local kiValue = kiStat.Value
+    local maxKi = kiStat.MaxValue or 1
+
+    local playerName = player.Name
+    local playerDisplayName = player.DisplayName
+    local fullName = playerDisplayName ~= playerName and string.format("%s [%s]", playerName, playerDisplayName) or playerName
+
+    local tag = head:FindFirstChild("StatsTag")
+    local nameLabel, textLabel, healthBar, kiBar
+    if not tag then
+        tag, nameLabel, textLabel, healthBar, kiBar = createTag(head)
+    else
+        nameLabel = tag:FindFirstChild("NameLabel")
+        textLabel = tag:FindFirstChild("StatsLabel")
+        healthBar = tag:FindFirstChild("HealthBarFrame") and tag.HealthBarFrame:FindFirstChild("HealthBar")
+        kiBar = tag:FindFirstChild("KiBarFrame") and tag.KiBarFrame:FindFirstChild("KiBar")
+    end
+
+    if nameLabel and textLabel and healthBar and kiBar then
+        nameLabel.Text = fullName  
+        textLabel.Text = string.format("F: %s | R: %s", formatNumber(strength), formatNumber(rebirth))  
+        healthBar.Size = UDim2.new(math.clamp(health / maxHealth, 0, 1), 0, 1, 0)
+        kiBar.Size = UDim2.new(math.clamp(kiValue / maxKi, 0, 1), 0, 1, 0)
+    end
+end
+
+local function onPlayerAdded(player)
+    player.CharacterAdded:Connect(function()
+        updateTag(player)
+    end)
+    RunService.Heartbeat:Connect(function()
+        updateTag(player)
+    end)
+end
+
+Players.PlayerAdded:Connect(onPlayerAdded)
+for _, player in ipairs(Players:GetPlayers()) do
+    onPlayerAdded(player)
+end
 
 
 --Tp Players
@@ -826,6 +960,45 @@ Kill:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateList)
 
 
 --Radar
+local function updateAllTags()
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= Players.LocalPlayer then
+            updateTag(player)
+        end
+    end
+end
+
+RunService.Heartbeat:Connect(function()
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= Players.LocalPlayer then
+            local character = player.Character
+            if character then
+                local head = character:FindFirstChild("Head")
+                if head then
+                    local tag = head:FindFirstChild("StatsTag")
+                    if tag then
+                        local distance = (workspace.CurrentCamera.CFrame.Position - head.Position).Magnitude
+                        local scale = math.clamp(distance / 30, 1.5, 2)
+                        tag.Size = UDim2.new(0, 100 * scale, 0, 25 * scale)
+                    end
+                end
+            end
+        end
+    end
+end)
+
+local function onPlayerAdded(player)
+    player.CharacterAdded:Connect(function()
+        updateTag(player)
+    end)
+end
+
+for _, player in ipairs(Players:GetPlayers()) do
+    onPlayerAdded(player)
+end
+
+Players.PlayerAdded:Connect(onPlayerAdded)
+
 
 local getIsActive1 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.120, 0), "Switch1", LoadSwitchState("Switch1"))--Farm
 local getIsActive2 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.115, 0), "Switch2", LoadSwitchState("Switch2"))--Form
@@ -1147,7 +1320,43 @@ task.spawn(function()
 end)
 
 
+local Black = false
 task.spawn(function()
+    while task.wait() do
+        pcall(function()
+            local character = lplr.Character
+            if not character or not character:FindFirstChild("Stats") then return end
+
+            local stats = character.Stats
+            local ki = stats:FindFirstChild("Ki")
+            local humanoid = character:FindFirstChild("Humanoid")
+            local rootPart = character:FindFirstChild("HumanoidRootPart")
+
+            if not (ki and humanoid and rootPart) then return end
+
+            if ki.Value < ki.MaxValue * 0.25 and player() and getIsActive4() and yo() <= 800e9 then
+                Ex.cha:InvokeServer("Blacknwhite27")
+            end
+            
+            if getIsActive4() then
+                lplr.Character.Humanoid:ChangeState(11)
+	                lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
+            end           
+            if player() then
+                if lplr.Status.Blocking.Value ~= true and getIsActive4() then
+                    Ex.block:InvokeServer(true)
+                end                
+                local rebirthValue = data.Rebirth.Value
+                local rebirthThreshold = (rebirthValue * 3e6) + 2e6
+                if yo() >= rebirthThreshold and yo() < (rebirthThreshold * 2) and getIsActive5() then
+                    Ex.reb:InvokeServer()
+                end
+            end
+        end)
+    end
+ end)
+ 
+ task.spawn(function()
     while task.wait() do
         pcall(function()
         local questValue = data.Quest.Value
@@ -1198,6 +1407,7 @@ pcall(function()
                         if yo() >= requisito then
                             local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
                             local bossInstance = game.Workspace.Living:FindFirstChild(npcName)                  
+                            local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
                             if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
                                (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
                                if getIsActive1() and player()  and data.Quest.Value == "" and CalB == false then
@@ -1207,7 +1417,7 @@ pcall(function()
                                 }
                                 game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(unpack(args))        
                                 end
-                              
+                                lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Jefe.HumanoidRootPart.CFrame * CFrame.new(0,0,4.5).p, Jefe.HumanoidRootPart.Position)
                                 break
                          end
                    end
@@ -1218,56 +1428,6 @@ pcall(function()
     end
 end)
 
-task.spawn(function()
-    while task.wait() do
-        pcall(function()
-        local Black = false
-            local character = lplr.Character
-            if not character or not character:FindFirstChild("Stats") then return end
-
-            local stats = character.Stats
-            local ki = stats:FindFirstChild("Ki")
-            local humanoid = character:FindFirstChild("Humanoid")
-            local rootPart = character:FindFirstChild("HumanoidRootPart")
-
-            if not (ki and humanoid and rootPart) then return end
-
-            if ki.Value < ki.MaxValue * 0.25 and player() and getIsActive4() and yo() <= 800e9 then
-                Ex.cha:InvokeServer("Blacknwhite27")
-            end
-            
-            if getIsActive11() and player() then
-            local gokuBlack = game.Workspace.Living:FindFirstChild("Goku Black")
-                local bossPosition = Vector3.new(848.1, 362.7, 2219.8)
-             if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack.Humanoid.Health > 0 then
-              local distance = (gokuBlack.HumanoidRootPart.Position - bossPosition).Magnitude
-            if distance <= 900 then
-               rootPart.CFrame = gokuBlack.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
-              Black = true
-                         end
-                      else
-                Black = false
-                         end
-                      else
-            Black = false
-                  end     
-            if getIsActive4() then
-                lplr.Character.Humanoid:ChangeState(11)
-	                lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
-            end           
-            if player() then
-                if lplr.Status.Blocking.Value ~= true and getIsActive4() then
-                    Ex.block:InvokeServer(true)
-                end                
-                local rebirthValue = data.Rebirth.Value
-                local rebirthThreshold = (rebirthValue * 3e6) + 2e6
-                if yo() >= rebirthThreshold and yo() < (rebirthThreshold * 2) and getIsActive5() then
-                    Ex.reb:InvokeServer()
-                end
-            end
-        end)
-    end
- end)
          
 canvolley = true        
  task.spawn(function() 
@@ -1320,32 +1480,7 @@ canvolley = true
                    end
              end)
       
-  local boss = {"SSJG Kakata", "Broccoli", 1e8}               
-task.spawn(function() 
-    while true do     
-        pcall(function()  
-        local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
-        local currentGameHour = math.floor(game.Lighting.ClockTime)            
-            local currentMinutes = math.floor((game.Lighting.ClockTime - currentGameHour) * 60)
-            if (
-                ((currentGameHour == 12 and currentMinutes >= 10) or (currentGameHour > 12) or (currentGameHour == 0 or currentGameHour == 1 and currentMinutes <= 1)) or 
-                ((currentGameHour == 5 and currentMinutes >= 40) or (currentGameHour > 5 and currentGameHour < 8) or (currentGameHour == 8 and currentMinutes <= 22))
-            ) then
-                 if yo()>= boss[3] and data.Quest.Value == "" and not getIsActive1()  and getIsActive6() then
-                local currentBoss = game.Workspace.Living:FindFirstChild(boss[1])
-                local target = currentBoss and currentBoss.Humanoid.Health <= 0 and game.Workspace.Others.NPCs:FindFirstChild(boss[2]) or game.Workspace.Others.NPCs:FindFirstChild(boss[1])
-                if target then
-                    lplr.Character.HumanoidRootPart.CFrame = target.HumanoidRootPart.CFrame  * CFrame.new(0, 0, 4)                  
-                    game.ReplicatedStorage.Package.Events.Qaction:InvokeServer(target)
-                    end
-                end
-                lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Jefe.HumanoidRootPart.CFrame * CFrame.new(0,0,4.5).p, Jefe.HumanoidRootPart.Position)
-            end
-        end)
-        task.wait()
-    end
-end)
-      
+
 
 local vu = game:GetService("VirtualUser")
 game:GetService("Players").LocalPlayer.Idled:Connect(function()
