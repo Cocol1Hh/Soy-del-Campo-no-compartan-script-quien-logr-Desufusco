@@ -1086,13 +1086,16 @@ end)
 
 task.spawn(function()
     pcall(function()
-local sts = {"Strength","Speed","Defense","Energy"}
+local sts = {"Strength", "Speed", "Defense", "Energy"}
 function yo()
     local l = math.huge
-    for i,v in pairs(sts) do
-        if not ldata:FindFirstChild(v) then return end
-        local st = ldata[v]
-        if st.Value < l then l = st.Value end
+    for _, v in pairs(sts) do
+        local stat = data:FindFirstChild(v)
+        if not stat then return end
+        local st = stat.Value
+        if st < l then
+            l = st
+        end
     end
     return l
 end
