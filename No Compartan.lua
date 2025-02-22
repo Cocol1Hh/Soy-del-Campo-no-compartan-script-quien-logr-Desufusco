@@ -406,8 +406,8 @@ local textProperties = {
     {text = "Farm2", position = UDim2.new(0.350, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70), parent = Barra1},
     {text = "Graf", position = UDim2.new(-0.160, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
     {text = "Plant", position = UDim2.new(0.350, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
-    {text = "Mapa", position = UDim2.new(-0.160, 0, 0.570, 0), color = Color3.fromRGB(200, 380, 90), parent = Barra1},
-    {text = "Klirin", position = UDim2.new(0.360, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
+    {text = "Klirin", position = UDim2.new(-0.160, 0, 0.570, 0), color = Color3.fromRGB(200, 380, 90), parent = Barra1},
+    {text = "Mapa", position = UDim2.new(0.360, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
     {text = "Tp", position = UDim2.new(-0.160, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3},
     {text = "Actk", position = UDim2.new(0.350, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3},
     {text = "Copy", position = UDim2.new(-0.160, 0, 0.345, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3},
@@ -1172,30 +1172,33 @@ end)
 
 local CalB = false
 task.spawn(function()              
-lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)          
+    if game.PlaceId ~= 5151400895 then
+lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)   
+end       
     while true do
         pcall(function()
             local boss = game.Workspace.Living:FindFirstChild("Halloween Boss")
-            if game.PlaceId ~= 5151400895 and data.Quest.Value == "" and getIsActive6() and boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 and yo() >= 3e7 then
+            if game.PlaceId ~= 5151400895 
+                and data.Quest.Value == "" 
+                and getIsActive6() 
+                and getIsActive6() 
+                and boss 
+                and boss:FindFirstChild("Humanoid") 
+                and boss.Humanoid.Health > 0 
+                and yo() >= 3e7 then
+                
                 CalB = true
-                lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)                        
-                if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
-                    lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)     
-                     spawn(function()                  
-                           Ex.mel:InvokeServer("Wolf Fang Fist", "Blacknwhite27") 
-                           Ex.mel:InvokeServer("High Power Rush", "Blacknwhite27")        
-                           Ex.mel:InvokeServer("God Slicer", "Blacknwhite27")  
-                             Ex.mel:InvokeServer("Spirit Barrage", "Blacknwhite27")        
-                       end)                            
+                lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)                                        
+                if boss.Humanoid.Health > 0 then
+                    lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)                 
                 end
             else
-                CalB = false
+                CalB = false 
             end
         end)
         task.wait()
     end
 end)
-
 
 
 local function copiarInformacionJugador()
@@ -1295,6 +1298,10 @@ end
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
                      end
+                     if CalB  then
+                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
+                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
+                     end
          end)         
       end
   end)
@@ -1326,7 +1333,6 @@ task.spawn(function()
 end)
 
 
-local Black = false
 task.spawn(function()
     while task.wait() do
         pcall(function()
@@ -1343,26 +1349,32 @@ task.spawn(function()
             if ki.Value < ki.MaxValue * 0.25 and player() and getIsActive1() and yo() <= 800e9 then
                 Ex.cha:InvokeServer("Blacknwhite27")
             end
-            
+            local Black = false
                     if getIsActive5() and player() then
-            local gokuBlack = game.Workspace.Living:FindFirstChild("Goku Black")
-                local bossPosition = Vector3.new(848.1, 362.7, 2219.8)
-             if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack.Humanoid.Health > 0 then
-              local distance = (gokuBlack.HumanoidRootPart.Position - bossPosition).Magnitude
-            if distance <= 900 then
-               rootPart.CFrame = gokuBlack.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
-              Black = true
+    local gokuBlack = game.Workspace.Living:FindFirstChild("Goku Black")
+    local bossPosition = Vector3.new(848.1, 362.7, 2219.8)
+    if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack.Humanoid.Health > 0 then
+        local distance = (gokuBlack.HumanoidRootPart.Position - bossPosition).Magnitude
+        if distance <= 900 then
+            rootPart.CFrame = gokuBlack.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
+            Black = true
+        else
+            Black = false
         end
-         else
+    else
         Black = false
     end
-       else
+else
     Black = false
-           end
+end
             if player() then
                 if lplr.Status.Blocking.Value ~= true and getIsActive1() then
                     Ex.block:InvokeServer(true)
                 end                
+                if getIsActive1() then
+                lplr.Character.Humanoid:ChangeState(11)
+	                lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
+            end           
                 local rebirthValue = data.Rebirth.Value
                 local rebirthThreshold = (rebirthValue * 3e6) + 2e6
                 if yo() >= rebirthThreshold and yo() < (rebirthThreshold * 2) and getIsActive3() then
@@ -1431,7 +1443,7 @@ end)
 task.spawn(function()
 while true do
 pcall(function()
-if getIsActive1() then
+if getIsActive1() and not CalB then
                 for i, npc in ipairs(npcList) do
                     local npcName, requisito, isActive = npc[1], npc[2], npc[3]
                     if isActive then
@@ -1449,6 +1461,13 @@ if getIsActive1() then
                                 game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(unpack(args))        
                                 end
                                 lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Jefe.HumanoidRootPart.CFrame * CFrame.new(0,0,4.5).p, Jefe.HumanoidRootPart.Position)
+	                               task.spawn(function()
+	                        for i,blast in pairs(FindChar().Effects:GetChildren()) do
+	                            if blast.Name == "Blast" then
+	                                blast.CFrame = Jefe.HumanoidRootPart.CFrame
+	                                       end
+	                                   end
+	                                end)
                                 break
                          end
                    end
@@ -1466,7 +1485,7 @@ canvolley = true
  while true do
  pcall(function()
           local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
-           if yo() >= 40000 and data.Quest.Value ~= ""  and not lplr.Status:FindFirstChild("Invincible") and Jefe.Humanoid.Health > 0 and  getIsActive1() or Black == true  then                                    
+if (yo() >= 40000 and data.Quest.Value ~= "" and not lplr.Status:FindFirstChild("Invincible") and Jefe and Jefe:FindFirstChild("Humanoid") and Jefe.Humanoid.Health > 0 and getIsActive1()) or Black  or CalB then                                    
                                     local stats = yo()
                                     local moves = {}
                                     local attacked = false
@@ -1596,6 +1615,7 @@ end)
 
 task.spawn(function()
     while task.wait(.4) do
+    pcall(function()
    if data.Quest.Value ~= "" and player() and game.PlaceId == 3311165597 then
          wait(2)
        for _, npc in ipairs(game.Workspace.Others.NPCs:GetChildren()) do
@@ -1606,6 +1626,7 @@ task.spawn(function()
           end
        end        
        updateList()
+       end)
     end
  end)            
  
