@@ -1554,13 +1554,22 @@ pcall(function()
             npcList[18][3] = true  
             else
             npcList[18][3] = false
-            end    
-         if getIsActive10() then
+            end          
+         end)
+      end
+ end)          
+ 
+ 
+ 
+ task.spawn(function()
+    while task.wait() do       
+pcall(function() 
+            if getIsActive10() then
             if yo() >= 150e6 and data.Zeni.Value >= 15000 and game.PlaceId == 3311165597  then
                 game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
                 wait(5)
             end
-            if yo() < 50e6 and game.PlaceId == 5151400895  then
+            if yo() < 150e6 and game.PlaceId == 5151400895  then
                 game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
                 wait(5)
             end
@@ -1568,7 +1577,6 @@ pcall(function()
          end)
       end
  end)          
- 
  
 local selectedPlayer = nil 
 function Oserbar()
