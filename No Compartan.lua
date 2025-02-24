@@ -1373,7 +1373,7 @@ end
 	                lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
             end           
                 local rebirthValue = data.Rebirth.Value
-                local rebirthThreshold = (rebirthValue * 3e6) + 2e6
+                local rebirthThreshold = (rebirthValue * 2e6) + 1e6
                 if yo() >= rebirthThreshold and yo() < (rebirthThreshold * 2) and getIsActive3() then
                     Ex.reb:InvokeServer()
                 end
@@ -1413,7 +1413,8 @@ end)
 
 
  npcList = {
-    {"Vekuta (SSJBUI)", 2.375e9, true},
+    {"Winter Beerus", 2.975e9, true},
+    {"Vekuta (SSJBUI)", 2.175e9, true},
     {"Wukong Rose", 1.65e9, true},
     {"Vekuta (LBSSJ4)", 1.05e9, true},
     {"Wukong (LBSSJ4)", 950e6, true},
@@ -1430,9 +1431,9 @@ end)
     {"Perfect Atom", 1275000, true},
     {"Chilly", 950000, true},
     {"Super Vegetable", 358000, true},
-    {"Mapa", 0, true},
-    {"Radish", 55000, true},
-    {"Kid Nohag", 40000, true},
+    {"Mapa", 55000, true},
+    {"Radish", 40000, true},
+    {"Kid Nohag", 0, true},
     {"Klirin", 0, true}
 }
 
@@ -1543,14 +1544,14 @@ end)
     while task.wait() do       
 pcall(function() 
             if getIsActive11() then
-            npcList[21][3] = true  
+            npcList[23][3] = true  
             else
-            npcList[21][3] = false
+            npcList[23][3] = false
             end
             if getIsActive12() then
-            npcList[18][3] = true  
+            npcList[22][3] = true  
             else
-            npcList[18][3] = false
+            npcList[22][3] = false
             end          
          end)
       end
@@ -1678,7 +1679,7 @@ task.spawn(function()
         end
         ligaLabel.Text = alignment
     end
-    game:GetService("Lighting").ClockTime = 18
+   
     updateWorldInfo()    
 end)
              
@@ -1723,7 +1724,7 @@ task.spawn(function()
 
         local rebirthValue = data.Rebirth.Value
         local strengthValue = data.Strength.Value
-        local nextRebirth = (rebirthValue * 3e6) + 2e6
+        local nextRebirth = (rebirthValue * 2e6) + 1e6
         local additionalStrength = lplr.Character and lplr.Character:FindFirstChild("Stats") and lplr.Character.Stats:FindFirstChild("Strength") and lplr.Character.Stats.Strength.Value or 0
         statusLabel.Text = string.format(
             "%s/%s/%s\n%s",
