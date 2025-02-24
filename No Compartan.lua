@@ -1503,12 +1503,45 @@ if (yo() >= 40000 and data.Quest.Value ~= "" and not lplr.Status:FindFirstChild(
              end)
       
 
-
-local vu = game:GetService("VirtualUser")
+task.spawn(function()
+       pcall(function() 
+            local vu = game:GetService("VirtualUser")
 game:GetService("Players").LocalPlayer.Idled:Connect(function()
     vu:CaptureController()
     vu:ClickButton2(Vector2.new())
+          end)
+         end)
+ end)          
+ 
+ 
+ task.spawn(function()
+pcall(function()
+    local bb = game:service 'VirtualUser'
+    game:service 'Players'.LocalPlayer.Idled:connect(function()
+        bb:CaptureController()
+        bb:ClickButton2(Vector2.new())
+        task.wait(2)
+    end)
 end)
+end)
+
+
+local GC = getconnections or get_signal_cons
+if GC then
+	for i,v in pairs(GC(lplr.Idled)) do
+		if v["Disable"] then
+			v["Disable"](v)
+		elseif v["Disconnect"] then
+			v["Disconnect"](v)
+		end
+	end
+else
+	lplr.Idled:Connect(function()
+		local VirtualUser = game:GetService("VirtualUser")
+		VirtualUser:CaptureController()
+		VirtualUser:ClickButton2(Vector2.new())
+	end)
+end
 
  task.spawn(function()
     while task.wait() do       
