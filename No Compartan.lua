@@ -346,7 +346,7 @@ Selct.CanvasSize = UDim2.new(0, 0, 0, 400)
 Selct.ScrollingDirection = Enum.ScrollingDirection.Y
 
 
-local forms = {"Divine Rose Prominence", "Astral Instinct", "Ultra Ego", "SSJBUI", "Beast", "LSSJ4"}
+local forms = {"Divine Blue", "Divine Rose Prominence", "Astral Instinct", "Ultra Ego", "SSJBUI", "Beast", "LSSJ4"}
 local frame = Instance.new("Frame", Selct)
 frame.Size = UDim2.new(0, 100, 0, #forms * 30 + 10)
 frame.Position = UDim2.new(0.8, -220, 0.270, -frame.Size.Y.Offset / 2)
@@ -407,7 +407,7 @@ local textProperties = {
     {text = "Graf", position = UDim2.new(-0.160, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
     {text = "Plant", position = UDim2.new(0.350, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
     {text = "Klirin", position = UDim2.new(-0.160, 0, 0.570, 0), color = Color3.fromRGB(200, 380, 90), parent = Barra1},
-    {text = "Mapa", position = UDim2.new(0.360, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
+    {text = "gohan", position = UDim2.new(0.360, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
     {text = "Tp", position = UDim2.new(-0.160, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3},
     {text = "Actk", position = UDim2.new(0.350, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3},
     {text = "Copy", position = UDim2.new(-0.160, 0, 0.345, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3},
@@ -1107,12 +1107,11 @@ function player()
 end
 
 
-
 task.spawn(function()
     while task.wait() do
         pcall(function()
         if player() and getIsActive2() then
-        local Forms = {'Divine Rose Prominence', 'Astral Instinct', 'Ultra Ego', 'SSJB4', 'True God of Creation', 
+        local Forms = {'Divine Blue', 'Divine Rose Prominence', 'Astral Instinct', 'Ultra Ego', 'SSJB4', 'True God of Creation', 
     'True God of Destruction', 'Super Broly', 'LSSJG', 'LSSJ4', 'SSJG4', 'LSSJ3', 'Mystic Kaioken', 
     'LSSJ Kaioken', 'SSJR3', 'SSJB3', 'God Of Destruction', 'God Of Creation', 'Jiren Ultra Instinct', 
     'Mastered Ultra Instinct', 'Godly SSJ2', 'Ultra Instinct Omen', 'Evil SSJ', 'Blue Evolution', 
@@ -1163,37 +1162,6 @@ task.spawn(function()
                 end
             end
         end)
-    end
-end)
-
-
-local CalB = false
-task.spawn(function()              
-    if game.PlaceId ~= 5151400895 then
-lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)   
-end       
-    while true do
-        pcall(function()
-            local boss = game.Workspace.Living:FindFirstChild("Halloween Boss")
-            if game.PlaceId ~= 5151400895 
-                and data.Quest.Value == "" 
-                and getIsActive6() 
-                and getIsActive6() 
-                and boss 
-                and boss:FindFirstChild("Humanoid") 
-                and boss.Humanoid.Health > 0 
-                and yo() >= 3e7 then
-                
-                CalB = true
-                lplr.Character.HumanoidRootPart.CFrame = CFrame.new(-35233, 18, -28942)                                        
-                if boss.Humanoid.Health > 0 then
-                    lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)                 
-                end
-            else
-                CalB = false 
-            end
-        end)
-        task.wait()
     end
 end)
 
@@ -1295,40 +1263,49 @@ end
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
                      end
-                     if CalB  then
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
-                     end
          end)         
       end
   end)
   
-
 task.spawn(function()
     while true do
         pcall(function()
             if getIsActive4() then
-                local currentGameHour = math.floor(game.Lighting.ClockTime)
-                local currentMinutes = math.floor((game.Lighting.ClockTime - currentGameHour) * 60)              
-                if (currentGameHour == 1 and currentMinutes >= 2) or (currentGameHour > 1 and currentGameHour < 5) or (currentGameHour == 5 and currentMinutes < 40) then
-                    if data.Quest.Value == "" then
-                        lplr.Character.HumanoidRootPart.CFrame = game.Workspace.Others.NPCs["Kid Nohag"].HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
-                        game.ReplicatedStorage.Package.Events.Qaction:InvokeServer(game.Workspace.Others.NPCs["Kid Nohag"])
+                local questOrder = {
+                    {npc = "Goku", boss = "Oozaru"},
+                    {npc = "Winter Wukong", boss = "Winter Wukong"}
+                }
+                
+                if data.Quest.Value == "" then
+                    for _, quest in ipairs(questOrder) do
+                        local boss = game.Workspace.Living:FindFirstChild(quest.boss)
+                        local npc = game.Workspace.Others.NPCs:FindFirstChild(quest.npc)
+                        
+                        if boss and boss:FindFirstChild("HumanoidRootPart") and 
+                           boss.Humanoid.Health > 0 and npc then
+                            lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
+                            game.ReplicatedStorage.Package.Events.Qaction:InvokeServer(npc)
+                            break
+                        end
                     end
-                    local boss = game.Workspace.Living:FindFirstChild("Oozaru")
-                    if boss and boss:FindFirstChild("HumanoidRootPart") then
-                        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
+                elseif data.Quest.Value == "Goku" then
+                    local oozaru = game.Workspace.Living:FindFirstChild("Oozaru")
+                    if oozaru and oozaru:FindFirstChild("HumanoidRootPart") and 
+                       oozaru.Humanoid.Health > 0 then
+                        lplr.Character.HumanoidRootPart.CFrame = oozaru.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
                     end
-                end
-                if currentGameHour == 5 and currentMinutes == 40 and data.Quest.Value == "Kid Nohag" then
-                    data.Quest.Value = ""
+                else
+                    local boss = game.Workspace.Living:FindFirstChild(data.Quest.Value)
+                    if boss and boss:FindFirstChild("HumanoidRootPart") and 
+                       boss.Humanoid.Health > 0 then
+                        lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
+                    end
                 end
             end
         end)
         task.wait()
     end
 end)
-
 
 task.spawn(function()
     while task.wait() do
@@ -1346,24 +1323,20 @@ task.spawn(function()
             if ki.Value < ki.MaxValue * 0.25 and player() and getIsActive1() and yo() <= 800e9 then
                 Ex.cha:InvokeServer("Blacknwhite27")
             end
-            local Black = false
-                    if getIsActive5() and player() then
+local Black = false
+
+if getIsActive5() and player()  then
     local gokuBlack = game.Workspace.Living:FindFirstChild("Goku Black")
-    local bossPosition = Vector3.new(848.1, 362.7, 2219.8)
     if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack.Humanoid.Health > 0 then
-        local distance = (gokuBlack.HumanoidRootPart.Position - bossPosition).Magnitude
-        if distance <= 900 then
+        if (gokuBlack.HumanoidRootPart.Position - Vector3.new(722.4, 209.7, 505.3)).Magnitude <= 900 then
             rootPart.CFrame = gokuBlack.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
             Black = true
         else
             Black = false
         end
-    else
-        Black = false
     end
-else
-    Black = false
 end
+            
             if player() then
                 if lplr.Status.Blocking.Value ~= true and getIsActive1() then
                     Ex.block:InvokeServer(true)
@@ -1382,34 +1355,26 @@ end
     end
  end)
  
- local boss = {"SSJG Kakata", "Broccoli", 1e8}               
-task.spawn(function() 
-    while true do     
-        pcall(function()  
-        if not getIsActive1()  and getIsActive4() then
-        local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
-        local currentGameHour = math.floor(game.Lighting.ClockTime)            
-            local currentMinutes = math.floor((game.Lighting.ClockTime - currentGameHour) * 60)
-            if  (
-                ((currentGameHour == 12 and currentMinutes >= 10) or (currentGameHour > 12) or (currentGameHour == 0 or currentGameHour == 1 and currentMinutes <= 1)) or 
-                ((currentGameHour == 5 and currentMinutes >= 40) or (currentGameHour > 5 and currentGameHour < 8) or (currentGameHour == 8 and currentMinutes <= 22))
-            ) then
-                 if yo()>= boss[3] and data.Quest.Value == "" then
-                local currentBoss = game.Workspace.Living:FindFirstChild(boss[1])
-                local target = currentBoss and currentBoss.Humanoid.Health <= 0 and game.Workspace.Others.NPCs:FindFirstChild(boss[2]) or game.Workspace.Others.NPCs:FindFirstChild(boss[1])
-                if target then
-                    lplr.Character.HumanoidRootPart.CFrame = target.HumanoidRootPart.CFrame  * CFrame.new(0, 0, 4)                  
-                    game.ReplicatedStorage.Package.Events.Qaction:InvokeServer(target)
+ local Black = false
+task.spawn(function()
+    while true do
+        pcall(function()
+            if getIsActive5() and player() then
+                local gokuBlack = game.Workspace.Living:FindFirstChild("Goku Black")
+                if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack.Humanoid.Health > 0 then
+                    local bossPosition = Vector3.new(722.4, 209.7, 505.3)
+                    if (gokuBlack.HumanoidRootPart.Position - bossPosition).Magnitude <= 900 then
+                        Black = true
+                        return
                     end
                 end
-                lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Jefe.HumanoidRootPart.CFrame * CFrame.new(0,0,4.5).p, Jefe.HumanoidRootPart.Position)
             end
-          end
+            Black = false
         end)
         task.wait()
     end
 end)
-      
+ 
 
 
  npcList = {
@@ -1419,10 +1384,12 @@ end)
     {"Vekuta (LBSSJ4)", 1.05e9, true},
     {"Wukong (LBSSJ4)", 950e6, true},
     {"Vegetable (LBSSJ4)", 650e6, true},
-    {"Vis (20%)", 500e6, true},
-    {"Vills (50%)", 350e6, true},
+    {"Vis (20%)", 520e6, true},
+    {"Winter Roshi", 400e6, true},
+    {"Vills (50%)", 300e6, true},
     {"Wukong (Omen)", 200e6, true},
-    {"Vegetable (GoD in-training)", 100e6, true},
+    {"Vegetable (GoD in-training)", 50e6, true},
+    {"Winter Wukong", 100e6, true},
     {"SSJG Kakata", 70e6, true},
     {"Broccoli", 35.5e6, true},
     {"SSJB Wukong", 4e6, true},
@@ -1437,11 +1404,13 @@ end)
     {"Klirin", 0, true}
 }
 
+
+
     
 task.spawn(function()
 while true do
 pcall(function()
-if getIsActive1() and not CalB then
+if getIsActive1()  then
                 for i, npc in ipairs(npcList) do
                     local npcName, requisito, isActive = npc[1], npc[2], npc[3]
                     if isActive then
@@ -1477,13 +1446,14 @@ if getIsActive1() and not CalB then
     end
 end)
 
+
          
 canvolley = true        
  task.spawn(function() 
  while true do
  pcall(function()
           local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
-if (yo() >= 40000 and data.Quest.Value ~= "" and not lplr.Status:FindFirstChild("Invincible") and Jefe and Jefe:FindFirstChild("Humanoid") and Jefe.Humanoid.Health > 0 and getIsActive1()) or Black  or CalB then                                    
+if (yo() >= 40000 and data.Quest.Value ~= "" and not lplr.Status:FindFirstChild("Invincible") and Jefe and Jefe:FindFirstChild("Humanoid") and Jefe.Humanoid.Health > 0 and getIsActive1()) or Black == true then                                    
                                     local stats = yo()
                                     local moves = {}
                                     local attacked = false
@@ -1542,16 +1512,16 @@ end)
 
  task.spawn(function()
     while task.wait() do       
-pcall(function() 
+       pcall(function() 
             if getIsActive11() then
+            npcList[24][3] = true  
+            else
+            npcList[24][3] = false
+            end
+            if getIsActive12() then
             npcList[23][3] = true  
             else
             npcList[23][3] = false
-            end
-            if getIsActive12() then
-            npcList[22][3] = true  
-            else
-            npcList[22][3] = false
             end          
          end)
       end
