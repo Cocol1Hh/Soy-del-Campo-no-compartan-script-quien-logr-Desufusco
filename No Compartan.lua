@@ -1787,6 +1787,98 @@ task.spawn(function()
     end
 end)
 
+local TeleportService = game:GetService("TeleportService")
+local timerLabel = Instance.new("TextLabel")
+local timeFileName = "SavedTime"
+local rebirthFileName = "SavedRebirth"
+local savedTimestamp = os.time()
+local savedRebirth = 0
+local elapsedTime = 0
+local isPaused = false
+local rebirthIncreased = false
+
+local function loadValue(name, default)
+    if isfile(name..".json") then
+        local data = HttpService:JSONDecode(readfile(name..".json"))
+        return data.v
+    end
+    return default
+end
+
+local function saveValue(name, value)
+    writefile(name..".json", HttpService:JSONEncode({v = value}))
+end
+
+local function resetTimer()
+    savedTimestamp = os.time()
+    elapsedTime = 0
+    saveValue(timeFileName, savedTimestamp)
+    savedRebirth = data.Rebirth.Value
+    saveValue(rebirthFileName, savedRebirth)
+    isPaused = false
+    rebirthIncreased = false
+end
+
+savedTimestamp = loadValue(timeFileName, os.time())
+savedRebirth = loadValue(rebirthFileName, data.Rebirth.Value)
+elapsedTime = os.time() - savedTimestamp
+
+timerLabel.Size = UDim2.new(0, 200, 0, 50)
+timerLabel.Position = UDim2.new(0.440, 0, 0.015, 0)
+timerLabel.Text = "Cargando..."
+timerLabel.BackgroundTransparency = 1  
+timerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+timerLabel.TextStrokeTransparency = 0  
+timerLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0) 
+timerLabel.Font = Enum.Font.SourceSansBold
+timerLabel.TextSize = 19
+timerLabel.Parent = Barra1
+
+spawn(function()
+    while true do
+        if game.PlaceId == 3311165597 then
+            if isPaused then
+                savedTimestamp = os.time() - elapsedTime
+                isPaused = false
+            end
+            elapsedTime = os.time() - savedTimestamp
+        elseif rebirthIncreased then
+            if not isPaused then
+                elapsedTime = os.time() - savedTimestamp
+                isPaused = true
+            end
+        else
+            elapsedTime = os.time() - savedTimestamp
+        end
+
+        local minutes = math.floor(elapsedTime / 60)
+        local seconds = elapsedTime % 60
+        timerLabel.Text = isPaused 
+            and string.format("%02d:%02d (Stop)", minutes, seconds)
+            or string.format("%02d:%02d", minutes, seconds)
+        task.wait(1)
+    end
+end)
+
+spawn(function()
+    while true do
+        if data.Rebirth.Value > savedRebirth then
+            if game.PlaceId == 3311165597 then
+                resetTimer()
+            else
+                rebirthIncreased = true
+                isPaused = true
+            end
+        end
+        task.wait(1)
+    end
+end)
+
+TeleportService.LocalPlayerArrivedFromTeleport:Connect(function()
+    if game.PlaceId == 3311165597 and rebirthIncreased then
+        resetTimer()
+    end
+end)
 
 --fin de todo \/
        end)    
