@@ -1346,7 +1346,7 @@ end
 	                lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
             end           
                 local rebirthValue = data.Rebirth.Value
-                local nextRebirth = (rebirthValue * 1.99e6) + 2e6
+                local rebirthThreshold = (rebirthValue * 1.99e6) + 2e6
                 if yo() >= rebirthThreshold and yo() < (rebirthThreshold * 2) and getIsActive3() then
                     Ex.reb:InvokeServer()
                 end
