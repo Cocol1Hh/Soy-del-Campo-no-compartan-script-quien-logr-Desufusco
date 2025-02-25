@@ -403,7 +403,7 @@ local textProperties = {
     {text = "Fly", position = UDim2.new(-0.04, 0, 0.320, 0), color = Color3.fromRGB(200, 300, 400), parent = Barra1},
     {text = "Brillo", position = UDim2.new(0.473, 0, 0.320, 0), color = Color3.fromRGB(180, 200, 100), parent = Barra1},
     {text = "Duck", position = UDim2.new(-0.160, 0, 0.420, 0), color = Color3.fromRGB(200, 100, 300), parent = Barra1},
-    {text = "Farm2", position = UDim2.new(0.350, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70), parent = Barra1},
+    {text = "Dupli", position = UDim2.new(0.350, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70), parent = Barra1},
     {text = "Graf", position = UDim2.new(-0.160, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
     {text = "Plant", position = UDim2.new(0.350, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
     {text = "Klirin", position = UDim2.new(-0.160, 0, 0.570, 0), color = Color3.fromRGB(200, 380, 90), parent = Barra1},
@@ -1004,7 +1004,7 @@ local getIsActive4 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.195, 0), "Switch
 local getIsActive5 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.275, 0), "Switch5", LoadSwitchState("Switch5"))--Black
 local getIsActive6 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.275, 0), "Switch6", LoadSwitchState("Switch6"))--Hallowen🎃
 local getIsActive7 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.420, 0), "Switch7", LoadSwitchState("Switch7"))--Duck
-local getIsActive8 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.420, 0), "Switch8", LoadSwitchState("Switch8"))--Bºrª
+local getIsActive8 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.420, 0), "Switch8", LoadSwitchState("Switch8"))--Duplicate server
 local getIsActive9 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.495, 0), "Switch9", LoadSwitchState("Switch9"))--Graf
 local getIsActive10 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.495, 0), "Switch10", LoadSwitchState("Switch10"))--Planet
 local getIsActive11 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.570, 0), "Switch11", LoadSwitchState("Switch11"))--Mapa
@@ -1543,6 +1543,27 @@ else
 	end)
 end
 
+spawn(function()
+    local lastState = getIsActive8()
+    while true do
+        local currentState = getIsActive8()
+        if not lastState and currentState then
+            pcall(function()
+                local playerCount = #game.Players:GetPlayers()
+                if playerCount > 1 then
+                    if game.PlaceId == 5151400895 then
+                        game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
+                    else
+                        game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
+                    end
+                end
+            end)
+        end
+        lastState = currentState
+        wait()
+    end
+end)
+
  task.spawn(function()
     while task.wait() do       
        pcall(function() 
@@ -1727,7 +1748,7 @@ task.spawn(function()
 
         local rebirthValue = data.Rebirth.Value
         local strengthValue = data.Strength.Value
-        local nextRebirth = (rebirthValue * 2e6) + 1e6
+        local nextRebirth = (rebirthValue * 1.99e6) + 2e6
         local additionalStrength = lplr.Character and lplr.Character:FindFirstChild("Stats") and lplr.Character.Stats:FindFirstChild("Strength") and lplr.Character.Stats.Strength.Value or 0
         statusLabel.Text = string.format(
             "%s/%s/%s\n%s",
@@ -1775,7 +1796,7 @@ task.spawn(function()
                local yDirection = 0
                 if humanoid.WalkSpeed >= 32 then
                     if humanoid.Jump then
-                        yDirection = speed * 0.35
+                        yDirection = speed * 0.45
                     end          
                     if moveDir.Magnitude > 0 or yDirection ~= 0 then
                         hum.CFrame = hum.CFrame + Vector3.new(moveDir.X, yDirection, moveDir.Z) * speed
@@ -1789,39 +1810,49 @@ end)
 
 local TeleportService = game:GetService("TeleportService")
 local timerLabel = Instance.new("TextLabel")
-local timeFileName = "SavedTime"
-local rebirthFileName = "SavedRebirth"
+local timeFileName = "SavedTime.json"
+local rebirthFileName = "SavedRebirth.json"
 local savedTimestamp = os.time()
 local savedRebirth = 0
 local elapsedTime = 0
 local isPaused = false
 local rebirthIncreased = false
 
-local function loadValue(name, default)
-    if isfile(name..".json") then
-        local data = HttpService:JSONDecode(readfile(name..".json"))
+local function createOrUpdateFile(fileName, value)
+    writefile(fileName, HttpService:JSONEncode({v = value}))
+end
+
+if not isfile(timeFileName) then
+    createOrUpdateFile(timeFileName, os.time())
+end
+
+if not isfile(rebirthFileName) then
+    createOrUpdateFile(rebirthFileName, data.Rebirth.Value)
+end
+
+local function loadValue(fileName, default)
+    if isfile(fileName) then
+        local data = HttpService:JSONDecode(readfile(fileName))
         return data.v
     end
     return default
 end
 
-local function saveValue(name, value)
-    writefile(name..".json", HttpService:JSONEncode({v = value}))
-end
+local savedTimestamp = loadValue(timeFileName, os.time())
+local savedRebirth = loadValue(rebirthFileName, data.Rebirth.Value)
+local elapsedTime = os.time() - savedTimestamp
+local isPaused = false
+local rebirthIncreased = false
 
 local function resetTimer()
     savedTimestamp = os.time()
     elapsedTime = 0
-    saveValue(timeFileName, savedTimestamp)
+    createOrUpdateFile(timeFileName, savedTimestamp)
     savedRebirth = data.Rebirth.Value
-    saveValue(rebirthFileName, savedRebirth)
+    createOrUpdateFile(rebirthFileName, savedRebirth)
     isPaused = false
     rebirthIncreased = false
 end
-
-savedTimestamp = loadValue(timeFileName, os.time())
-savedRebirth = loadValue(rebirthFileName, data.Rebirth.Value)
-elapsedTime = os.time() - savedTimestamp
 
 timerLabel.Size = UDim2.new(0, 200, 0, 50)
 timerLabel.Position = UDim2.new(0.440, 0, 0.015, 0)
