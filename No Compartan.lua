@@ -1378,8 +1378,8 @@ end)
 
 
  npcList = {
+ {"Winter Beerus", 2.775e9, true},
     {"Vekuta (SSJBUI)", 2.175e9, true},
-    {"Winter Beerus", 1.775e9, true},
     {"Wukong Rose", 1.65e9, true},
     {"Vekuta (LBSSJ4)", 1.05e9, true},
     {"Wukong (LBSSJ4)", 950e6, true},
