@@ -1320,7 +1320,7 @@ task.spawn(function()
 
             if not (ki and humanoid and rootPart) then return end
 
-            if ki.Value < ki.MaxValue * 0.35 and player() and getIsActive1() and yo() <= 800e9 then
+            if ki.Value < ki.MaxValue * 0.25 and player() and getIsActive1() and yo() <= 800e9 then
                 Ex.cha:InvokeServer("Blacknwhite27")
             end
 local Black = false
@@ -1345,11 +1345,11 @@ end
                 lplr.Character.Humanoid:ChangeState(11)
 	                lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
             end           
-               local rebirthValue = data.Rebirth.Value
-              local rebirthThreshold = (rebirthValue * 1.99e6) + 2e6
-              if yo() < (rebirthThreshold * 2) then
-                Ex.reb:InvokeServer()
-               end
+                local rebirthValue = data.Rebirth.Value
+                local rebirthThreshold = (rebirthValue * 1.99e6) + 2e6
+                if yo() >= rebirthThreshold and yo() < (rebirthThreshold * 2) and getIsActive3() then
+                    Ex.reb:InvokeServer()
+                end
             end
         end)
     end
@@ -1378,8 +1378,8 @@ end)
 
 
  npcList = {
-    {"Vekuta (SSJBUI)", 2.775e9, true},
-    {"Winter Beerus", 2.175e9, true},
+    {"Winter Beerus", 2.975e9, true},
+    {"Vekuta (SSJBUI)", 2.175e9, true},
     {"Wukong Rose", 1.65e9, true},
     {"Vekuta (LBSSJ4)", 1.05e9, true},
     {"Wukong (LBSSJ4)", 950e6, true},
@@ -1390,15 +1390,14 @@ end)
     {"Wukong (Omen)", 200e6, true},
     {"Vegetable (GoD in-training)", 50e6, true},
     {"Winter Wukong", 100e6, true},
-    {"SSJG Kakata", 50e6, true},
-    {"Broccoli", 19.5e6, true},
-    {"SSJB Wukong", 4025000, true},
+    {"SSJG Kakata", 70e6, true},
+    {"Broccoli", 35.5e6, true},
+    {"SSJB Wukong", 4e6, true},
     {"Kai-fist Master", 3025000, true},
     {"SSJ2 Wukong", 2250000, true},
     {"Perfect Atom", 1275000, true},
-    {"Winter Gohan", 760000, true},
-    {"Chilly", 550000, true},
-    {"Super Vegetable", 218000, true},
+    {"Chilly", 950000, true},
+    {"Super Vegetable", 358000, true},
     {"Mapa", 55000, true},
     {"Radish", 40000, true},
     {"Kid Nohag", 0, true},
@@ -1569,14 +1568,14 @@ end)
     while task.wait() do       
        pcall(function() 
             if getIsActive11() then
-            npcList[25][3] = true  
-            else
-            npcList[25][3] = false
-            end
-            if getIsActive12() then
             npcList[24][3] = true  
             else
             npcList[24][3] = false
+            end
+            if getIsActive12() then
+            npcList[23][3] = true  
+            else
+            npcList[23][3] = false
             end          
          end)
       end
