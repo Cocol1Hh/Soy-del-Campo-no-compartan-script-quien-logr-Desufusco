@@ -1270,13 +1270,13 @@ end
 task.spawn(function()
     while true do
         pcall(function()
-            if getIsActive4() then
+            if getIsActive4() and yo() >= 50e7 then
                 local questOrder = {
                     {npc = "Goku", boss = "Oozaru"},
                     {npc = "Winter Wukong", boss = "Winter Wukong"}
                 }
                 
-                if data.Quest.Value == "" and getIsActive4() then
+                if data.Quest.Value == "" and getIsActive4() and yo() >= 50e7 then
                     for _, quest in ipairs(questOrder) do
                         local boss = game.Workspace.Living:FindFirstChild(quest.boss)
                         local npc = game.Workspace.Others.NPCs:FindFirstChild(quest.npc)
@@ -1288,7 +1288,7 @@ task.spawn(function()
                             break
                         end
                     end
-                elseif data.Quest.Value == "Goku" and getIsActive4() then
+                elseif data.Quest.Value == "Goku" and getIsActive4() and yo() >= 50e7 then
                     local oozaru = game.Workspace.Living:FindFirstChild("Oozaru")
                     if oozaru and oozaru:FindFirstChild("HumanoidRootPart") and 
                        oozaru.Humanoid.Health > 0 then
