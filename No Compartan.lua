@@ -1276,7 +1276,7 @@ task.spawn(function()
                     {npc = "Winter Wukong", boss = "Winter Wukong"}
                 }
                 
-                if data.Quest.Value == "" then
+                if data.Quest.Value == "" and getIsActive4() then
                     for _, quest in ipairs(questOrder) do
                         local boss = game.Workspace.Living:FindFirstChild(quest.boss)
                         local npc = game.Workspace.Others.NPCs:FindFirstChild(quest.npc)
@@ -1288,7 +1288,7 @@ task.spawn(function()
                             break
                         end
                     end
-                elseif data.Quest.Value == "Goku" then
+                elseif data.Quest.Value == "Goku" and getIsActive4() then
                     local oozaru = game.Workspace.Living:FindFirstChild("Oozaru")
                     if oozaru and oozaru:FindFirstChild("HumanoidRootPart") and 
                        oozaru.Humanoid.Health > 0 then
