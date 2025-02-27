@@ -1341,14 +1341,10 @@ end
                 if lplr.Status.Blocking.Value ~= true and getIsActive1() then
                     Ex.block:InvokeServer(true)
                 end                
-                if getIsActive1() then
-                lplr.Character.Humanoid:ChangeState(11)
-	                lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
-            end           
                 local rebirthValue = data.Rebirth.Value
-                local rebirthThreshold = (rebirthValue * 1.99e6) + 2e6
-                if yo() >= rebirthThreshold and yo() < (rebirthThreshold * 2) and getIsActive3() then
-                    Ex.reb:InvokeServer()
+              local rebirthThreshold = (rebirthValue * 1.99e6) + 2e6
+              if yo() < (rebirthThreshold * 2) and getIsActive3()  then
+                Ex.reb:InvokeServer()
                 end
             end
         end)
