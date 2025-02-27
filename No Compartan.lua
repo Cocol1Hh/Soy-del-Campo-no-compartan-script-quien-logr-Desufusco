@@ -1378,7 +1378,7 @@ end)
 
 
  npcList = {
-    {"Winter Beerus", 2.975e9, true},
+ {"Winter Beerus", 2.775e9, true},
     {"Vekuta (SSJBUI)", 2.175e9, true},
     {"Wukong Rose", 1.65e9, true},
     {"Vekuta (LBSSJ4)", 1.05e9, true},
@@ -1389,23 +1389,21 @@ end)
     {"Vills (50%)", 300e6, true},
     {"Wukong (Omen)", 200e6, true},
     {"Vegetable (GoD in-training)", 50e6, true},
-    {"Winter Wukong", 100e6, true},
-    {"SSJG Kakata", 70e6, true},
-    {"Broccoli", 35.5e6, true},
-    {"SSJB Wukong", 4e6, true},
+    {"Winter Wukong", 110e6, true},
+    {"SSJG Kakata", 56e6, true},
+    {"Broccoli", 20.5e6, true},
+    {"SSJB Wukong", 4025000, true},
     {"Kai-fist Master", 3025000, true},
     {"SSJ2 Wukong", 2250000, true},
-    {"Perfect Atom", 1275000, true},
-    {"Chilly", 950000, true},
-    {"Super Vegetable", 358000, true},
+    {"Perfect Atom", 1375000, true},
+    {"Winter Gohan", 860000, true},
+    {"Chilly", 650000, true},
+    {"Super Vegetable", 308000, true},
     {"Mapa", 55000, true},
     {"Radish", 40000, true},
     {"Kid Nohag", 0, true},
     {"Klirin", 0, true}
 }
-
-
-
     
 task.spawn(function()
     while true do
