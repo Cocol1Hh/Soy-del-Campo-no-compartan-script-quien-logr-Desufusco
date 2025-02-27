@@ -1097,10 +1097,7 @@ function yo()
     return l
 end
 
-function FindChar()
-    while (not lplr.Character) and (not lplr.Character:FindFirstChild("Humanoid")) and (not lplr.Character.Humanoid.Health > 0) do task.wait() end
-    return lplr.Character
-end
+
 
 function player()
 	return lplr.Character and lplr.Character.Humanoid and lplr.Character.Humanoid.Health > 0 and lplr.Character:FindFirstChild("HumanoidRootPart")
@@ -1183,6 +1180,7 @@ local function copiarInformacionJugador()
 
         local maxMastery = 332526
         local transformaciones = {
+             "Divine Blue",
             "Divine Rose Prominence",
             "Astral Instinct",
             "Ultra Ego",
@@ -1252,8 +1250,6 @@ end
   task.spawn(function()
     while task.wait() do
         pcall(function()
-        FindChar().Humanoid:ChangeState(8)
-        FindChar().Humanoid:ChangeState(18)    
     camera() 
           if getIsActive1()  and data.Quest.Value ~= ""  then
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
@@ -1267,45 +1263,7 @@ end
       end
   end)
   
-task.spawn(function()
-    while true do
-        pcall(function()
-            if getIsActive4() then
-                local questOrder = {
-                    {npc = "Goku", boss = "Oozaru"},
-                    {npc = "Winter Wukong", boss = "Winter Wukong"}
-                }
-                
-                if data.Quest.Value == "" then
-                    for _, quest in ipairs(questOrder) do
-                        local boss = game.Workspace.Living:FindFirstChild(quest.boss)
-                        local npc = game.Workspace.Others.NPCs:FindFirstChild(quest.npc)
-                        
-                        if boss and boss:FindFirstChild("HumanoidRootPart") and 
-                           boss.Humanoid.Health > 0 and npc then
-                            lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
-                            game.ReplicatedStorage.Package.Events.Qaction:InvokeServer(npc)
-                            break
-                        end
-                    end
-                elseif data.Quest.Value == "Goku" then
-                    local oozaru = game.Workspace.Living:FindFirstChild("Oozaru")
-                    if oozaru and oozaru:FindFirstChild("HumanoidRootPart") and 
-                       oozaru.Humanoid.Health > 0 then
-                        lplr.Character.HumanoidRootPart.CFrame = oozaru.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
-                    end
-                else
-                    local boss = game.Workspace.Living:FindFirstChild(data.Quest.Value)
-                    if boss and boss:FindFirstChild("HumanoidRootPart") and 
-                       boss.Humanoid.Health > 0 then
-                        lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
-                    end
-                end
-            end
-        end)
-        task.wait()
-    end
-end)
+
 
 task.spawn(function()
     while task.wait() do
@@ -1344,6 +1302,8 @@ end
                 if getIsActive1() then
                 lplr.Character.Humanoid:ChangeState(11)
 	                lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
+	                  lplr.Character.Humanoid:ChangeState(8)
+                        lplr.Character.Humanoid:ChangeState(18)    
             end           
                 local rebirthValue = data.Rebirth.Value
                 local rebirthThreshold = (rebirthValue * 1.69e6) + 2e6
@@ -1390,14 +1350,14 @@ end)
     {"Wukong (Omen)", 200e6, true},
     {"Vegetable (GoD in-training)", 50e6, true},
     {"Winter Wukong", 100e6, true},
-    {"SSJG Kakata", 70e6, true},
-    {"Broccoli", 35.5e6, true},
+    {"SSJG Kakata", 80e6, true},
+    {"Broccoli", 21.5e6, true},
     {"SSJB Wukong", 4e6, true},
     {"Kai-fist Master", 3025000, true},
     {"SSJ2 Wukong", 2250000, true},
     {"Perfect Atom", 1275000, true},
     {"Chilly", 950000, true},
-    {"Super Vegetable", 358000, true},
+    {"Super Vegetable", 258000, true},
     {"Mapa", 55000, true},
     {"Radish", 40000, true},
     {"Kid Nohag", 0, true},
