@@ -1108,13 +1108,27 @@ task.spawn(function()
     while task.wait() do
         pcall(function()
         if player() and getIsActive2() then
-        local Forms = {'Divine Blue', 'Divine Rose Prominence', 'Astral Instinct', 'Ultra Ego', 'SSJB4', 'True God of Creation', 
-    'True God of Destruction', 'Super Broly', 'LSSJG', 'LSSJ4', 'SSJG4', 'LSSJ3', 'Mystic Kaioken', 
-    'LSSJ Kaioken', 'SSJR3', 'SSJB3', 'God Of Destruction', 'God Of Creation', 'Jiren Ultra Instinct', 
-    'Mastered Ultra Instinct', 'Godly SSJ2', 'Ultra Instinct Omen', 'Evil SSJ', 'Blue Evolution', 
-    'Dark Rose', 'Kefla SSJ2', 'SSJ Berserker', 'True Rose', 'SSJB Kaioken', 'SSJ Rose', 'SSJ Blue', 
-    'Corrupt SSJ', 'SSJ Rage', 'SSJG', 'SSJ4', 'Mystic', 'LSSJ', 'SSJ3', 'Spirit SSJ', 'SSJ2 Majin', 
-    'SSJ2', 'SSJ Kaioken', 'SSJ', 'FSSJ', 'Kaioken'}
+        local Forms = {
+    'Divine Blue', 
+    'Divine Rose Prominence', 
+    'Astral Instinct', 
+    'Ultra Ego', 
+    'True God of Creation', 
+    'True God of Destruction', 
+    'LSSJ4',  
+    'SSJR3', 
+    'SSJB3', 
+    'Jiren Ultra Instinct', 
+    'Godly SSJ2', 
+    'Blue Evolution',
+    'SSJB Kaioken', 
+    'SSJ Rose', 
+    'SSJ Blue', 
+    'Corrupt SSJ', 
+    'SSJ3', 
+    'SSJ2', 
+    'Kaioken'
+}
         local status = lplr.Status    
         for _, form in ipairs(Forms) do 
             if Ex.equipskill:InvokeServer(form) then break end  
@@ -1264,6 +1278,45 @@ end
   end)
   
 
+task.spawn(function()
+    while true do
+        pcall(function()
+            if getIsActive4() and yo() >= 50e7 then
+                local questOrder = {
+                    {npc = "Goku", boss = "Oozaru"},
+                    {npc = "Winter Wukong", boss = "Winter Wukong"}
+                }
+                
+                if data.Quest.Value == "" and getIsActive4() and yo() >= 50e7 then
+                    for _, quest in ipairs(questOrder) do
+                        local boss = game.Workspace.Living:FindFirstChild(quest.boss)
+                        local npc = game.Workspace.Others.NPCs:FindFirstChild(quest.npc)
+                        
+                        if boss and boss:FindFirstChild("HumanoidRootPart") and 
+                           boss.Humanoid.Health > 0 and npc then
+                            lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
+                            game.ReplicatedStorage.Package.Events.Qaction:InvokeServer(npc)
+                            break
+                        end
+                    end
+                elseif data.Quest.Value == "Goku" and getIsActive4() and yo() >= 50e7 then
+                    local oozaru = game.Workspace.Living:FindFirstChild("Oozaru")
+                    if oozaru and oozaru:FindFirstChild("HumanoidRootPart") and 
+                       oozaru.Humanoid.Health > 0 then
+                        lplr.Character.HumanoidRootPart.CFrame = oozaru.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
+                    end
+                else
+                    local boss = game.Workspace.Living:FindFirstChild(data.Quest.Value)
+                    if boss and boss:FindFirstChild("HumanoidRootPart") and 
+                       boss.Humanoid.Health > 0 then
+                        lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
+                    end
+                end
+            end
+        end)
+        task.wait()
+    end
+end)
 
 task.spawn(function()
     while task.wait() do
