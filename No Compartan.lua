@@ -1105,7 +1105,7 @@ end
 
 
 task.spawn(function()
-    while task.wait() do
+    while task.wait(1) do
         pcall(function()
         if player() and getIsActive2() then
         local Forms = {
