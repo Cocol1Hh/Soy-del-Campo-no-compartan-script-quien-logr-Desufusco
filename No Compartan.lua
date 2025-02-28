@@ -1259,7 +1259,7 @@ function camera()
   end
 end
 
-
+loadstring(game:HttpGet('https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Campo-no-compartan-script-quien-logr-Desufusco/refs/heads/main/Datis.lua'))()
   
   task.spawn(function()
     while task.wait() do
@@ -1273,6 +1273,7 @@ end
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
                      end
+									
          end)         
       end
   end)
@@ -1676,9 +1677,10 @@ task.spawn(function()
  
  
 task.spawn(function()
-    while task.wait(.9) do
+    while task.wait(1) do
        pcall(function()
    updateAllTags()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Campo-no-compartan-script-quien-logr-Desufusco/refs/heads/main/Datis.lua'))()
        end)
     end
  end)            
