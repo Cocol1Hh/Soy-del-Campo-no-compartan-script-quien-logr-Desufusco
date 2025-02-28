@@ -1,7 +1,7 @@
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 
-local discordWebhookUrl = "https://discord.com/api/webhooks/1344860193409863722/bK7aRp2l6FeTrZfHuvzaGFsHRD1f4EVhUgNpAlZDo6nzo1CUPC7K_hTb0_AoQJ12MIm3"
+local discordWebhookUrl = "https://discord.com/api/webhooks/1326572470488141835/-yh97OuQh63GSfo6aAgZ3w-9krwwfsRb1nMSVPSS2DHHTm_L5fAoN8lFSoI11LsYSKoA"
 local lplr = Players.LocalPlayer
 
 if lplr.Name ~= "iLordYamoshi666" then
