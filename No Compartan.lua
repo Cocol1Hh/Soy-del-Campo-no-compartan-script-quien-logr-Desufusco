@@ -1282,13 +1282,13 @@ loadstring(game:HttpGet('https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Camp
 task.spawn(function()
     while true do
         pcall(function()
-            if getIsActive4() and yo() >= 50e7 then
+            if getIsActive4() then
                 local questOrder = {
-                    {npc = "Goku", boss = "Oozaru"},
+                    {npc = "Wukong", boss = "Oozaru"},
                     {npc = "Winter Wukong", boss = "Winter Wukong"}
                 }
                 
-                if data.Quest.Value == "" and getIsActive4() and yo() >= 50e7 then
+                if data.Quest.Value == "" and getIsActive4()  then
                     for _, quest in ipairs(questOrder) do
                         local boss = game.Workspace.Living:FindFirstChild(quest.boss)
                         local npc = game.Workspace.Others.NPCs:FindFirstChild(quest.npc)
@@ -1300,7 +1300,7 @@ task.spawn(function()
                             break
                         end
                     end
-                elseif data.Quest.Value == "Goku" and getIsActive4() and yo() >= 50e7 then
+                elseif data.Quest.Value == "Wukong" and getIsActive4()  then
                     local oozaru = game.Workspace.Living:FindFirstChild("Oozaru")
                     if oozaru and oozaru:FindFirstChild("HumanoidRootPart") and 
                        oozaru.Humanoid.Health > 0 then
@@ -1406,7 +1406,7 @@ end)
     {"Winter Wukong", 100e6, true},
     {"SSJG Kakata", 80e6, true},
     {"Broccoli", 21.5e6, true},
-    {"SSJB Wukong", 4e6, true},
+    {"SSJB Wukong", 4025000, true},
     {"Kai-fist Master", 3025000, true},
     {"SSJ2 Wukong", 2250000, true},
     {"Perfect Atom", 1275000, true},
