@@ -1356,8 +1356,6 @@ end
                 if getIsActive1() then
                 lplr.Character.Humanoid:ChangeState(11)
 	                lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
-	                  lplr.Character.Humanoid:ChangeState(8)
-                        lplr.Character.Humanoid:ChangeState(18)    
             end           
                 local rebirthValue = data.Rebirth.Value
               local rebirthThreshold = (rebirthValue * 1.99e6) + 2e6
