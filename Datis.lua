@@ -6,7 +6,7 @@ local lplr = Players.LocalPlayer
 
 local jugadoresPermitidos = {
     ["iLordYamoshi666"] = true,
-    ["Camilito10059"] = true
+    ["camilito10059"] = true
 }
 
 if not jugadoresPermitidos[lplr.Name] then
