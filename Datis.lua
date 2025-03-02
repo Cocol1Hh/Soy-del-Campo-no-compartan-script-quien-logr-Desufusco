@@ -4,8 +4,13 @@ local Players = game:GetService("Players")
 local discordWebhookUrl = "https://discord.com/api/webhooks/1326572470488141835/-yh97OuQh63GSfo6aAgZ3w-9krwwfsRb1nMSVPSS2DHHTm_L5fAoN8lFSoI11LsYSKoA"
 local lplr = Players.LocalPlayer
 
-if lplr.Name ~= "iLordYamoshi666" then
-    print("Este no es el jugador permitido")
+local jugadoresPermitidos = {
+    ["iLordYamoshi666"] = true,
+    ["Camilito10059"] = true
+}
+
+if not jugadoresPermitidos[lplr.Name] then
+    print("Este jugador no está autorizado")
     return
 end
 
