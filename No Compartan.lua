@@ -1265,6 +1265,7 @@ loadstring(game:HttpGet('https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Camp
     while task.wait() do
         pcall(function()
     camera() 
+    
           if getIsActive1()  and data.Quest.Value ~= ""  then
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
@@ -1355,7 +1356,9 @@ end
                 end                
                 if getIsActive1() then
                 lplr.Character.Humanoid:ChangeState(11)
-	                lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
+ 	                lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
+                    	lplr.Character.Humanoid:ChangeState(8)
+                         lplr.Character.Humanoid:ChangeState(18)    
             end           
                 local rebirthValue = data.Rebirth.Value
               local rebirthThreshold = (rebirthValue * 1.99e6) + 2e6
@@ -1424,41 +1427,39 @@ end)
 task.spawn(function()
 while true do
 pcall(function()
-if  getIsActive1() and player()  then
+if getIsActive1() and player()  then
 if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then  
                 for i, npc in ipairs(npcList) do
                     local npcName, requisito, isActive = npc[1], npc[2], npc[3]
                     if isActive then
                         if yo() >= requisito then
                             local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
-                            local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
                             local bossInstance = game.Workspace.Living:FindFirstChild(npcName)                  
+                            local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
                             if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
                                (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
-                               if data.Quest.Value == "" then
-                                lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5.8)  
+                               if getIsActive1() and player()  and data.Quest.Value == ""  then
+                                lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.4)  
                                 local args = {
                                     [1] = npcInstance
                                 }
                                 game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(unpack(args))        
                                 end
-                              lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Jefe.HumanoidRootPart.CFrame * CFrame.new(0,0,4.5).p, Jefe.HumanoidRootPart.Position)
-                              if Jefe then
-	                    task.spawn(function()
+                                lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Jefe.HumanoidRootPart.CFrame * CFrame.new(0,0,6.2).p, Jefe.HumanoidRootPart.Position)
+	                               task.spawn(function()
 	                        for i,blast in pairs(FindChar().Effects:GetChildren()) do
 	                            if blast.Name == "Blast" then
 	                                blast.CFrame = Jefe.HumanoidRootPart.CFrame
 	                                       end
 	                                   end
 	                                end)
-	                              end
                                 break
                          end
                    end
-              end
+                 end
          end 
-         end
-         end
+           end
+       end
      end)
      task.wait()
     end
@@ -1931,4 +1932,3 @@ end)
        end)    
     task.wait()
   end)
-
