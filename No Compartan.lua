@@ -1339,7 +1339,7 @@ task.spawn(function()
 local Black = false
 
 if getIsActive5() and player()  then
-    local gokuBlack = game.Workspace.Living:FindFirstChild("Goku Black")
+    local gokuBlack = game.Workspace.Living:FindFirstChild("Wukong Black")
     if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack.Humanoid.Health > 0 then
         if (gokuBlack.HumanoidRootPart.Position - Vector3.new(722.4, 209.7, 505.3)).Magnitude <= 900 then
             rootPart.CFrame = gokuBlack.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
@@ -1375,7 +1375,7 @@ task.spawn(function()
     while true do
         pcall(function()
             if getIsActive5() and player() then
-                local gokuBlack = game.Workspace.Living:FindFirstChild("Goku Black")
+                local gokuBlack = game.Workspace.Living:FindFirstChild("Wukong Black")
                 if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack.Humanoid.Health > 0 then
                     local bossPosition = Vector3.new(722.4, 209.7, 505.3)
                     if (gokuBlack.HumanoidRootPart.Position - bossPosition).Magnitude <= 900 then
