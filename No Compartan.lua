@@ -1392,15 +1392,14 @@ end)
  
 
 
- npcList = {
-    {"Winter Beerus", 2.176e9, true},
+  npcList = {
+    {"Winter Bills", 2.176e9, true},
     {"Vekuta (SSJBUI)", 2.175e9, true},
     {"Wukong Rose", 1.65e9, true},
-    {"Winter Beerus", 1.575e9, true},
     {"Vekuta (LBSSJ4)", 1.05e9, true},
     {"Wukong (LBSSJ4)", 950e6, true},
     {"Vegetable (LBSSJ4)", 650e6, true},
-    {"Vis (20%)", 520e6, true},
+    {"Vis (20%)", 550e6, true},
     {"Winter Roshi", 400e6, true},
     {"Vills (50%)", 300e6, true},
     {"Wukong (Omen)", 200e6, true},
@@ -1420,9 +1419,6 @@ end)
     {"Kid Nohag", 0, false},
     {"Klirin", 0, falae}
 }
-
-
-
     
 task.spawn(function()
 while true do
