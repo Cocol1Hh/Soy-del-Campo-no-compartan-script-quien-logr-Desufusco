@@ -1296,7 +1296,7 @@ task.spawn(function()
                         
                         if boss and boss:FindFirstChild("HumanoidRootPart") and 
                            boss.Humanoid.Health > 0 and npc then
-                            lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
+                            lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
                             game.ReplicatedStorage.Package.Events.Qaction:InvokeServer(npc)
                             break
                         end
@@ -1305,13 +1305,13 @@ task.spawn(function()
                     local oozaru = game.Workspace.Living:FindFirstChild("Oozaru")
                     if oozaru and oozaru:FindFirstChild("HumanoidRootPart") and 
                        oozaru.Humanoid.Health > 0 then
-                        lplr.Character.HumanoidRootPart.CFrame = oozaru.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
+                        lplr.Character.HumanoidRootPart.CFrame = oozaru.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
                     end
                 else
                     local boss = game.Workspace.Living:FindFirstChild(data.Quest.Value)
                     if boss and boss:FindFirstChild("HumanoidRootPart") and 
                        boss.Humanoid.Health > 0 then
-                        lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
+                        lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
                     end
                 end
             end
@@ -1466,10 +1466,10 @@ task.spawn(function()
     while task.wait() do       
        pcall(function() 
             if getIsActive11() then
-            npcList[26][3] = true  
+            npcList[25][3] = true  
             end
             if getIsActive12() then
-            npcList[25][3] = true  
+            npcList[24][3] = true  
             end          
          end)
       end
