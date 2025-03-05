@@ -399,7 +399,7 @@ local textProperties = {
     {text = "Reb", position = UDim2.new(-0.160, 0, 0.195, 0), color = Color3.fromRGB(0, 255, 255), parent = Barra1},
     {text = "Ozaru", position = UDim2.new(0.360, 0, 0.195, 0), color = Color3.fromRGB(0, 0, 255), parent = Barra1},
     {text = "Black", position = UDim2.new(-0.160, 0, 0.270, 0), color = Color3.fromRGB(255, 255, 0), parent = Barra1},
-    {text = "HA🎃", position = UDim2.new(0.350, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 255), parent = Barra1},
+    {text = "Evil", position = UDim2.new(0.350, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 255), parent = Barra1},
     {text = "Fly", position = UDim2.new(-0.04, 0, 0.320, 0), color = Color3.fromRGB(200, 300, 400), parent = Barra1},
     {text = "Brillo", position = UDim2.new(0.473, 0, 0.320, 0), color = Color3.fromRGB(180, 200, 100), parent = Barra1},
     {text = "Duck", position = UDim2.new(-0.160, 0, 0.420, 0), color = Color3.fromRGB(200, 100, 300), parent = Barra1},
@@ -1390,7 +1390,23 @@ task.spawn(function()
     end
 end)
  
-
+task.spawn(function()
+    while true do
+    pcall(function()
+    if getIsActive6() then
+        for _, boss in ipairs(game.Workspace.Living:GetChildren()) do
+            if boss.Name == "Evil Saya" and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
+                lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.5)
+                               game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
+                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
+                break
+            end
+            end
+          end
+        end)
+        task.wait() 
+    end
+end)
 
   npcList = {
     {"Winter Bills", 2.176e9, true},
@@ -1482,7 +1498,7 @@ canvolley = true
  while true do
  pcall(function()
           local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
-if (yo() >= 40000 and data.Quest.Value ~= "" and not lplr.Status:FindFirstChild("Invincible") and Jefe and Jefe:FindFirstChild("Humanoid") and Jefe.Humanoid.Health > 0 and getIsActive1()) or Black == true then                                    
+if (yo() >= 40000 and data.Quest.Value ~= "" and not lplr.Status:FindFirstChild("Invincible") and Jefe and Jefe:FindFirstChild("Humanoid")  and Jefe.Humanoid.Health > 0 and getIsActive1()) or Black == true then                                    
                                     local stats = yo()
                                     local moves = {}
                                     local attacked = false
