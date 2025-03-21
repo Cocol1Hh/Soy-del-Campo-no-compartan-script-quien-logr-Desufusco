@@ -1311,7 +1311,7 @@ end
 
 
 task.spawn(function()
-    while task.wait(1) do
+    while task.wait() do
         pcall(function()
         if player() and getIsActive2() then
         local Forms = {'Divine Blue', 'Divine Rose Prominence', 'Astral Instinct', 'Ultra Ego', 'SSJB4', 'True God of Creation', 
@@ -1338,6 +1338,27 @@ task.spawn(function()
                   end)
                 transforming = false
               end
+           end)
+        end
+     end)
+     
+     task.spawn(function()
+    while task.wait() do
+        pcall(function()
+        local char = game.Workspace.Living:FindFirstChild(lplr.Name)
+       if char and player() then
+    local stats = char:FindFirstChild("Stats")
+    if stats then
+        local ki = stats:FindFirstChild("Ki")
+        local maxKi = stats:FindFirstChild("MaxKi")
+        if ki and maxKi and ki:IsA("NumberValue") and maxKi:IsA("NumberValue") then
+            local porcentaje = game.PlaceId == 5151400895 and 0.25 or 0.70
+            if ki.Value <= (maxKi.Value * porcentaje) and player() and getIsActive1() and yo() <= 800e9 then
+                Ex.cha:InvokeServer("Blacknwhite27")
+            end
+            end
+            end
+            end
            end)
         end
      end)
@@ -1454,25 +1475,18 @@ end
   task.spawn(function()
     while task.wait() do
         pcall(function()
-    camera() 
-    
+    camera()    
           if getIsActive1()  and data.Quest.Value ~= ""  then
+           if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then           
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
+                     end
                      end
                      if getIsActive4()  and data.Quest.Value ~= ""  then
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
                      end								
-         end)         
-      end
-  end)
-  
-
-task.spawn(function()
-    while true do
-        pcall(function()
-            if getIsActive4() then
+                     if getIsActive4() then
                 local questOrder = {
                     {npc = "Wukong", boss = "Oozaru"},
                     {npc = "Winter Wukong", boss = "Winter Wukong"}
@@ -1504,110 +1518,59 @@ task.spawn(function()
                     end
                 end
             end
-        end)
-        task.wait()
-    end
-end)
+         end)         
+      end
+  end)
+  
+  
 
 task.spawn(function()
     while task.wait() do
-        pcall(function()
-local char = game.Workspace.Living:FindFirstChild(lplr.Name)
-if char then
-    local stats = char:FindFirstChild("Stats")
-    if stats then
-        local ki = stats:FindFirstChild("Ki")
-        local maxKi = stats:FindFirstChild("MaxKi")
-        if ki and maxKi and ki:IsA("NumberValue") and maxKi:IsA("NumberValue") then
-            if ki.Value <= (maxKi.Value * 0.25) and player() and getIsActive1() and yo() <= 800e9 then
-                Ex.cha:InvokeServer("Blacknwhite27")
-            end
-        end
-    end
-end
-
-local Black = false
-if getIsActive5() and player()  then
-    local gokuBlack = game.Workspace.Living:FindFirstChild("Wukong Black")
-    if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack.Humanoid.Health > 0 then
-        if (gokuBlack.HumanoidRootPart.Position - Vector3.new(722.4, 209.7, 505.3)).Magnitude <= 900 then
-            rootPart.CFrame = gokuBlack.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
-            Black = true
-        else
-            Black = false
-        end
-    end
-end
-            
+        pcall(function()        
             if player() then
                 if game.Players.LocalPlayer.Status.Blocking.Value == false and getIsActive1() then
                     game.Players.LocalPlayer.Status.Blocking.Value = true               
                 end                
-  local rebirths = game.Workspace.Living[lplr.Name].Stats.Rebirth.Value
-local nextRebirth = (rebirths * 1.99e6) + 2e6
-if yo() < nextRebirth * 2 and getIsActive3() then
+              local rebirths = game.Workspace.Living[lplr.Name].Stats.Rebirth.Value
+               local nextRebirth = (rebirths * 1.99e6) + 2e6
+             if yo() < nextRebirth * 2 and getIsActive3() then
           Ex.reb:InvokeServer()
                 end
-            end
-        end)
-    end
- end)
- 
- local Black = false
-task.spawn(function()
-    while true do
-        pcall(function()
-            if getIsActive5() and player() then
-                local gokuBlack = game.Workspace.Living:FindFirstChild("Wukong Black")
-                if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack.Humanoid.Health > 0 then
-                    local bossPosition = Vector3.new(722.4, 209.7, 505.3)
-                    if (gokuBlack.HumanoidRootPart.Position - bossPosition).Magnitude <= 900 then
-                        Black = true
-                        return
-                    end
                 end
-            end
-            Black = false
-        end)
-        task.wait()
-    end
-end)
- 
-task.spawn(function()
-    while true do
-    pcall(function()
-    if getIsActive6() then
+            pcall(function()
+            task.spawn(function()
+            if game.PlaceId == 3311165597 then
+            if getIsActive6() then
         for _, boss in ipairs(game.Workspace.Living:GetChildren()) do
             if boss.Name == "Evil Saya" and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
                 lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.5)
                                game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
                 break
-            end
-            end
-          end
-        end)
-        task.wait() 
-    end
-end)
-
-task.spawn(function()
-    while true do
-    pcall(function()
-    if getIsActive1() and  yo() <= 10000   then
+                 end
+                  end
+                  end
+          if getIsActive1() and  yo() <= 10000   then
         for _, boss in ipairs(game.Workspace.Living:GetChildren()) do
             if boss.Name == "X Fighter" and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
                 lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.5)
                                game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
                 break
-            end
-            end
-          end
+                  end
+                  end
+                  end                           
+                end--if fin if game.PlaceId == 3311165597 then
+             end)
+          end)
         end)
-        task.wait() 
     end
-end)
+ end)
+ 
+ 
+
+
+ 
 
   npcList = {
     {"Winter Bills", 4.176e9, true},
@@ -1683,6 +1646,7 @@ canvolley = true
  while true do
  pcall(function()
           local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
+ if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then           
 if (yo() >= 40000 and data.Quest.Value ~= "" and not lplr.Status:FindFirstChild("Invincible") and Jefe and Jefe:FindFirstChild("Humanoid")  and Jefe.Humanoid.Health > 0 and getIsActive1()) or Black == true then                                    
                                     local stats = yo()
                                     local moves = {}
@@ -1726,7 +1690,8 @@ if (yo() >= 40000 and data.Quest.Value ~= "" and not lplr.Status:FindFirstChild(
                                             canvolley = true
                                         end)
                                     end                                  
-                            end              
+                               end              
+                            end
                        end)
                        task.wait()
                    end
@@ -1865,24 +1830,6 @@ task.spawn(function()
     end
  end)            
  
- local Q = data:WaitForChild("Quest")
-local notified = false
-local function NotyQ()
-    if Q.Value ~= "" and not notified then
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Misión Iniciada",
-            Text = tostring(Q.Value),
-            Duration = 2
-        })
-        notified = true
-    elseif Q.Value == "" then
-        notified = false
-    end
-end
-NotyQ()
-game.ReplicatedStorage.Datas[lplr.UserId].Quest.Changed:Connect(function()
-    NotyQ()
-end)
 
 task.spawn(function()
     if data:FindFirstChild("Allignment") then
@@ -1897,8 +1844,7 @@ task.spawn(function()
             ligaLabel.TextStrokeTransparency = 0
         end
         ligaLabel.Text = alignment
-    end
-   
+    end   
     updateWorldInfo()    
 end)
              
@@ -1952,14 +1898,6 @@ task.spawn(function()
             formatNumber(additionalStrength),
             formatNumber(rebirthValue))    
             
-           if getIsActive9() then
-            for _, obj in pairs(game.Workspace:GetDescendants()) do
-            if obj.Name == "Effects" or obj:IsA("ParticleEmitter") then
-              obj:Destroy()
-                end
-            end          
-        end
-           
               local currentRebirthValue = data.Rebirth.Value
         if currentRebirthValue > previousRebirthValue then
             game.ReplicatedStorage.RebirthTimeValue.Value = tick()
@@ -1974,8 +1912,7 @@ task.spawn(function()
         else
             hasReinitialized = false
           end
-           saveRebirthData()
-           
+           saveRebirthData()           
                 end                                                      
          end)        
     end
