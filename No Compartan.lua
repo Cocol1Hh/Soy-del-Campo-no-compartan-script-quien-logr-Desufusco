@@ -1,4 +1,209 @@
+local service = 1951
+local host = "https://api.platoboost.com"
+local useNonce = true
 
+local HttpService = game:GetService("HttpService")
+
+local ArchivoClaveGuardada = "jses_syn"
+
+local fSetClipboard, fRequest, fStringChar, fToString, fStringSub, fOsTime, fMathRandom, fMathFloor, fGetHwid, isfile, readfile, writefile, delfile = 
+    setclipboard or toclipboard, request or http_request or syn.request, string.char, tostring, string.sub, os.time, math.random, math.floor, 
+    gethwid or function() return game:GetService("Players").LocalPlayer.UserId end, 
+    isfile, readfile, writefile, delfile
+
+local function log(...)
+    print("[KeySystem]", ...)
+end
+
+local function generateNonce()
+    local str = ""
+    for _ = 1, 16 do
+        str = str .. fStringChar(fMathFloor(fMathRandom() * (122 - 97 + 1)) + 97)
+    end
+    return str
+end
+
+local function retryWithDelay(fn, attempts, delay)
+    for i = 1, attempts do
+        local success, result = pcall(fn)
+        if success and result then
+            return true, result
+        end
+        if i < attempts then
+            wait(delay)
+        end
+    end
+    return false
+end
+
+local function generateLink()
+    local hosts = {"https://api.platoboost.com", "https://api.platoboost.net"}
+    for _, currentHost in ipairs(hosts) do
+        local endpoint = currentHost .. "/public/start"
+        local body = { service = service, identifier = fGetHwid() }
+
+        local success, response = pcall(function()
+            return fRequest({
+                Url = endpoint,
+                Method = "POST",
+                Body = HttpService:JSONEncode(body),
+                Headers = {
+                    ["Content-Type"] = "application/json"
+                }
+            })
+        end)
+
+        if success and response and response.StatusCode == 200 then
+            local decoded = HttpService:JSONDecode(response.Body)
+            if decoded.success and decoded.data and decoded.data.url then
+                return decoded.data.url
+            end
+        elseif response and response.StatusCode == 429 then
+            log("Rate limited. Wait before retrying.")
+        else
+            log("Failed to connect to: " .. currentHost)
+        end
+    end
+    return nil
+end
+
+local function verificarClave(clave)
+    local hosts = {
+        "https://api.platoboost.com",
+        "https://api.platoboost.net"
+    }
+    
+    local nonce = generateNonce()
+    local identifier = fGetHwid()
+    log("Verificando clave:", clave)
+    log("HWID:", identifier)
+
+    local function tryVerifyWithHost(host)
+        local whitelistUrl = string.format("%s/public/whitelist/%d", host, service)
+        local whitelistResponse = fRequest({
+            Url = whitelistUrl,
+            Method = "GET",
+            Headers = {
+                ["Content-Type"] = "application/json"
+            },
+            Query = {
+                identifier = identifier,
+                key = clave,
+                nonce = useNonce and nonce or nil
+            }
+        })
+
+        if whitelistResponse and whitelistResponse.StatusCode == 200 then
+            local success, decoded = pcall(function()
+                return HttpService:JSONDecode(whitelistResponse.Body)
+            end)
+
+            if success and decoded and decoded.success and decoded.data and decoded.data.valid then
+                log("Whitelist verificación exitosa")
+                return true
+            end
+        end
+
+        local redeemUrl = string.format("%s/public/redeem/%d", host, service)
+        local redeemResponse = fRequest({
+            Url = redeemUrl,
+            Method = "POST",
+            Headers = {
+                ["Content-Type"] = "application/json"
+            },
+            Body = HttpService:JSONEncode({
+                identifier = identifier,
+                key = clave,
+                nonce = useNonce and nonce or nil
+            })
+        })
+
+        if redeemResponse and redeemResponse.StatusCode == 200 then
+            local success, decoded = pcall(function()
+                return HttpService:JSONDecode(redeemResponse.Body)
+            end)
+
+            if success and decoded and decoded.success then
+                log("Redeem verificación exitosa")
+                return true
+            end
+        end
+
+        return false
+    end
+
+    for _, host in ipairs(hosts) do
+        log("Intentando con host:", host)
+        
+        local success, result = retryWithDelay(function()
+            return tryVerifyWithHost(host)
+        end, 3, 1)
+
+        if success and result then
+            pcall(function()
+                writefile(ArchivoClaveGuardada, HttpService:JSONEncode({
+                    clave = clave,
+                    fecha = fOsTime()
+                }))
+            end)
+            
+            return true
+        end
+    end
+
+    log("Verificación fallida con todos los hosts")
+    return false
+end
+
+local jugadoresPremio = { "carequinhacaspunhada", "Rutao_Gameplays", "armijosfernando2178", "Danielsan134341", "Zerincee", "fernanfloP091o"}
+
+local function esJugadorPremio(nombre)
+    for _, jugador in ipairs(jugadoresPremio) do
+        if nombre == jugador then
+            return true
+        end
+    end
+    return false
+end
+
+local function claveEsValida()
+    if esJugadorPremio(game.Players.LocalPlayer.Name) then
+        log("Jugador premio detectado. Clave automáticamente válida.")
+        return true
+    end
+
+    if isfile(ArchivoClaveGuardada) then
+        local success, datos = pcall(function()
+            return HttpService:JSONDecode(readfile(ArchivoClaveGuardada))
+        end)
+        
+        if success and datos and datos.clave then
+            log("Verificando clave guardada...")
+            local isValid = verificarClave(datos.clave)         
+            if isValid then
+                log("Clave guardada válida")
+                return true
+            else
+                log("Clave guardada no válida. Eliminando archivo...")
+                delfile(ArchivoClaveGuardada)
+            end
+        else
+            log("El archivo de clave guardada no contiene datos válidos. Eliminando archivo...")
+            delfile(ArchivoClaveGuardada)
+        end
+    end
+    return false
+end
+
+local function resetearClave()
+    if isfile(ArchivoClaveGuardada) then
+        delfile(ArchivoClaveGuardada)
+    end
+end
+
+local function script()
+    log("¡La clave es válida! Ejecutando el script principal...")
+    
 
 local fffg = game.CoreGui:FindFirstChild("fffg")
 if fffg then
@@ -196,7 +401,7 @@ Fps.Parent = Barra1
 
 local VS = Instance.new("TextLabel")
 VS.Parent = Barra1
-VS.Text = "V [0.7]"
+VS.Text = "V [0.7.01]"
 VS.Size = UDim2.new(0, 100, 0, 10)
 VS.Position = UDim2.new(0.783, 0, 0.009, 0)
 VS.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -406,8 +611,8 @@ local textProperties = {
     {text = "Dupli", position = UDim2.new(0.350, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70), parent = Barra1},
     {text = "Graf", position = UDim2.new(-0.160, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
     {text = "Plant", position = UDim2.new(0.350, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
-    {text = "Klirin", position = UDim2.new(-0.160, 0, 0.570, 0), color = Color3.fromRGB(200, 380, 90), parent = Barra1},
-    {text = "gohan", position = UDim2.new(0.360, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
+    {text = "...", position = UDim2.new(-0.160, 0, 0.570, 0), color = Color3.fromRGB(200, 380, 90), parent = Barra1},
+    {text = "...", position = UDim2.new(0.360, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
     {text = "Tp", position = UDim2.new(-0.160, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3},
     {text = "Actk", position = UDim2.new(0.350, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3},
     {text = "Copy", position = UDim2.new(-0.160, 0, 0.345, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3},
@@ -803,26 +1008,27 @@ local function createTag(head)
 end
 
 local function updateTag(player)
-    if player == Players.LocalPlayer then return end  
+    if player == game:GetService("Players").LocalPlayer then return end  
 
-    local character = player.Character
+    local character = game.Workspace.Living:FindFirstChild(player.Name)
     if not character then return end
 
     local head = character:FindFirstChild("Head")
     local stats = character:FindFirstChild("Stats")
     if not head or not stats then return end
 
-    local data = ReplicatedStorage:FindFirstChild("Datas") and ReplicatedStorage.Datas:FindFirstChild(player.UserId)
+    local data = game:GetService("ReplicatedStorage"):FindFirstChild("Datas") and game:GetService("ReplicatedStorage").Datas:FindFirstChild(player.UserId)
     local kiStat = stats:FindFirstChild("Ki")
+    local maxKiStat = stats:FindFirstChild("MaxKi")  -- Ahora obtiene MaxKi de Living
     local humanoid = character:FindFirstChildOfClass("Humanoid")
-    if not data or not kiStat or not humanoid then return end
+    if not data or not kiStat or not maxKiStat or not humanoid then return end
 
     local strength = data:FindFirstChild("Strength") and data.Strength.Value or 0
     local rebirth = data:FindFirstChild("Rebirth") and data.Rebirth.Value or 0
     local health = humanoid.Health
     local maxHealth = humanoid.MaxHealth
     local kiValue = kiStat.Value
-    local maxKi = kiStat.MaxValue or 1
+    local maxKi = maxKiStat.Value  -- Se asegura de obtener el valor desde Living
 
     local playerName = player.Name
     local playerDisplayName = player.DisplayName
@@ -843,7 +1049,7 @@ local function updateTag(player)
         nameLabel.Text = fullName  
         textLabel.Text = string.format("F: %s | R: %s", formatNumber(strength), formatNumber(rebirth))  
         healthBar.Size = UDim2.new(math.clamp(health / maxHealth, 0, 1), 0, 1, 0)
-        kiBar.Size = UDim2.new(math.clamp(kiValue / maxKi, 0, 1), 0, 1, 0)
+        kiBar.Size = UDim2.new(math.clamp(kiValue / maxKi, 0, 1), 0, 1, 0) -- Actualiza la barra de Ki correctamente
     end
 end
 
@@ -1108,27 +1314,13 @@ task.spawn(function()
     while task.wait(1) do
         pcall(function()
         if player() and getIsActive2() then
-        local Forms = {
-    'Divine Blue', 
-    'Divine Rose Prominence', 
-    'Astral Instinct', 
-    'Ultra Ego', 
-    'True God of Creation', 
-    'True God of Destruction', 
-    'LSSJ4',  
-    'SSJR3', 
-    'SSJB3', 
-    'Jiren Ultra Instinct', 
-    'Godly SSJ2', 
-    'Blue Evolution',
-    'SSJB Kaioken', 
-    'SSJ Rose', 
-    'SSJ Blue', 
-    'Corrupt SSJ', 
-    'SSJ3', 
-    'SSJ2', 
-    'Kaioken'
-}
+        local Forms = {'Divine Blue', 'Divine Rose Prominence', 'Astral Instinct', 'Ultra Ego', 'SSJB4', 'True God of Creation', 
+    'True God of Destruction', 'Super Broly', 'LSSJG', 'LSSJ4', 'SSJG4', 'LSSJ3', 'Mystic Kaioken', 
+    'LSSJ Kaioken', 'SSJR3', 'SSJB3', 'God Of Destruction', 'God Of Creation', 'Jiren Ultra Instinct', 
+    'Mastered Ultra Instinct', 'Godly SSJ2', 'Ultra Instinct Omen', 'Evil SSJ', 'Blue Evolution', 
+    'Dark Rose', 'Kefla SSJ2', 'SSJ Berserker', 'True Rose', 'SSJB Kaioken', 'SSJ Rose', 'SSJ Blue', 
+    'Corrupt SSJ', 'SSJ Rage', 'SSJG', 'SSJ4', 'Mystic', 'LSSJ', 'SSJ3', 'Spirit SSJ', 'SSJ2 Majin', 
+    'SSJ2', 'SSJ Kaioken', 'SSJ', 'FSSJ', 'Kaioken'}
         local status = lplr.Status    
         for _, form in ipairs(Forms) do 
             if Ex.equipskill:InvokeServer(form) then break end  
@@ -1259,8 +1451,6 @@ function camera()
   end
 end
 
-loadstring(game:HttpGet('https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Campo-no-compartan-script-quien-logr-Desufusco/refs/heads/main/Datis.lua'))()
-  
   task.spawn(function()
     while task.wait() do
         pcall(function()
@@ -1273,8 +1463,7 @@ loadstring(game:HttpGet('https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Camp
                      if getIsActive4()  and data.Quest.Value ~= ""  then
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
-                     end
-									
+                     end								
          end)         
       end
   end)
@@ -1323,21 +1512,21 @@ end)
 task.spawn(function()
     while task.wait() do
         pcall(function()
-            local character = lplr.Character
-            if not character or not character:FindFirstChild("Stats") then return end
-
-            local stats = character.Stats
-            local ki = stats:FindFirstChild("Ki")
-            local humanoid = character:FindFirstChild("Humanoid")
-            local rootPart = character:FindFirstChild("HumanoidRootPart")
-
-            if not (ki and humanoid and rootPart) then return end
-
-            if ki.Value < ki.MaxValue * 0.25 and player() and getIsActive1() and yo() <= 800e9 then
+local char = game.Workspace.Living:FindFirstChild(lplr.Name)
+if char then
+    local stats = char:FindFirstChild("Stats")
+    if stats then
+        local ki = stats:FindFirstChild("Ki")
+        local maxKi = stats:FindFirstChild("MaxKi")
+        if ki and maxKi and ki:IsA("NumberValue") and maxKi:IsA("NumberValue") then
+            if ki.Value <= (maxKi.Value * 0.25) and player() and getIsActive1() and yo() <= 800e9 then
                 Ex.cha:InvokeServer("Blacknwhite27")
             end
-local Black = false
+        end
+    end
+end
 
+local Black = false
 if getIsActive5() and player()  then
     local gokuBlack = game.Workspace.Living:FindFirstChild("Wukong Black")
     if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack.Humanoid.Health > 0 then
@@ -1351,19 +1540,13 @@ if getIsActive5() and player()  then
 end
             
             if player() then
-                if lplr.Status.Blocking.Value ~= true and getIsActive1() then
-                    Ex.block:InvokeServer(true)
+                if game.Players.LocalPlayer.Status.Blocking.Value == false and getIsActive1() then
+                    game.Players.LocalPlayer.Status.Blocking.Value = true               
                 end                
-                if getIsActive1() then
-                lplr.Character.Humanoid:ChangeState(11)
- 	                lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
-                    	lplr.Character.Humanoid:ChangeState(8)
-                         lplr.Character.Humanoid:ChangeState(18)    
-            end           
-                local rebirthValue = data.Rebirth.Value
-              local rebirthThreshold = (rebirthValue * 1.99e6) + 2e6
-              if yo() < (rebirthThreshold * 2) and getIsActive3()  then
-                Ex.reb:InvokeServer()
+  local rebirths = game.Workspace.Living[lplr.Name].Stats.Rebirth.Value
+local nextRebirth = (rebirths * 1.99e6) + 2e6
+if yo() < nextRebirth * 2 and getIsActive3() then
+          Ex.reb:InvokeServer()
                 end
             end
         end)
@@ -1408,10 +1591,28 @@ task.spawn(function()
     end
 end)
 
+task.spawn(function()
+    while true do
+    pcall(function()
+    if getIsActive1() and  yo() <= 10000   then
+        for _, boss in ipairs(game.Workspace.Living:GetChildren()) do
+            if boss.Name == "X Fighter" and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
+                lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.5)
+                               game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
+                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
+                break
+            end
+            end
+          end
+        end)
+        task.wait() 
+    end
+end)
+
   npcList = {
-    {"Winter Bills", 2.176e9, true},
-    {"Vekuta (SSJBUI)", 2.175e9, true},
-    {"Wukong Rose", 1.65e9, true},
+    {"Winter Bills", 4.176e9, true},
+    {"Vekuta (SSJBUI)", 3.175e9, true},
+    {"Wukong Rose", 2.15e9, true},
     {"Vekuta (LBSSJ4)", 1.05e9, true},
     {"Wukong (LBSSJ4)", 950e6, true},
     {"Vegetable (LBSSJ4)", 650e6, true},
@@ -1432,8 +1633,8 @@ end)
     {"Super Vegetable", 298000, true},
     {"Mapa", 55000, true},
     {"Radish", 40000, true},
-    {"Kid Nohag", 0, false},
-    {"Klirin", 0, falae}
+    {"Kid Nohag", 20000, true},
+    {"Klirin", 10000, true}
 }
     
 task.spawn(function()
@@ -1477,22 +1678,6 @@ if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then
     end
 end)
 
-
-task.spawn(function()
-    while task.wait() do       
-       pcall(function() 
-            if getIsActive11() then
-            npcList[25][3] = true  
-            end
-            if getIsActive12() then
-            npcList[24][3] = true  
-            end          
-         end)
-      end
- end)          
- 
-
-         
 canvolley = true        
  task.spawn(function() 
  while true do
@@ -1670,31 +1855,12 @@ loadServerData()
 end)
    end
 end)
-
-task.spawn(function()
-    while task.wait(.4) do
-    pcall(function()
-   if data.Quest.Value ~= "" and player() and game.PlaceId == 3311165597 then
-         wait(2)
-       for _, npc in ipairs(game.Workspace.Others.NPCs:GetChildren()) do
-          if npc:FindFirstChild("HumanoidRootPart") and (npc.HumanoidRootPart.Position - lplr.Character.HumanoidRootPart.Position).Magnitude <= 500 and npc.Name ~= "Halloween NPC" then
-              data.Quest.Value = ""
-                break
-               end
-          end
-       end        
-       updateList()
-       end)
-    end
- end)            
- 
  
  
 task.spawn(function()
     while task.wait(1) do
        pcall(function()
    updateAllTags()
-   loadstring(game:HttpGet('https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Campo-no-compartan-script-quien-logr-Desufusco/refs/heads/main/Datis.lua'))()
        end)
     end
  end)            
@@ -1944,3 +2110,147 @@ end)
        end)    
     task.wait()
   end)
+   end
+
+local function verificarEstadoServicio()
+    for _, host in ipairs({"https://api.platoboost.com", "https://api.platoboost.net"}) do
+        local success, response = pcall(function()
+            return fRequest({
+                Url = host .. "/public/connectivity",
+                Method = "GET"
+            })
+        end)
+        
+        if success and response and response.StatusCode == 200 then
+            log("Servicio disponible en:", host)
+            return true
+        end
+    end
+    
+    log("Servicio no disponible en ningún host")
+    return false
+end
+
+
+if claveEsValida() then
+    log("Clave válida detectada. Ejecutando script principal.")
+    script()
+    return
+end
+
+
+if not verificarEstadoServicio() then
+    log("Servicio no disponible. No se puede mostrar la GUI.")
+    return
+end
+
+-- Crear GUI
+local KeyGui = Instance.new("ScreenGui")
+KeyGui.Parent = game.CoreGui
+
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0.318, 0, 0.318, 0)
+Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+Frame.BorderSizePixel = 0
+Frame.Parent = KeyGui
+
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0.05, 0)
+UICorner.Parent = Frame
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(0.95, 0, 0.15, 0)
+Title.Position = UDim2.new(0.025, 0, 0.05, 0)
+Title.BackgroundTransparency = 1
+Title.TextColor3 = Color3.fromRGB(220, 220, 220)
+Title.TextScaled = true
+Title.Font = Enum.Font.GothamBold
+Title.Text = "🔐 Sistema de Claves"
+Title.Parent = Frame
+
+local TextBox = Instance.new("TextBox")
+TextBox.Size = UDim2.new(0.9, 0, 0.13, 0)
+TextBox.Position = UDim2.new(0.05, 0, 0.28, 0)
+TextBox.PlaceholderText = "Introduce tu clave aquí"
+TextBox.Font = Enum.Font.Gotham
+TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextBox.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+TextBox.BorderSizePixel = 0
+TextBox.TextScaled = true
+TextBox.ClearTextOnFocus = false
+TextBox.Parent = Frame
+
+local BotonVerificar = Instance.new("TextButton")
+BotonVerificar.Size = UDim2.new(0.4, 0, 0.15, 0)
+BotonVerificar.Position = UDim2.new(0.05, 0, 0.65, 0)
+BotonVerificar.Text = "Verificar Clave"
+BotonVerificar.Font = Enum.Font.GothamBold
+BotonVerificar.TextScaled = true
+BotonVerificar.TextColor3 = Color3.fromRGB(255, 255, 255)
+BotonVerificar.BackgroundColor3 = Color3.fromRGB(0, 204, 122)
+BotonVerificar.BorderSizePixel = 0
+BotonVerificar.Parent = Frame
+
+local BotonCopiar = Instance.new("TextButton")
+BotonCopiar.Size = UDim2.new(0.4, 0, 0.15, 0)
+BotonCopiar.Position = UDim2.new(0.55, 0, 0.65, 0)
+BotonCopiar.Text = "Generar Link"
+BotonCopiar.Font = Enum.Font.GothamBold
+BotonCopiar.TextScaled = true
+BotonCopiar.TextColor3 = Color3.fromRGB(255, 255, 255)
+BotonCopiar.BackgroundColor3 = Color3.fromRGB(0, 122, 204)
+BotonCopiar.BorderSizePixel = 0
+BotonCopiar.Parent = Frame
+
+BotonVerificar.MouseButton1Click:Connect(function()
+    local clave = TextBox.Text
+    if clave == "" then
+        TextBox.Text = "Por favor, introduce una clave"
+        TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
+        return
+    end
+
+    TextBox.Text = "Verificando..."
+    TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    
+    local success, result = pcall(function()
+        return verificarClave(clave)
+    end)
+
+    if not success then
+        TextBox.Text = "Error en la verificación"
+        TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
+        log("Error en verificación:", result)
+        return
+    end
+
+    if result then
+        TextBox.Text = "¡Clave aceptada!"
+        TextBox.TextColor3 = Color3.fromRGB(100, 255, 100)
+        wait(1)
+        KeyGui:Destroy()
+        script()
+    else
+        TextBox.Text = "Clave inválida"
+        TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
+    end
+end)
+
+BotonCopiar.MouseButton1Click:Connect(function()
+    TextBox.Text = "Generando link..."
+    TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    
+    local link = generateLink()
+    if link then
+        TextBox.Text = "Link generado y copiado"
+        TextBox.TextColor3 = Color3.fromRGB(100, 255, 100)
+        if fSetClipboard then
+            fSetClipboard(link)
+        end
+    else
+        TextBox.Text = "No se pudo generar el link"
+        TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
+    end
+end)
