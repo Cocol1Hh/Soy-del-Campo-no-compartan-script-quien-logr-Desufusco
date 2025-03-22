@@ -551,7 +551,7 @@ Selct.CanvasSize = UDim2.new(0, 0, 0, 400)
 Selct.ScrollingDirection = Enum.ScrollingDirection.Y
 
 
-local forms = {"Divine Blue", "Divine Rose Prominence", "Astral Instinct", "Ultra Ego", "SSJBUI", "Beast", "LSSJ4"}
+local forms = {"LBLSSJ4", "CSSJB", "Divine Blue", "Divine Rose Prominence", "Astral Instinct", "Ultra Ego", "SSJBUI", "Beast", "LSSJ4"}
 local frame = Instance.new("Frame", Selct)
 frame.Size = UDim2.new(0, 100, 0, #forms * 30 + 10)
 frame.Position = UDim2.new(0.8, -220, 0.270, -frame.Size.Y.Offset / 2)
@@ -1314,7 +1314,7 @@ task.spawn(function()
     while task.wait() do
         pcall(function()
         if player() and getIsActive2() then
-        local Forms = {'Divine Blue', 'Divine Rose Prominence', 'Astral Instinct', 'Ultra Ego', 'SSJB4', 'True God of Creation', 
+        local Forms = {'LBLSSJ4', 'CSSJB', 'Divine Blue', 'Divine Rose Prominence', 'Astral Instinct', 'Ultra Ego', 'SSJB4', 'True God of Creation', 
     'True God of Destruction', 'Super Broly', 'LSSJG', 'LSSJ4', 'SSJG4', 'LSSJ3', 'Mystic Kaioken', 
     'LSSJ Kaioken', 'SSJR3', 'SSJB3', 'God Of Destruction', 'God Of Creation', 'Jiren Ultra Instinct', 
     'Mastered Ultra Instinct', 'Godly SSJ2', 'Ultra Instinct Omen', 'Evil SSJ', 'Blue Evolution', 
@@ -1575,17 +1575,17 @@ task.spawn(function()
   npcList = {
     {"Winter Bills", 4.176e9, true},
     {"Vekuta (SSJBUI)", 3.175e9, true},
-    {"Wukong Rose", 2.15e9, true},
-    {"Vekuta (LBSSJ4)", 1.05e9, true},
-    {"Wukong (LBSSJ4)", 950e6, true},
-    {"Vegetable (LBSSJ4)", 650e6, true},
-    {"Vis (20%)", 550e6, true},
-    {"Winter Roshi", 400e6, true},
+    {"Wukong Rose", 2.75e9, true},
+    {"Vekuta (LBSSJ4)", 2.05e9, true},
+    {"Wukong (LBSSJ4)", 1.90e6, true},
+    {"Vegetable (LBSSJ4)", 950e6, true},
+    {"Vis (20%)", 650e6, true},
+    {"Winter Roshi", 500e6, true},
     {"Vills (50%)", 300e6, true},
     {"Wukong (Omen)", 200e6, true},
     {"Vegetable (GoD in-training)", 50e6, true},
-    {"Winter Wukong", 100e6, true},
-    {"SSJG Kakata", 80e6, true},
+    {"Winter Wukong", 120e6, true},
+    {"SSJG Kakata", 1000e6, true},
     {"Broccoli", 21.5e6, true},
     {"SSJB Wukong", 4025000, true},
     {"Kai-fist Master", 3025000, true},
@@ -1663,9 +1663,7 @@ if (yo() >= 40000 and data.Quest.Value ~= "" and not lplr.Status:FindFirstChild(
                                     if stats >= 125000 then
                                         table.insert(moves, "Mach Kick")
                                     end
-                                    if stats >= 100e6 and game.PlaceId == 5151400895  then
-                                        table.insert(moves, "Super Dragon Fist")
-                                    end
+                                    
                                     if stats >= 60e6 then
                                         if data.Allignment.Value == "Good" then
                                             table.insert(moves, "Spirit Barrage")
@@ -1683,7 +1681,13 @@ if (yo() >= 40000 and data.Quest.Value ~= "" and not lplr.Status:FindFirstChild(
                                     end
                                     if yo() > 10000 and canvolley then
                                         canvolley = false
-                                        game.ReplicatedStorage.Package.Events.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, "Blacknwhite27")                                       
+                                        local boss = game.Workspace.Living:FindFirstChild(data.Quest.Value)
+                                      if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
+                                game:GetService("ReplicatedStorage").Package.Events.voleys:InvokeServer(
+                                         "Energy Volley", 
+                                      {["MouseHit"] = boss.HumanoidRootPart.CFrame, ["FaceMouse"] = true}, 
+                                        "Blacknwhite27"  )
+                                      end
                                         attacked = true
                                         spawn(function()
                                             wait(.01)
