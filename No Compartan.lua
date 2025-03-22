@@ -451,7 +451,7 @@ Selct.ScrollingDirection = Enum.ScrollingDirection.Y
 local forms = {"LBLSSJ4", "CSSJB", "Divine Blue", "Divine Rose Prominence", "Astral Instinct", "Ultra Ego", "SSJBUI", "Beast", "LSSJ4"}
 local frame = Instance.new("Frame", Selct)
 frame.Size = UDim2.new(0, 100, 0, #forms * 30 + 10)
-frame.Position = UDim2.new(0.8, -220, 0.270, -frame.Size.Y.Offset / 2)
+frame.Position = UDim2.new(0.8, -220, 0.270, -frame.Size.Y.Offset / 3)
 frame.BackgroundTransparency = 1
 
 local list = Instance.new("UIListLayout", frame)
