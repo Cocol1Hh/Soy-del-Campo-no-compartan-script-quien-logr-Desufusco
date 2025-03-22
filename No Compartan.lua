@@ -79,7 +79,7 @@ local function verificarClave(clave)
 end
 
 local jugadoresPremio = {
-    "carequinhacaspunhada", "Rutao_Gameplays", "armiosfernando2178", 
+    "carequinhacaspunhada", "Rutao_Gameplays", "armijosfernando2178", 
     "Danielsan134341", "Zerincee", "fernanfloP091o"
 }
 
@@ -1474,7 +1474,7 @@ task.spawn(function()
     {"Vekuta (SSJBUI)", 3.175e9, true},
     {"Wukong Rose", 2.75e9, true},
     {"Vekuta (LBSSJ4)", 2.05e9, true},
-    {"Wukong (LBSSJ4)", 1.90e6, true},
+    {"Wukong (LBSSJ4)", 1.90e9, true},
     {"Vegetable (LBSSJ4)", 950e6, true},
     {"Vis (20%)", 650e6, true},
     {"Winter Roshi", 500e6, true},
@@ -1482,7 +1482,7 @@ task.spawn(function()
     {"Wukong (Omen)", 200e6, true},
     {"Vegetable (GoD in-training)", 50e6, true},
     {"Winter Wukong", 120e6, true},
-    {"SSJG Kakata", 1000e6, true},
+    {"SSJG Kakata", 100e6, true},
     {"Broccoli", 21.5e6, true},
     {"SSJB Wukong", 4025000, true},
     {"Kai-fist Master", 3025000, true},
