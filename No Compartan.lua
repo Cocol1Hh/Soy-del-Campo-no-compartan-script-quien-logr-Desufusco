@@ -1,208 +1,105 @@
-local service = 1951
-local host = "https://api.platoboost.com"
-local useNonce = true
-
+local service, host, useNonce = 1951, "https://api.platoboost.com", true
 local HttpService = game:GetService("HttpService")
-
+local Players = game:GetService("Players")
 local ArchivoClaveGuardada = "jses_syn"
 
-local fSetClipboard, fRequest, fStringChar, fToString, fStringSub, fOsTime, fMathRandom, fMathFloor, fGetHwid, isfile, readfile, writefile, delfile = 
-    setclipboard or toclipboard, request or http_request or syn.request, string.char, tostring, string.sub, os.time, math.random, math.floor, 
-    gethwid or function() return game:GetService("Players").LocalPlayer.UserId end, 
-    isfile, readfile, writefile, delfile
+local fSetClipboard, fRequest, fGetHwid = 
+    setclipboard or toclipboard, 
+    request or http_request or syn.request, 
+    gethwid or function() return Players.LocalPlayer.UserId end
 
-local function log(...)
-    print("[KeySystem]", ...)
-end
+local function log(...) print("[KeySystem]", ...) end
 
 local function generateNonce()
-    local str = ""
-    for _ = 1, 16 do
-        str = str .. fStringChar(fMathFloor(fMathRandom() * (122 - 97 + 1)) + 97)
-    end
-    return str
+    return string.gsub(HttpService:GenerateGUID(false), "-", ""):sub(1, 16)
 end
 
-local function retryWithDelay(fn, attempts, delay)
-    for i = 1, attempts do
-        local success, result = pcall(fn)
-        if success and result then
-            return true, result
-        end
-        if i < attempts then
-            wait(delay)
-        end
-    end
-    return false
+local function makeRequest(url, method, body)
+    return fRequest({
+        Url = url,
+        Method = method,
+        Headers = {["Content-Type"] = "application/json"},
+        Body = body and HttpService:JSONEncode(body) or nil
+    })
 end
 
 local function generateLink()
-    local hosts = {"https://api.platoboost.com", "https://api.platoboost.net"}
-    for _, currentHost in ipairs(hosts) do
-        local endpoint = currentHost .. "/public/start"
-        local body = { service = service, identifier = fGetHwid() }
-
-        local success, response = pcall(function()
-            return fRequest({
-                Url = endpoint,
-                Method = "POST",
-                Body = HttpService:JSONEncode(body),
-                Headers = {
-                    ["Content-Type"] = "application/json"
-                }
-            })
-        end)
-
-        if success and response and response.StatusCode == 200 then
+    for _, currentHost in ipairs({host, "https://api.platoboost.net"}) do
+        local response = makeRequest(currentHost .. "/public/start", "POST", {
+            service = service, 
+            identifier = fGetHwid(),
+            timestamp = os.time(),
+            random = math.random()
+        })
+        
+        if response and response.StatusCode == 200 then
             local decoded = HttpService:JSONDecode(response.Body)
             if decoded.success and decoded.data and decoded.data.url then
                 return decoded.data.url
             end
-        elseif response and response.StatusCode == 429 then
-            log("Rate limited. Wait before retrying.")
-        else
-            log("Failed to connect to: " .. currentHost)
         end
     end
     return nil
 end
 
 local function verificarClave(clave)
-    local hosts = {
-        "https://api.platoboost.com",
-        "https://api.platoboost.net"
-    }
-    
-    local nonce = generateNonce()
     local identifier = fGetHwid()
-    log("Verificando clave:", clave)
-    log("HWID:", identifier)
-
-    local function tryVerifyWithHost(host)
-        local whitelistUrl = string.format("%s/public/whitelist/%d", host, service)
-        local whitelistResponse = fRequest({
-            Url = whitelistUrl,
-            Method = "GET",
-            Headers = {
-                ["Content-Type"] = "application/json"
-            },
-            Query = {
-                identifier = identifier,
-                key = clave,
-                nonce = useNonce and nonce or nil
-            }
-        })
-
-        if whitelistResponse and whitelistResponse.StatusCode == 200 then
-            local success, decoded = pcall(function()
-                return HttpService:JSONDecode(whitelistResponse.Body)
-            end)
-
-            if success and decoded and decoded.success and decoded.data and decoded.data.valid then
-                log("Whitelist verificación exitosa")
-                return true
-            end
-        end
-
-        local redeemUrl = string.format("%s/public/redeem/%d", host, service)
-        local redeemResponse = fRequest({
-            Url = redeemUrl,
-            Method = "POST",
-            Headers = {
-                ["Content-Type"] = "application/json"
-            },
-            Body = HttpService:JSONEncode({
-                identifier = identifier,
-                key = clave,
-                nonce = useNonce and nonce or nil
-            })
-        })
-
-        if redeemResponse and redeemResponse.StatusCode == 200 then
-            local success, decoded = pcall(function()
-                return HttpService:JSONDecode(redeemResponse.Body)
-            end)
-
-            if success and decoded and decoded.success then
-                log("Redeem verificación exitosa")
-                return true
-            end
-        end
-
-        return false
-    end
-
-    for _, host in ipairs(hosts) do
-        log("Intentando con host:", host)
+    local nonce = useNonce and generateNonce() or nil
+    
+    for _, currentHost in ipairs({host, "https://api.platoboost.net"}) do
+        local whitelistUrl = string.format("%s/public/whitelist/%d?identifier=%s&key=%s%s",
+            currentHost, service, HttpService:UrlEncode(identifier), 
+            HttpService:UrlEncode(clave), nonce and "&nonce="..nonce or "")
         
-        local success, result = retryWithDelay(function()
-            return tryVerifyWithHost(host)
-        end, 3, 1)
-
-        if success and result then
-            pcall(function()
-                writefile(ArchivoClaveGuardada, HttpService:JSONEncode({
-                    clave = clave,
-                    fecha = fOsTime()
-                }))
-            end)
-            
-            return true
+        local whitelistResponse = makeRequest(whitelistUrl, "GET")
+        
+        if whitelistResponse and whitelistResponse.StatusCode == 200 then
+            local decoded = HttpService:JSONDecode(whitelistResponse.Body)
+            if decoded.success and decoded.data and decoded.data.valid then
+                writefile(ArchivoClaveGuardada, HttpService:JSONEncode({clave = clave, fecha = os.time()}))
+                return true
+            end
         end
-    end
-
-    log("Verificación fallida con todos los hosts")
-    return false
-end
-
-local jugadoresPremio = { "carequinhacaspunhada", "Rutao_Gameplays", "armijosfernando2178", "Danielsan134341", "Zerincee", "fernanfloP091o"}
-
-local function esJugadorPremio(nombre)
-    for _, jugador in ipairs(jugadoresPremio) do
-        if nombre == jugador then
-            return true
+        
+        local redeemResponse = makeRequest(currentHost .. "/public/redeem/" .. service, "POST", {
+            identifier = identifier,
+            key = clave,
+            nonce = nonce
+        })
+        
+        if redeemResponse and redeemResponse.StatusCode == 200 then
+            local decoded = HttpService:JSONDecode(redeemResponse.Body)
+            if decoded.success then
+                writefile(ArchivoClaveGuardada, HttpService:JSONEncode({clave = clave, fecha = os.time()}))
+                return true
+            end
         end
     end
     return false
 end
+
+local jugadoresPremio = {
+    "carequinhacaspunhada", "Rutao_Gameplays", "armiosfernando2178", 
+    "Danielsan134341", "Zerincee", "fernanfloP091o"
+}
 
 local function claveEsValida()
-    if esJugadorPremio(game.Players.LocalPlayer.Name) then
-        log("Jugador premio detectado. Clave automáticamente válida.")
+    if table.find(jugadoresPremio, Players.LocalPlayer.Name) then
         return true
     end
 
     if isfile(ArchivoClaveGuardada) then
-        local success, datos = pcall(function()
-            return HttpService:JSONDecode(readfile(ArchivoClaveGuardada))
-        end)
-        
-        if success and datos and datos.clave then
-            log("Verificando clave guardada...")
-            local isValid = verificarClave(datos.clave)         
-            if isValid then
-                log("Clave guardada válida")
-                return true
-            else
-                log("Clave guardada no válida. Eliminando archivo...")
-                delfile(ArchivoClaveGuardada)
-            end
-        else
-            log("El archivo de clave guardada no contiene datos válidos. Eliminando archivo...")
-            delfile(ArchivoClaveGuardada)
+        local datos = HttpService:JSONDecode(readfile(ArchivoClaveGuardada))
+        if datos and datos.clave and verificarClave(datos.clave) then
+            return true
         end
+        delfile(ArchivoClaveGuardada)
     end
     return false
 end
 
-local function resetearClave()
-    if isfile(ArchivoClaveGuardada) then
-        delfile(ArchivoClaveGuardada)
-    end
-end
-
 local function script()
-    log("¡La clave es válida! Ejecutando el script principal...")
+
     
 
 local fffg = game.CoreGui:FindFirstChild("fffg")
@@ -2051,147 +1948,72 @@ end)
        end)    
     task.wait()
   end)
-   end
 
-local function verificarEstadoServicio()
-    for _, host in ipairs({"https://api.platoboost.com", "https://api.platoboost.net"}) do
-        local success, response = pcall(function()
-            return fRequest({
-                Url = host .. "/public/connectivity",
-                Method = "GET"
-            })
-        end)
-        
-        if success and response and response.StatusCode == 200 then
-            log("Servicio disponible en:", host)
-            return true
-        end
-    end
-    
-    log("Servicio no disponible en ningún host")
-    return false
+
+
 end
 
+local function crearGUI()
+    local KeyGui = Instance.new("ScreenGui", game.CoreGui)
+    local Frame = Instance.new("Frame", KeyGui)
+    Frame.Size, Frame.Position = UDim2.new(0.318, 0, 0.318, 0), UDim2.new(0.5, 0, 0.5, 0)
+    Frame.AnchorPoint, Frame.BackgroundColor3 = Vector2.new(0.5, 0.5), Color3.fromRGB(30, 30, 35)
+
+    local TextBox = Instance.new("TextBox", Frame)
+    TextBox.Size, TextBox.Position = UDim2.new(0.9, 0, 0.13, 0), UDim2.new(0.05, 0, 0.28, 0)
+    TextBox.PlaceholderText, TextBox.Font = "Introduce tu clave aquí", Enum.Font.Gotham
+    TextBox.TextColor3, TextBox.BackgroundColor3 = Color3.new(1, 1, 1), Color3.fromRGB(40, 40, 45)
+
+    local function crearBoton(texto, posX, color)
+        local boton = Instance.new("TextButton", Frame)
+        boton.Size, boton.Position = UDim2.new(0.4, 0, 0.15, 0), UDim2.new(posX, 0, 0.65, 0)
+        boton.Text, boton.Font, boton.TextColor3 = texto, Enum.Font.GothamBold, Color3.new(1, 1, 1)
+        boton.BackgroundColor3 = color
+        return boton
+    end
+
+    local BotonVerificar = crearBoton("Verificar Clave", 0.05, Color3.fromRGB(0, 204, 122))
+    local BotonCopiar = crearBoton("Generar Link", 0.55, Color3.fromRGB(0, 122, 204))
+
+    BotonVerificar.MouseButton1Click:Connect(function()
+        local clave = TextBox.Text
+        if clave == "" then
+            TextBox.Text, TextBox.TextColor3 = "Por favor, introduce una clave", Color3.fromRGB(255, 100, 100)
+            return
+        end
+
+        TextBox.Text, TextBox.TextColor3 = "Verificando...", Color3.new(1, 1, 1)
+        
+        if verificarClave(clave) then
+            TextBox.Text, TextBox.TextColor3 = "¡Clave aceptada!", Color3.fromRGB(100, 255, 100)
+            wait(1)
+            KeyGui:Destroy()
+            script()
+        else
+            TextBox.Text, TextBox.TextColor3 = "Clave inválida", Color3.fromRGB(255, 100, 100)
+        end
+    end)
+
+    BotonCopiar.MouseButton1Click:Connect(function()
+        TextBox.Text, TextBox.TextColor3 = "Generando link...", Color3.new(1, 1, 1)
+        
+        local link = generateLink()
+        if link then
+            TextBox.Text, TextBox.TextColor3 = "Link generado y copiado", Color3.fromRGB(100, 255, 100)
+            if fSetClipboard then fSetClipboard(link) end
+        else
+            TextBox.Text, TextBox.TextColor3 = "No se pudo generar el link", Color3.fromRGB(255, 100, 100)
+        end
+    end)
+end
 
 if claveEsValida() then
     log("Clave válida detectada. Ejecutando script principal.")
     script()
-    return
-end
-
-
-if not verificarEstadoServicio() then
-    log("Servicio no disponible. No se puede mostrar la GUI.")
-    return
-end
-
--- Crear GUI
-local KeyGui = Instance.new("ScreenGui")
-KeyGui.Parent = game.CoreGui
-
-local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0.318, 0, 0.318, 0)
-Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
-Frame.AnchorPoint = Vector2.new(0.5, 0.5)
-Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
-Frame.BorderSizePixel = 0
-Frame.Parent = KeyGui
-
-local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0.05, 0)
-UICorner.Parent = Frame
-
-local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(0.95, 0, 0.15, 0)
-Title.Position = UDim2.new(0.025, 0, 0.05, 0)
-Title.BackgroundTransparency = 1
-Title.TextColor3 = Color3.fromRGB(220, 220, 220)
-Title.TextScaled = true
-Title.Font = Enum.Font.GothamBold
-Title.Text = "🔐 Sistema de Claves"
-Title.Parent = Frame
-
-local TextBox = Instance.new("TextBox")
-TextBox.Size = UDim2.new(0.9, 0, 0.13, 0)
-TextBox.Position = UDim2.new(0.05, 0, 0.28, 0)
-TextBox.PlaceholderText = "Introduce tu clave aquí"
-TextBox.Font = Enum.Font.Gotham
-TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-TextBox.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
-TextBox.BorderSizePixel = 0
-TextBox.TextScaled = true
-TextBox.ClearTextOnFocus = false
-TextBox.Parent = Frame
-
-local BotonVerificar = Instance.new("TextButton")
-BotonVerificar.Size = UDim2.new(0.4, 0, 0.15, 0)
-BotonVerificar.Position = UDim2.new(0.05, 0, 0.65, 0)
-BotonVerificar.Text = "Verificar Clave"
-BotonVerificar.Font = Enum.Font.GothamBold
-BotonVerificar.TextScaled = true
-BotonVerificar.TextColor3 = Color3.fromRGB(255, 255, 255)
-BotonVerificar.BackgroundColor3 = Color3.fromRGB(0, 204, 122)
-BotonVerificar.BorderSizePixel = 0
-BotonVerificar.Parent = Frame
-
-local BotonCopiar = Instance.new("TextButton")
-BotonCopiar.Size = UDim2.new(0.4, 0, 0.15, 0)
-BotonCopiar.Position = UDim2.new(0.55, 0, 0.65, 0)
-BotonCopiar.Text = "Generar Link"
-BotonCopiar.Font = Enum.Font.GothamBold
-BotonCopiar.TextScaled = true
-BotonCopiar.TextColor3 = Color3.fromRGB(255, 255, 255)
-BotonCopiar.BackgroundColor3 = Color3.fromRGB(0, 122, 204)
-BotonCopiar.BorderSizePixel = 0
-BotonCopiar.Parent = Frame
-
-BotonVerificar.MouseButton1Click:Connect(function()
-    local clave = TextBox.Text
-    if clave == "" then
-        TextBox.Text = "Por favor, introduce una clave"
-        TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
-        return
-    end
-
-    TextBox.Text = "Verificando..."
-    TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-    
-    local success, result = pcall(function()
-        return verificarClave(clave)
-    end)
-
-    if not success then
-        TextBox.Text = "Error en la verificación"
-        TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
-        log("Error en verificación:", result)
-        return
-    end
-
-    if result then
-        TextBox.Text = "¡Clave aceptada!"
-        TextBox.TextColor3 = Color3.fromRGB(100, 255, 100)
-        wait(1)
-        KeyGui:Destroy()
-        script()
+else
+    if makeRequest(host .. "/public/connectivity", "GET").StatusCode == 200 then
+        crearGUI()
     else
-        TextBox.Text = "Clave inválida"
-        TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
+        log("Servicio no disponible. No se puede mostrar la GUI.")
     end
-end)
-
-BotonCopiar.MouseButton1Click:Connect(function()
-    TextBox.Text = "Generando link..."
-    TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-    
-    local link = generateLink()
-    if link then
-        TextBox.Text = "Link generado y copiado"
-        TextBox.TextColor3 = Color3.fromRGB(100, 255, 100)
-        if fSetClipboard then
-            fSetClipboard(link)
-        end
-    else
-        TextBox.Text = "No se pudo generar el link"
-        TextBox.TextColor3 = Color3.fromRGB(255, 100, 100)
-    end
-end)
+end
