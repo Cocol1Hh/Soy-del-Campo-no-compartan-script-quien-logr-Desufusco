@@ -1041,7 +1041,18 @@ function yo()
     return l
 end
 
-
+local stats = getgenv().Stats
+function checkplr()
+    found = false
+    for i,v in pairs(stats) do
+        if v[1] == lplr.Name then
+            found = true
+            return v -- Name, Reb cap, Stat cap
+        end
+    end
+    local table = {lplr.Name, math.huge, math.huge, true}
+    if not found then return table end
+end
 
 function player()
 	if lplr.Character and lplr.Character:FindFirstChild("Humanoid") then
@@ -1204,14 +1215,6 @@ task.spawn(function()
                     end
                 end
             end
-        end)
-    end
-end)
-
-task.spawn(function()
-while task.wait() do
-pcall(function()
-        local lplr = Players.LocalPlayer
         if getIsActive15() then
         if  lplr.Character and lplr.Character:FindFirstChild("HumanoidRootPart") and selectedPlayerValue.Value and selectedPlayerValue.Value.Character and selectedPlayerValue.Value.Character:FindFirstChild("HumanoidRootPart") then
             local Jefe = selectedPlayerValue.Value.Character
@@ -1221,6 +1224,7 @@ pcall(function()
         end)
     end
 end)
+
 
 
   task.spawn(function()
@@ -1320,79 +1324,90 @@ task.spawn(function()
  end)
  
  
+local HttpService = game:GetService("HttpService")
+local folderName = "Missiones🤑🤑"
+local fileName = folderName .. "/bosses.txt"
 
+local function saveBossList(bossList)
+    local jsonData = HttpService:JSONEncode(bossList)
+    local formattedData = jsonData:gsub("},", "},\n\n")
+    if not isfolder(folderName) then
+        makefolder(folderName)
+    end
+    writefile(fileName, formattedData)
+end
 
- 
+local function loadBossList()
+    if isfile(fileName) then
+        return HttpService:JSONDecode(readfile(fileName))
+    else
+        local defaultBossList = {
+            {"Winter Bills", 4.176e9, true},
+            {"Vekuta (SSJBUI)", 3.175e9, true},
+            {"Wukong Rose", 2.75e9, true},
+            {"Vekuta (LBSSJ4)", 2.05e9, true},
+            {"Wukong (LBSSJ4)", 1.90e9, true},
+            {"Vegetable (LBSSJ4)", 950e6, true},
+            {"Vis (20%)", 650e6, true},
+            {"Winter Roshi", 500e6, true},
+            {"Vills (50%)", 300e6, true},
+            {"Wukong (Omen)", 200e6, true},
+            {"Vegetable (GoD in-training)", 50e6, true},
+            {"Winter Wukong", 120e6, true},
+            {"SSJG Kakata", 100e6, true},
+            {"Broccoli", 21.5e6, true},
+            {"SSJB Wukong", 4025000, true},
+            {"Kai-fist Master", 3025000, true},
+            {"SSJ2 Wukong", 2050000, true},
+            {"Perfect Atom", 1375000, true},
+            {"Winter Gohan", 860000, true},
+            {"Chilly", 650000, true},
+            {"Super Vegetable", 298000, true},
+            {"Mapa", 55000, true},
+            {"Radish", 40000, true},
+            {"Kid Nohag", 20000, true},
+            {"Klirin", 10000, true}
+        }
+        saveBossList(defaultBossList)
+        return defaultBossList
+    end
+end
 
-  npcList = {
-    {"Winter Bills", 4.176e9, true},
-    {"Vekuta (SSJBUI)", 3.175e9, true},
-    {"Wukong Rose", 2.75e9, true},
-    {"Vekuta (LBSSJ4)", 2.05e9, true},
-    {"Wukong (LBSSJ4)", 1.90e9, true},
-    {"Vegetable (LBSSJ4)", 950e6, true},
-    {"Vis (20%)", 650e6, true},
-    {"Winter Roshi", 500e6, true},
-    {"Vills (50%)", 300e6, true},
-    {"Wukong (Omen)", 200e6, true},
-    {"Vegetable (GoD in-training)", 50e6, true},
-    {"Winter Wukong", 120e6, true},
-    {"SSJG Kakata", 100e6, true},
-    {"Broccoli", 21.5e6, true},
-    {"SSJB Wukong", 4025000, true},
-    {"Kai-fist Master", 3025000, true},
-    {"SSJ2 Wukong", 2050000, true},
-    {"Perfect Atom", 1375000, true},
-    {"Winter Gohan", 860000, true},
-    {"Chilly", 650000, true},
-    {"Super Vegetable", 298000, true},
-    {"Mapa", 55000, true},
-    {"Radish", 40000, true},
-    {"Kid Nohag", 20000, true},
-    {"Klirin", 10000, true}
-}
-    
+local npcList = loadBossList()
+
 task.spawn(function()
-while true do
-pcall(function()
-if player() and getIsActive1() then
-if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then  
-                for i, npc in ipairs(npcList) do
-                    local npcName, requisito, isActive = npc[1], npc[2], npc[3]
-                    if isActive then
-                        if yo() >= requisito then
-                            local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
-                            local bossInstance = game.Workspace.Living:FindFirstChild(npcName)                  
-                            local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
-                            if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
-                               (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
-                               if getIsActive1() and player()  and data.Quest.Value == ""  then
-                                lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.4)  
-                                local args = {
-                                    [1] = npcInstance
-                                }
-                                game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(unpack(args))        
+    while true do
+        pcall(function()
+            if player() and getIsActive1() then
+                if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then  
+                    for i, npc in ipairs(npcList) do
+                        local npcName, requisito, isActive = npc[1], npc[2], npc[3]
+                        if isActive then
+                            if yo() >= requisito then
+                                local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
+                                local bossInstance = game.Workspace.Living:FindFirstChild(npcName)                  
+                                local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
+                                if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
+                                   (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
+                                   if getIsActive1() and player() and data.Quest.Value == "" then
+                                        lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.4)  
+                                        local args = {
+                                            [1] = npcInstance
+                                        }
+                                        game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(unpack(args))        
+                                    end
+                                    lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Jefe.HumanoidRootPart.CFrame * CFrame.new(0,0,6.2).p, Jefe.HumanoidRootPart.Position)
+                                    break
                                 end
-                                lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Jefe.HumanoidRootPart.CFrame * CFrame.new(0,0,6.2).p, Jefe.HumanoidRootPart.Position)
-	                               task.spawn(function()
-	                        for i,blast in pairs(FindChar().Effects:GetChildren()) do
-	                            if blast.Name == "Blast" then
-	                                blast.CFrame = Jefe.HumanoidRootPart.CFrame
-	                                       end
-	                                   end
-	                                end)
-                                break
-                         end
-                   end
-                 end
-         end 
-           end
-       end
-     end)
-     task.wait()
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+        task.wait()
     end
 end)
-
 
 
 canvolley = true        
@@ -1410,7 +1425,7 @@ task.spawn(function()
                     local moves = {}
                     local attacked = false
 
-                    if stats < 500e9 then
+                    if stats < 900e9 then
                         if stats >= 5000 then table.insert(moves, "Wolf Fang Fist") end
                         if stats >= 40000 then table.insert(moves, "Meteor Crash") end
                         if stats >= 100000 then table.insert(moves, "High Power Rush") end
@@ -1507,27 +1522,20 @@ else
 	end)
 end
 
-spawn(function()
-    local lastState = getIsActive8()
-    while true do
-        local currentState = getIsActive8()
-        if not lastState and currentState then
+task.spawn(function()
+wait(6)
+    while task.wait() do
+        if getIsActive8() then
             pcall(function()
                 local playerCount = #game.Players:GetPlayers()
                 if playerCount > 1 then
-                    if game.PlaceId == 5151400895 then
-                        game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
-                    else
-                        game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
-                    end
+                    local destino = (game.PlaceId == 5151400895) and "Vills Planet" or "Earth"
+                    game.ReplicatedStorage.Package.Events.TP:InvokeServer(destino)
                 end
             end)
         end
-        lastState = currentState
-        wait()
     end
 end)
-
  
  
  task.spawn(function()
@@ -1546,25 +1554,7 @@ pcall(function()
          end)
       end
  end)          
- 
-local selectedPlayer = nil 
-function Oserbar()
-   while wait(.5) do
-    local playerToView = selectedPlayer 
-    if playerToView and playerToView.Character then
-        local humanoid = playerToView.Character:FindFirstChild("Humanoid")
-        if humanoid then
-            game.Workspace.CurrentCamera.CameraSubject = humanoid
-        end
-    else       
-        local localPlayer = game:GetService("Players").LocalPlayer
-        if localPlayer.Character then
-            game.Workspace.CurrentCamera.CameraSubject = localPlayer.Character:FindFirstChild("Humanoid")
-        end
-     end
-  end
-end
-task.spawn(Oserbar)
+
 
 task.spawn(function()
     while wait(.4) do
