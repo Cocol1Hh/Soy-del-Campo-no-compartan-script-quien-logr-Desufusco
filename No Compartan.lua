@@ -307,60 +307,12 @@ VS.TextSize = 7
 VS.TextStrokeTransparency = 0.8
 
 
-local worldIds = {
-    [3311165597] = "Tierra",
-    [5151400895] = "Bilss",
-    [3608495586] = "Time",
-    [3608496430] = "Grvd"
-}
-
-local searchFrame = Instance.new("Frame", Barra2)
-searchFrame.Size = UDim2.new(0.3, 0, 0, 100)
-searchFrame.Position = UDim2.new(0.35, 0, 0, 0)
-searchFrame.BackgroundTransparency = 1
-
-local searchBox = Instance.new("TextBox", searchFrame)
-searchBox.Size = UDim2.new(2, 0, 0, 30)
-searchBox.Position = UDim2.new(-1.1, 0, 0, 10)
-searchBox.PlaceholderText = "Cantidad de jugadores"
-searchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-searchBox.TextScaled = true
-searchBox.BackgroundTransparency = 0
-searchBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-searchBox.BorderColor3 = Color3.fromRGB(169, 169, 169)  -- Gris
-searchBox.BorderSizePixel = 2
-
-local searchButton = Instance.new("TextButton", searchFrame)
-searchButton.Size = UDim2.new(0.3, 0, 0, 32)
-searchButton.Position = UDim2.new(.940, 0, 0, 9) 
-searchButton.Text = "TP"
-searchButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
-searchButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-
-local resultLabel = Instance.new("TextLabel", searchFrame)
-resultLabel.Size = UDim2.new(-0.5, 0, 0, 30)
-resultLabel.Position = UDim2.new(0.05, 0, 0, 50)
-resultLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-resultLabel.TextScaled = true
-resultLabel.Text = ""
-resultLabel.BackgroundTransparency = 1
-
-
 local button = Instance.new("TextButton", Barra1)
 button.Size = UDim2.new(0.120, 0, 0.03, 0)
 button.Position = UDim2.new(0.840, 0, 0.03, 0)
 button.Text = "Reset"
 button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 button.TextColor3 = Color3.fromRGB(255, 100, 200)
-
-local totalInfoLabel = Instance.new("TextLabel", Barra2)
-totalInfoLabel.Size = UDim2.new(1, 0, 0, 100)
-totalInfoLabel.Position = UDim2.new(-0.2, 0, 0.06, 0)
-totalInfoLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-totalInfoLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-totalInfoLabel.BackgroundTransparency = 1
-totalInfoLabel.TextScaled = true
-totalInfoLabel.TextWrapped = true
 
 
 local tierra = Instance.new("ImageButton", Barra2)
@@ -425,16 +377,6 @@ Contenedor.BorderSizePixel = 0
 Contenedor.ScrollBarThickness = 6
 Contenedor.CanvasSize = UDim2.new(0, 0, 0, 400)
 Contenedor.ScrollingDirection = Enum.ScrollingDirection.Y
-
-local Kill = Instance.new("ScrollingFrame", Barra3)
-Kill.Size = UDim2.new(0, 400, 0, 200)
-Kill.Position = UDim2.new(0.490, 0, 0.131, 0)
-Kill.AnchorPoint = Vector2.new(0.5, 0.5)
-Kill.BackgroundColor3 = Color3.fromRGB(0, 0, 70)
-Kill.BorderSizePixel = 0
-Kill.ScrollBarThickness = 6
-Kill.CanvasSize = UDim2.new(0, 0, 0, 400)
-Kill.ScrollingDirection = Enum.ScrollingDirection.Y
 
 
 local Selct = Instance.new("ScrollingFrame", Barra2)
@@ -718,81 +660,6 @@ local function createBar(xPos, text, color, yPos, max, updateFunc, name)
     end)
 end
 
-local allServerData = {}
-local function loadServerData()
-    local httpService = game:GetService("HttpService")
-    for _, worldId in pairs(worldIds) do
-        local success, serverData = pcall(function()
-            return httpService:JSONDecode(game:HttpGetAsync("https://games.roblox.com/v1/games/" .. _ .. "/servers/Public?limit=100"))
-        end)
-        if success and serverData then
-            allServerData[worldId] = serverData.data
-        end
-    end
-end
-local function teleportToServer(playerCount)
-    local foundServer = nil
-    for worldId, worldData in pairs(allServerData) do
-        for _, server in ipairs(worldData) do
-            if server.playing == playerCount then
-                foundServer = server
-                break
-            end
-        end
-        if foundServer then break end
-    end
-    
-    if foundServer then
-        local teleportService = game:GetService("TeleportService")
-        teleportService:TeleportToPlaceInstance(game.PlaceId, foundServer.id, game.Players.LocalPlayer)
-    else
-        resultLabel.Text = "No se encontró un servidor con esa cantidad."
-    end
-end
-
-local function updateWorldInfo()
-    local httpService = game:GetService("HttpService")
-    local infoText = ""  
-    for worldId, worldName in pairs(worldIds) do
-        local success, serverData = pcall(function()
-            return httpService:JSONDecode(game:HttpGetAsync("https://games.roblox.com/v1/games/" .. worldId .. "/servers/Public?sortOrder=Asc&limit=100"))
-        end)       
-        if success and serverData then
-            local worldServers, worldPlayers = #serverData.data, 0
-            for _, server in ipairs(serverData.data) do
-                worldPlayers = worldPlayers + server.playing
-            end
-            infoText = infoText .. worldName .. ": " .. worldServers .. " Servs, " .. worldPlayers .. " Jug.\n"
-        else
-            infoText = infoText .. worldName .. ": 0 Servs, 0 Jug.\n"
-        end
-    end
-    totalInfoLabel.Text = infoText
-end
-
-local function getServers()
-    local httpService = game:GetService("HttpService")
-    local worldId = game.PlaceId
-    local success, serverData = pcall(function()
-        return httpService:JSONDecode(game:HttpGetAsync("https://games.roblox.com/v1/games/" .. worldId .. "/servers/Public?sortOrder=Asc&limit=100"))
-    end)
-    return success and serverData.data or {}
-end
-local function teleportToServer(serverId)
-    game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, serverId, lplr)
-end
-
-local function createButton(size, position, text)
-    local button = Instance.new("TextButton")
-    button.Size = size
-    button.Position = position
-    button.BackgroundColor3 = Color3.fromRGB(0, 60, 200)
-    button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    button.TextScaled = true
-    button.Text = text
-    button.Parent = Barra2
-    return button
-end
 
 --Formas
 for i, form in ipairs(forms) do
@@ -828,6 +695,110 @@ if selectedForm then
 end
 
 --Radar
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Kill = Instance.new("ScrollingFrame", Barra3)
+Kill.Size = UDim2.new(0, 400, 0, 200)
+Kill.Position = UDim2.new(0.490, 0, 0.131, 0)
+Kill.AnchorPoint = Vector2.new(0.5, 0.5)
+Kill.BackgroundColor3 = Color3.fromRGB(0, 0, 70)
+Kill.BorderSizePixel = 0
+Kill.ScrollBarThickness = 9
+Kill.CanvasSize = UDim2.new(0, 0, 0, 400)
+Kill.ScrollingDirection = Enum.ScrollingDirection.Y
+
+local selectedPlayerValue = Instance.new("ObjectValue", ReplicatedStorage)
+selectedPlayerValue.Name = "SelectedPlayer"
+local selectedRow = nil
+
+local function createTextLabel(parent, pos, text)
+    local label = Instance.new("TextLabel", parent)
+    label.Size = UDim2.new(0.32, 0, 1, 0)
+    label.Position = pos
+    label.BackgroundColor3 = Color3.fromRGB(30, 30, 120)
+    label.Text = text
+    label.TextColor3 = Color3.new(1, 1, 1)
+    label.Font = Enum.Font.SourceSansBold
+    label.TextScaled = true
+    label.BorderSizePixel = 0
+    local corner = Instance.new("UICorner", label)
+    corner.CornerRadius = UDim.new(0, 10)
+    return label
+end
+
+local function getStat(player, statName)
+    local character = game.Workspace.Living:FindFirstChild(player.Name)
+    return character and character.Stats and character.Stats[statName] and character.Stats[statName].Value or 0
+end
+
+local function getDisplayName(player)
+    return player.DisplayName ~= player.Name and player.Name .. "\n[" .. player.DisplayName .. "]" or player.Name
+end
+
+local function updateList()
+    local currentSelectedPlayer = selectedPlayerValue.Value
+    Kill:ClearAllChildren()
+    local playerList = {}
+    for _, player in ipairs(Players:GetPlayers()) do
+        local strength = getStat(player, "Strength")
+        local rebirth = getStat(player, "Rebirth")
+        if strength and rebirth then
+            table.insert(playerList, {player = player, strengthLabel = nil, rebirthLabel = nil})
+        end
+    end
+    table.sort(playerList, function(a, b) return getStat(a.player, "Rebirth") > getStat(b.player, "Rebirth") end)
+    for i, info in ipairs(playerList) do
+        local player = info.player
+        local rowButton = Instance.new("TextButton", Kill)
+        rowButton.Size = UDim2.new(1, 0, 0, 40)
+        rowButton.Position = UDim2.new(0, 0, 0, (i - 1) * 45)
+        rowButton.BackgroundColor3 = (player == currentSelectedPlayer) and Color3.fromRGB(50, 50, 150) or Color3.fromRGB(20, 20, 100)
+        rowButton.Text = ""
+        rowButton.BorderSizePixel = 0
+        rowButton.AutoButtonColor = false
+        local corner = Instance.new("UICorner", rowButton)
+        corner.CornerRadius = UDim.new(0, 10)
+        createTextLabel(rowButton, UDim2.new(0.02, 0, 0, 0), getDisplayName(player))
+        info.rebirthLabel = createTextLabel(rowButton, UDim2.new(0.35, 0, 0, 0), formatNumber(getStat(player, "Rebirth")))
+        info.strengthLabel = createTextLabel(rowButton, UDim2.new(0.68, 0, 0, 0), formatNumber(getStat(player, "Strength")))
+        rowButton.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                if selectedRow == rowButton then
+                    rowButton.BackgroundColor3 = Color3.fromRGB(20, 20, 100)
+                    selectedRow = nil
+                    selectedPlayerValue.Value = nil
+                else
+                    if selectedRow then selectedRow.BackgroundColor3 = Color3.fromRGB(20, 20, 100) end
+                    rowButton.BackgroundColor3 = Color3.fromRGB(50, 50, 150)
+                    selectedRow = rowButton
+                    selectedPlayerValue.Value = player
+                end
+            end
+        end)
+        if player == currentSelectedPlayer then selectedRow = rowButton end
+    end
+    Kill.CanvasSize = UDim2.new(0, 0, 0, #playerList * 45)
+    task.spawn(function()
+        pcall(function()
+            while wait(0.5) do
+                for _, info in ipairs(playerList) do
+                    if info.rebirthLabel and info.strengthLabel then
+                        info.rebirthLabel.Text = formatNumber(getStat(info.player, "Rebirth"))
+                        info.strengthLabel.Text = formatNumber(getStat(info.player, "Strength"))
+                    end
+                end
+            end
+        end)
+    end)
+end
+
+Players.PlayerAdded:Connect(updateList)
+Players.PlayerRemoving:Connect(updateList)
+Kill:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateList)
+task.spawn(function() pcall(updateList) end)
+
+
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -964,102 +935,15 @@ for _, player in ipairs(Players:GetPlayers()) do
     onPlayerAdded(player)
 end
 
-
 --Tp Players
 local getIsActive15 = createSwitch(Barra3, UDim2.new(0.2, 0, 0.275, 0), "Switch15", LoadSwitchState("Switch15"))--Tp
 local getIsActive17 = createSwitch(Barra3, UDim2.new(0.2, 0, 0.345, 0), "Switch17", LoadSwitchState("Switch17"))--Tp
 local getIsActive18 = createSwitch(Barra3, UDim2.new(0.740, 0, 0.345, 0), "Switch18", LoadSwitchState("Switch178"))--Tp
 --[Xd]
-local selectedPlayer = nil
-local teleportConnection = nil
-
-local function teleportToPlayer(player)
-    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        lplr.Character:SetPrimaryPartCFrame(player.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3))
-        lplr.Character.Humanoid:ChangeState(11)
-        lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0) 
-    end
-end
-
-local function toggleTeleport(player)
-    if selectedPlayer == player then
-        selectedPlayer = nil
-    else    
-        selectedPlayer = player        
-        spawn(function()
-            while selectedPlayer == player do
-                if getIsActive15() then
-                    teleportToPlayer(player)                                   
-                end
-                task.wait()
-            end
-        end)        
-    end
-end
-
-local function createClickableFrame(size, position, parent, player)
-    local frame = Instance.new("TextButton", parent)
-    frame.Size, frame.Position, frame.BackgroundColor3 = size, position, Color3.fromRGB(30, 30, 30)
-    frame.BorderSizePixel, frame.BorderColor3, frame.Text, frame.AutoButtonColor = 2, Color3.fromRGB(255, 0, 0), "", false
-    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
-    
-    frame.MouseButton1Click:Connect(function()
-        toggleTeleport(player)
-    end)
-    
-    return frame
-end
-
-local function createLabel(parent, text)
-    local label = Instance.new("TextLabel", parent)
-    label.Size, label.BackgroundTransparency = UDim2.new(1, 0, 1, 0), 1
-    label.TextColor3, label.Font, label.TextSize, label.Text = Color3.new(1, 1, 1), Enum.Font.SourceSans, 18, text
-    return label
-end
-
-local function getStat(player, statName)
-    local statsFolder = game.Workspace.Living:FindFirstChild(player.Name) and game.Workspace.Living[player.Name]:FindFirstChild("Stats")
-    if statsFolder then
-        local stat = statsFolder:FindFirstChild(statName)
-        return stat and stat.Value or 0
-    end
-    return 0
-end
-
-local function updateList()
-    Kill:ClearAllChildren()
-    local playerList = {}
-    for _, player in ipairs(game.Players:GetPlayers()) do
-        table.insert(playerList, {player = player, strength = getStat(player, "Strength")})
-    end
-    
-    table.sort(playerList, function(a, b) return a.strength > b.strength end)
-
-    local frameWidth = Kill.AbsoluteSize.X
-    local columnWidth = (frameWidth - 20) / 3  -- 20 para padding
-
-    for i, info in ipairs(playerList) do
-        local yPos = (i - 1) * 35
-        local player, strength = info.player, info.strength
-        local rebirth = getStat(player, "Rebirth")
-
-        local function createFrame(xPos, value, player)
-            local frame = createClickableFrame(UDim2.new(0, columnWidth, 0, 30), UDim2.new(0, xPos, 0, yPos), Kill, player)
-            createLabel(frame, value)
-        end
-
-        
-        createFrame(5, player.Name, player)
-        createFrame(10 + columnWidth, formatNumber(rebirth), player)
-        createFrame(15 + columnWidth * 2, formatNumber(strength), player)
-    end
-    Kill.CanvasSize = UDim2.new(0, 0, 0, #playerList * 35)
-end
-
-Kill:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateList)
 
 
 --Radar
+
 local function updateAllTags()
     for _, player in ipairs(Players:GetPlayers()) do
         if player ~= Players.LocalPlayer then
@@ -1119,49 +1003,6 @@ local getIsActive16 = createSwitch(Barra3, UDim2.new(0.740, 0, 0.275, 0), "Switc
 createBar(0, "Flight", Color3.fromRGB(255, 0, 0), 0.37, 100, function(v) speed = v end, "flight")
 createBar(0.513, "Ambient", Color3.fromRGB(0, 255, 0), 0.37, 700, function(v) Lighting.Ambient = Color3.fromRGB(v, v, v) end, "ambient")
 
-local rejoiButton = createButton(UDim2.new(0.07, 0, 0, 32), UDim2.new(0.740, 0, 0, 9), "Rejoi")
-local plusButton = createButton(UDim2.new(0.07, 0, 0, 32), UDim2.new(.825, 0, 0, 9), "+")
-local minusButton = createButton(UDim2.new(0.07, 0, 0, 32), UDim2.new(.912, 0, 0, 9), "-")
-
-rejoiButton.MouseButton1Click:Connect(function()
-    for _, server in ipairs(getServers()) do
-        if server.id == game.JobId then
-            teleportToServer(server.id)
-            break
-        end
-    end
-end)
-
-plusButton.MouseButton1Click:Connect(function()
-    local targetServer = nil
-    for _, server in ipairs(getServers()) do
-        if not targetServer or server.playing > targetServer.playing then
-            targetServer = server
-        end
-    end
-    if targetServer then teleportToServer(targetServer.id) end
-end)
-
-minusButton.MouseButton1Click:Connect(function()
-    local targetServer = nil
-    for _, server in ipairs(getServers()) do
-        if not targetServer or server.playing < targetServer.playing then
-            targetServer = server
-        end
-    end
-    if targetServer then teleportToServer(targetServer.id) end
-end)
-
-searchButton.MouseButton1Click:Connect(function()
-    local playerCount = tonumber(searchBox.Text)
-    if playerCount then
-        teleportToServer(playerCount)
-    else
-        resultLabel.Text = "Por favor, ingresa una cantidad válida."
-    end
-end)
-
-
 
 --Casi fin del interrutor /\
 
@@ -1203,14 +1044,22 @@ end
 
 
 function player()
-	return lplr.Character and lplr.Character.Humanoid and lplr.Character.Humanoid.Health > 0 and lplr.Character:FindFirstChild("HumanoidRootPart")
+	if lplr.Character and lplr.Character:FindFirstChild("Humanoid") then
+		if lplr.Character.Humanoid.Health > 0 and lplr.Character:FindFirstChild("HumanoidRootPart") then
+			return true
+		else
+			data.Quest.Value = ""
+		end
+	end
+	return false
 end
 
 
 task.spawn(function()
-    while task.wait() do
+    while wait(1) do
         pcall(function()
-        if player() and getIsActive2() then
+        if player() then
+      if getIsActive2() then
         local Forms = {'LBLSSJ4', 'CSSJB', 'Divine Blue', 'Divine Rose Prominence', 'Astral Instinct', 'Ultra Ego', 'SSJB4', 'True God of Creation', 
     'True God of Destruction', 'Super Broly', 'LSSJG', 'LSSJ4', 'SSJG4', 'LSSJ3', 'Mystic Kaioken', 
     'LSSJ Kaioken', 'SSJR3', 'SSJB3', 'God Of Destruction', 'God Of Creation', 'Jiren Ultra Instinct', 
@@ -1224,9 +1073,9 @@ task.spawn(function()
      end
         if status and status.SelectedTransformation.Value ~= status.Transformation.Value then
             Ex.ta:InvokeServer()
-                       end
-                end
-                if not getIsActive2() and selectedForm and not transforming and lplr.Status.Transformation.Value ~= selectedForm and player() then
+                       end                
+                    end
+                       if not getIsActive2() and selectedForm and not transforming and lplr.Status.Transformation.Value ~= selectedForm  then
                   transforming = true
                     pcall(function()
                 if Ex.equipskill:InvokeServer(selectedForm) then
@@ -1235,15 +1084,17 @@ task.spawn(function()
                   end)
                 transforming = false
               end
+              end
            end)
         end
      end)
      
      task.spawn(function()
     while task.wait() do
+       if player()  then
         pcall(function()
         local char = game.Workspace.Living:FindFirstChild(lplr.Name)
-       if char and player() then
+       if char then
     local stats = char:FindFirstChild("Stats")
     if stats then
         local ki = stats:FindFirstChild("Ki")
@@ -1257,10 +1108,24 @@ task.spawn(function()
             end
             end
            end)
+           end
         end
      end)
      
 
+task.spawn(function()
+while task.wait() do
+pcall(function()
+        local lplr = Players.LocalPlayer
+        if getIsActive15() then
+        if  lplr.Character and lplr.Character:FindFirstChild("HumanoidRootPart") and selectedPlayerValue.Value and selectedPlayerValue.Value.Character and selectedPlayerValue.Value.Character:FindFirstChild("HumanoidRootPart") then
+            local Jefe = selectedPlayerValue.Value.Character
+            lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Jefe.HumanoidRootPart.CFrame * CFrame.new(0,0,4.2).p, Jefe.HumanoidRootPart.Position)
+        end
+        end
+        end)
+    end
+end)
 
 local Mel = { 
     "Super Dragon Fist", "God Slicer", "Spirit Barrage", "Mach Kick", "Wolf Fang Fist", 
@@ -1287,92 +1152,81 @@ task.spawn(function()
 end)
 
 
-local function copiarInformacionJugador()
-    local jugador = selectedPlayer
-    if jugador then
-        local data = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(jugador.UserId)
-        local nombre = jugador.Name
-        local apodo = jugador.DisplayName
-        local fuerza = formatNumber(data.Strength.Value)
-        local zeni = formatNumber(data.Zeni.Value)
-        local rebirth = data.Rebirth.Value
-
-        local vida = "No disponible"
-        if jugador.Character and jugador.Character:FindFirstChild("Humanoid") then
-            vida = formatNumber(jugador.Character.Humanoid.Health)
-        end
-
-        local maxMastery = 332526
-        local transformaciones = {
-             "Divine Blue",
-            "Divine Rose Prominence",
-            "Astral Instinct",
-            "Ultra Ego",
-            "SSJBUI",
-            "Beast",
-            "LSSJ4"
-        }
-        local maestrias = {}
-
-        for _, transformacion in ipairs(transformaciones) do
-            local currentMastery = 0
-            if data:FindFirstChild(transformacion) then
-                currentMastery = data[transformacion].Value
-            end
-            local masteryText = "Sin Maestría"
-            if currentMastery > 0 then
-                masteryText = string.format("%d (%.1f%%)", currentMastery, (currentMastery / maxMastery) * 100)
-            end
-            table.insert(maestrias, string.format("%s: %s", transformacion, masteryText))
-        end
-
-        local texto = string.format(
-            "Nombre: %s\nApodo: %s\nFuerza: %s\nVida: %s\nZenis: %s\nRebirth: %s\n\nMaestrías:\n%s",
-            nombre, apodo, fuerza, vida, zeni, rebirth, table.concat(maestrias, "\n")
-        )
-
-        if setclipboard then
-            setclipboard(texto)
-        end
-    end
+local function getStat(player, statName)
+    local char = game.Workspace.Living:FindFirstChild(player.Name)
+    return char and char:FindFirstChild("Stats") and char.Stats:FindFirstChild(statName) and char.Stats[statName].Value or 0
 end
 
 local wasActive17 = false
+
 task.spawn(function()
     while task.wait(1) do
         local isActive17 = getIsActive17()
-        if isActive17 and not wasActive17 then
-            copiarInformacionJugador()
+        if isActive17 and not wasActive17 and selectedPlayerValue.Value then
+            local p = selectedPlayerValue.Value
+            local data = game.ReplicatedStorage:FindFirstChild("Datas"):FindFirstChild(p.UserId)
+            local nombre, apodo = p.Name, p.DisplayName
+            local fuerza, rebirth = formatNumber(getStat(p, "Strength")), getStat(p, "Rebirth")
+            local zeni = data and data:FindFirstChild("Zeni") and formatNumber(data.Zeni.Value) or "0"
+            local vida = p.Character and p.Character:FindFirstChild("Humanoid") and formatNumber(p.Character.Humanoid.Health) or "No disponible"
+
+            local maestrias = {}
+            for _, t in ipairs({"Divine Blue", "Divine Rose Prominence", "Astral Instinct", "Ultra Ego", "SSJBUI", "Beast", "LSSJ4"}) do
+                local m = data and data:FindFirstChild(t) and data[t].Value or 0
+                table.insert(maestrias, string.format("%s: %d", t, m))
+            end
+
+            if setclipboard then
+                setclipboard(string.format("Nombre: %s\nApodo: %s\nFuerza: %s\nVida: %s\nZenis: %s\nRebirth: %s\n\nMaestrías:\n%s",
+                    nombre, apodo, fuerza, vida, zeni, rebirth, table.concat(maestrias, "\n")))
+            end
         end
         wasActive17 = isActive17
     end
 end)
 
-
-function camera()
-    if getIsActive18() then
-    local playerToView = selectedPlayer
-    if playerToView and playerToView.Character then
-        local humanoid = playerToView.Character:FindFirstChild("Humanoid")
-        if humanoid then
-            workspace.CurrentCamera.CameraSubject = humanoid 
-        end
-    else
-        local localPlayer = Players.LocalPlayer
-        if localPlayer and localPlayer.Character then
-            local humanoid = localPlayer.Character:FindFirstChild("Humanoid")
-            if humanoid then
-                workspace.CurrentCamera.CameraSubject = humanoid
+task.spawn(function()
+    while task.wait() do
+        pcall(function()
+            local lplr = Players.LocalPlayer
+            if getIsActive18() then
+                if selectedPlayerValue.Value and selectedPlayerValue.Value.Character then
+                    local Jefe = selectedPlayerValue.Value.Character:FindFirstChild("Humanoid")
+                    if Jefe then
+                        workspace.CurrentCamera.CameraSubject = Jefe
+                    end
+                else
+                    if lplr.Character then
+                        local humanoid = lplr.Character:FindFirstChild("Humanoid")
+                        if humanoid then
+                            workspace.CurrentCamera.CameraSubject = humanoid
+                        end
+                    end
+                end
             end
-        end
+        end)
     end
-  end
-end
+end)
+
+task.spawn(function()
+while task.wait() do
+pcall(function()
+        local lplr = Players.LocalPlayer
+        if getIsActive15() then
+        if  lplr.Character and lplr.Character:FindFirstChild("HumanoidRootPart") and selectedPlayerValue.Value and selectedPlayerValue.Value.Character and selectedPlayerValue.Value.Character:FindFirstChild("HumanoidRootPart") then
+            local Jefe = selectedPlayerValue.Value.Character
+            lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Jefe.HumanoidRootPart.CFrame * CFrame.new(0,0,4.2).p, Jefe.HumanoidRootPart.Position)
+        end
+        end
+        end)
+    end
+end)
+
 
   task.spawn(function()
     while task.wait() do
         pcall(function()
-    camera()    
+        if player() then
           if getIsActive1()  and data.Quest.Value ~= ""  then
            if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then           
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
@@ -1415,6 +1269,7 @@ end
                     end
                 end
             end
+            end --player() 
          end)         
       end
   end)
@@ -1423,21 +1278,20 @@ end
 
 task.spawn(function()
     while task.wait() do
-        pcall(function()        
+        pcall(function()       
+              local rebirths = game.Workspace.Living[lplr.Name].Stats.Rebirth.Value
+              local nextRebirth = (rebirths * 1.99e6) + 2e6
             if player() then
                 if game.Players.LocalPlayer.Status.Blocking.Value == false and getIsActive1() then
                     game.Players.LocalPlayer.Status.Blocking.Value = true               
-                end                
-              local rebirths = game.Workspace.Living[lplr.Name].Stats.Rebirth.Value
-               local nextRebirth = (rebirths * 1.99e6) + 2e6
+                end                              
              if yo() < nextRebirth * 2 and getIsActive3() then
           Ex.reb:InvokeServer()
-                end
-                end
+          end                                
             pcall(function()
             task.spawn(function()
-            if game.PlaceId == 3311165597 then
-            if getIsActive6() then
+            if player() and game.PlaceId == 3311165597  then
+            if getIsActive6()  then
         for _, boss in ipairs(game.Workspace.Living:GetChildren()) do
             if boss.Name == "Evil Saya" and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
                 lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.5)
@@ -1446,7 +1300,7 @@ task.spawn(function()
                 break
                  end
                   end
-                  end
+                  end--  if getIsActive6()  then
           if getIsActive1() and  yo() <= 10000   then
         for _, boss in ipairs(game.Workspace.Living:GetChildren()) do
             if boss.Name == "X Fighter" and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
@@ -1457,9 +1311,10 @@ task.spawn(function()
                   end
                   end
                   end                           
-                end--if fin if game.PlaceId == 3311165597 then
+                end--if fin if game.PlaceId == 3311165597 then                
              end)
           end)
+          end
         end)
     end
  end)
@@ -1500,7 +1355,7 @@ task.spawn(function()
 task.spawn(function()
 while true do
 pcall(function()
-if getIsActive1() and player()  then
+if player() and getIsActive1() then
 if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then  
                 for i, npc in ipairs(npcList) do
                     local npcName, requisito, isActive = npc[1], npc[2], npc[3]
@@ -1538,65 +1393,72 @@ if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then
     end
 end)
 
+
+
 canvolley = true        
- task.spawn(function() 
- while true do
- pcall(function()
-          local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
- if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then           
-if (yo() >= 40000 and data.Quest.Value ~= "" and not lplr.Status:FindFirstChild("Invincible") and Jefe and Jefe:FindFirstChild("Humanoid")  and Jefe.Humanoid.Health > 0 and getIsActive1()) or Black == true then                                    
-                                    local stats = yo()
-                                    local moves = {}
-                                    local attacked = false
-                                    if stats >= 5000 then
-                                        table.insert(moves, "Wolf Fang Fist")
-                                    end
-                                    if stats >= 40000 then
-                                        table.insert(moves, "Meteor Crash")
-                                    end
-                                    if stats >= 100000 then
-                                        table.insert(moves, "High Power Rush")
-                                    end
-                                    if stats >= 125000 then
-                                        table.insert(moves, "Mach Kick")
-                                    end
-                                    
-                                    if stats >= 60e6 then
-                                        if data.Allignment.Value == "Good" then
-                                            table.insert(moves, "Spirit Barrage")
-                                        else
-                                            table.insert(moves, "God Slicer")
-                                        end
-                                    end
-                                    for i,move in pairs(moves) do
-                                        if not lplr.Status:FindFirstChild(move) then
-                                            spawn(function()
-                                                game:GetService("ReplicatedStorage").Package.Events.mel:InvokeServer(move,"Blacknwhite27")                                        
-                                            end)
-                                            attacked = true
-                                        end
-                                    end
-                                    if yo() > 10000 and canvolley then
-                                        canvolley = false
-                                        local boss = game.Workspace.Living:FindFirstChild(data.Quest.Value)
-                                      if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
-                                game:GetService("ReplicatedStorage").Package.Events.voleys:InvokeServer(
-                                         "Energy Volley", 
-                                      {["MouseHit"] = boss.HumanoidRootPart.CFrame, ["FaceMouse"] = true}, 
-                                        "Blacknwhite27"  )
-                                      end
-                                        attacked = true
-                                        spawn(function()
-                                            wait(.01)
-                                            canvolley = true
-                                        end)
-                                    end                                  
-                               end              
+task.spawn(function() 
+    while true do
+        pcall(function()
+        if player() then
+            local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
+            if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then           
+                if (yo() >= 40000 and data.Quest.Value ~= "" and not lplr.Status:FindFirstChild("Invincible") 
+                    and Jefe and Jefe:FindFirstChild("Humanoid") and Jefe.Humanoid.Health > 0 and getIsActive1()) 
+                    or Black == true then                                    
+                    
+                    local stats = yo()
+                    local moves = {}
+                    local attacked = false
+
+                    if stats < 500e9 then
+                        if stats >= 5000 then table.insert(moves, "Wolf Fang Fist") end
+                        if stats >= 40000 then table.insert(moves, "Meteor Crash") end
+                        if stats >= 100000 then table.insert(moves, "High Power Rush") end
+                        if stats >= 125000 then table.insert(moves, "Mach Kick") end
+                        if stats < 4e9 and game.PlaceId == 5151400895 then
+                            table.insert(moves, "Super Dragon Fist")
+                        end
+                        if stats < 40e9 and stats >= 60e6 then
+                            if data.Allignment.Value == "Good" then
+                                table.insert(moves, "Spirit Barrage")
+                            else
+                                table.insert(moves, "God Slicer")
                             end
-                       end)
-                       task.wait()
-                   end
-             end)
+                        end
+                    end
+
+                    for i, move in pairs(moves) do
+                        if not lplr.Status:FindFirstChild(move) then
+                            spawn(function()
+                                game:GetService("ReplicatedStorage").Package.Events.mel:InvokeServer(move, "Blacknwhite27")                                        
+                            end)
+                            attacked = true
+                        end
+                    end
+
+                    if stats < 10e9 and stats > 10000 and canvolley then
+                        canvolley = false
+                        local boss = game.Workspace.Living:FindFirstChild(data.Quest.Value)
+                        if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
+                            game:GetService("ReplicatedStorage").Package.Events.voleys:InvokeServer(
+                                "Energy Volley", 
+                                {["MouseHit"] = boss.HumanoidRootPart.CFrame, ["FaceMouse"] = true}, 
+                                "Blacknwhite27"
+                            )
+                        end
+                        attacked = true
+                        spawn(function()
+                            wait(.01)
+                            canvolley = true
+                        end)
+                    end                                  
+                end              
+             end
+            end
+        end)
+        task.wait()
+    end
+end)
       
 
 task.spawn(function()
@@ -1606,6 +1468,12 @@ game:GetService("Players").LocalPlayer.Idled:Connect(function()
     vu:CaptureController()
     vu:ClickButton2(Vector2.new())
           end)
+         end)
+ end)          
+ 
+ task.spawn(function()
+       pcall(function() 
+            updateAllTags()
          end)
  end)          
  
