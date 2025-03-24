@@ -79,7 +79,7 @@ local function verificarClave(clave)
 end
 
 local jugadoresPremio = {
-    "carequinhacaspunhada", "Rutao_Gameplays", "armijosfernando2178", 
+    "carequinhacaspunhada", "Fernanflop093o", "armijosfernando2178", 
     "Danielsan134341", "Zerincee", "fernanfloP091o"
 }
 
@@ -99,6 +99,8 @@ local function claveEsValida()
 end
 
 local function script()
+
+
 
     
 
@@ -448,7 +450,7 @@ local textProperties = {
     {text = "Brillo", position = UDim2.new(0.473, 0, 0.320, 0), color = Color3.fromRGB(180, 200, 100), parent = Barra1},
     {text = "Duck", position = UDim2.new(-0.160, 0, 0.420, 0), color = Color3.fromRGB(200, 100, 300), parent = Barra1},
     {text = "Dupli", position = UDim2.new(0.350, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70), parent = Barra1},
-    {text = "Graf", position = UDim2.new(-0.160, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
+    {text = "Req", position = UDim2.new(-0.160, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
     {text = "Plant", position = UDim2.new(0.350, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
     {text = "...", position = UDim2.new(-0.160, 0, 0.570, 0), color = Color3.fromRGB(200, 380, 90), parent = Barra1},
     {text = "...", position = UDim2.new(0.360, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1},
@@ -1474,7 +1476,9 @@ task.spawn(function()
         task.wait()
     end
 end)
-      
+
+
+
 
 task.spawn(function()
        pcall(function() 
@@ -1699,6 +1703,150 @@ task.spawn(function()
     end
 end)
 
+
+--REQUISITOS LEER
+local npcList = {
+    {"Mapa", 55000}, {"Radish", 40000}, {"Kid Nohag", 20000}, {"Klirin", 10000},
+    {"Super Vegetable", 298000}, {"Chilly", 650000}, {"Winter Gohan", 860000},
+    {"Perfect Atom", 1375000}, {"SSJ2 Wukong", 2050000}, {"Kai-fist Master", 3025000},
+    {"SSJB Wukong", 4025000}, {"Broccoli", 21.5e6}, {"SSJG Kakata", 100e6},
+    {"Winter Wukong", 120e6}, {"Vegetable (GoD in-training)", 50e6},
+    {"Wukong (Omen)", 200e6}, {"Vills (50%)", 300e6}, {"Winter Roshi", 500e6},
+    {"Vis (20%)", 650e6}, {"Vegetable (LBSSJ4)", 950e6}, {"Wukong (LBSSJ4)", 1.90e9},
+    {"Vekuta (LBSSJ4)", 2.05e9}, {"Wukong Rose", 2.75e9}, {"Vekuta (SSJBUI)", 3.175e9},
+    {"Winter Bills", 4.176e9}
+}
+
+local saveFile = "frame_position.txt"
+local function savePosition(frame)
+    local pos = frame.Position
+    local data = tostring(pos.X.Scale) .. "," .. tostring(pos.X.Offset) .. "," .. tostring(pos.Y.Scale) .. "," .. tostring(pos.Y.Offset)
+    writefile(saveFile, data)
+end
+
+local function resetPosition()
+    return UDim2.new(0.5, -125, 0.5, -30) 
+end
+
+local function loadPosition()
+    if isfile(saveFile) then
+        local data = readfile(saveFile)
+        local values = {}
+        for num in string.gmatch(data, "([^,]+)") do
+            table.insert(values, tonumber(num))
+        end
+        if #values == 4 then
+            return UDim2.new(values[1], values[2], values[3], values[4])
+        end
+    end
+    return resetPosition()
+end
+
+local function getRebirthRequirement()
+    local player = game.Players.LocalPlayer
+    local rebirthFrame = player.PlayerGui:FindFirstChild("Main") and player.PlayerGui.Main.MainFrame.Frames:FindFirstChild("Rebirth")
+
+    if not rebirthFrame then return 0 end
+
+    for _, child in ipairs(rebirthFrame:GetChildren()) do
+        if child:IsA("TextLabel") or child:IsA("TextButton") then
+            local num = tonumber(child.Text:gsub(",", ""):match("%d+"))
+            if num then
+                return num
+            end
+        end
+    end
+    return 0
+end
+
+local function getLastMissionByRebirthRequirement(rebirthReq)
+    local lastMission = "Ninguna"
+    for i = #npcList, 1, -1 do
+        if npcList[i][2] <= rebirthReq then
+            lastMission = npcList[i][1]
+            break
+        end
+    end
+    return lastMission
+end
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game.CoreGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 250, 0, 60)
+frame.Position = loadPosition()
+frame.BackgroundTransparency = 1
+frame.BorderSizePixel = 0
+frame.Draggable = true
+frame.Active = true
+frame.Parent = screenGui
+
+frame.Changed:Connect(function(property)
+    if property == "Position" then
+        savePosition(frame)
+    end
+end)
+
+local textLabel = Instance.new("TextLabel")
+textLabel.Size = UDim2.new(1, -10, 1, -10)
+textLabel.Position = UDim2.new(0, 5, 0, 5)
+textLabel.BackgroundTransparency = 1
+textLabel.TextColor3 = Color3.fromRGB(0, 150, 255)
+textLabel.TextScaled = true
+textLabel.TextWrapped = true
+textLabel.Font = Enum.Font.SourceSansBold
+textLabel.Parent = frame
+
+local stroke = Instance.new("UIStroke")
+stroke.Thickness = 2
+stroke.Color = Color3.fromRGB(0, 0, 0)
+stroke.Parent = textLabel
+
+local lastState = getIsActive9()
+
+game:GetService("RunService").RenderStepped:Connect(function()
+    local currentState = getIsActive9()
+
+    if currentState ~= lastState then
+        if not currentState then
+            frame.Position = resetPosition() 
+        end
+        lastState = currentState
+    end
+
+    frame.Visible = currentState
+
+    if not currentState then return end
+
+    local fuerzaActual = yo()
+    local siguienteMision = nil
+
+    for i = 1, #npcList do
+        if fuerzaActual < npcList[i][2] then
+            siguienteMision = npcList[i]
+            break
+        end
+    end
+
+    local rebirthReq = getRebirthRequirement()
+    local ultimaMision = getLastMissionByRebirthRequirement(rebirthReq)
+
+    if fuerzaActual >= rebirthReq then
+        textLabel.Text = "🔥 REBIRTH COMPLETE 😃"
+        textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
+    elseif siguienteMision then
+        local nombreMision = siguienteMision[1]
+        local faltaFuerza = formatNumber(siguienteMision[2] - fuerzaActual)
+        textLabel.Text = nombreMision .. " | " .. faltaFuerza .. "\nReq: " .. formatNumber(rebirthReq) .. " | " .. ultimaMision
+        textLabel.TextColor3 = Color3.fromRGB(0, 150, 255)
+    else
+        frame.Visible = false
+    end
+end)
+--Fin/\
+      
+
 local TeleportService = game:GetService("TeleportService")
 local timerLabel = Instance.new("TextLabel")
 local timeFileName = "SavedTime.json"
@@ -1875,3 +2023,7 @@ else
         log("Servicio no disponible. No se puede mostrar la GUI.")
     end
 end
+
+
+
+
