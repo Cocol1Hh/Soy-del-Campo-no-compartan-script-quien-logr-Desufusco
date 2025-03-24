@@ -392,7 +392,7 @@ Selct.CanvasSize = UDim2.new(0, 0, 0, 400)
 Selct.ScrollingDirection = Enum.ScrollingDirection.Y
 
 
-local forms = {"LBLSSJ4", "CSSJB", "Divine Blue", "Divine Rose Prominence", "Astral Instinct", "Ultra Ego", "SSJBUI", "Beast", "LSSJ4"}
+local forms = {"Ego Instinct", "LBLSSJ4", "CSSJB", "Divine Blue", "Divine Rose Prominence", "Astral Instinct", "Ultra Ego", "SSJBUI", "Beast", "LSSJ4"}
 local frame = Instance.new("Frame", Selct)
 frame.Size = UDim2.new(0, 100, 0, #forms * 30 + 10)
 frame.Position = UDim2.new(0.8, -220, 0.270, -frame.Size.Y.Offset / 3)
@@ -1073,7 +1073,7 @@ task.spawn(function()
         pcall(function()
         if player() then
       if getIsActive2() then
-        local Forms = {'LBLSSJ4', 'CSSJB', 'Divine Blue', 'Divine Rose Prominence', 'Astral Instinct', 'Ultra Ego', 'SSJB4', 'True God of Creation', 
+        local Forms = {'Ego Instinct', 'LBLSSJ4', 'CSSJB', 'Divine Blue', 'Divine Rose Prominence', 'Astral Instinct', 'Ultra Ego', 'SSJB4', 'True God of Creation', 
     'True God of Destruction', 'Super Broly', 'LSSJG', 'LSSJ4', 'SSJG4', 'LSSJ3', 'Mystic Kaioken', 
     'LSSJ Kaioken', 'SSJR3', 'SSJB3', 'God Of Destruction', 'God Of Creation', 'Jiren Ultra Instinct', 
     'Mastered Ultra Instinct', 'Godly SSJ2', 'Ultra Instinct Omen', 'Evil SSJ', 'Blue Evolution', 
