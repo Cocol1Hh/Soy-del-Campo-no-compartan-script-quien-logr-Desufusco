@@ -1232,7 +1232,7 @@ task.spawn(function()
                     if distance <= 900 then
                         local rootPart = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
                         if rootPart then
-                            rootPart.CFrame = gokuBlack.HumanoidRootPart.CFrame + Vector3.new(0, 2, 0) -- TP un poco arriba para evitar colisiones
+                            rootPart.CFrame = gokuBlack.HumanoidRootPart.CFrame + Vector3.new(0, 2, 0)
                         end
                     end
                 end
@@ -1317,6 +1317,16 @@ end)
       end
   end)
   
+  
+  task.spawn(function()
+    while task.wait() do
+        pcall(function()
+            if getIsActive1() and player() then
+                lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
+            end
+        end)
+    end
+end)
 
 local function getRebirthRequirement()
     local player = game.Players.LocalPlayer
@@ -1325,31 +1335,24 @@ local function getRebirthRequirement()
     for _, child in ipairs(rebirthFrame:GetChildren()) do
         if child:IsA("TextLabel") or child:IsA("TextButton") then
             local num = tonumber(child.Text:gsub(",", ""):match("%d+"))
-            if num then
-                return num
-            end
+            if num then return num end
         end
     end
     return 0
 end
 
 task.spawn(function()
-    local invoked = false
-
     while true do
-        local fuerzaActual = yo()
-        local rebirthReq = getRebirthRequirement()
-
-        if fuerzaActual >= rebirthReq * 2 and not invoked then
-            pcall(function()
+        pcall(function()
+            local fuerzaActual = yo()
+            local rebirthReq = getRebirthRequirement()
+               if getIsActive1() and player() then
+            if fuerzaActual >= rebirthReq and fuerzaActual < rebirthReq * 2 then
                 Ex.reb:InvokeServer()
-            end)
-            invoked = true
-        elseif fuerzaActual < rebirthReq * 2 then
-            invoked = false
-        end
-
-        task.wait(1)
+                end
+            end
+        end)
+        task.wait(.3)
     end
 end)
 
@@ -1718,7 +1721,7 @@ task.spawn(function()
 
         local rebirthValue = data.Rebirth.Value
         local strengthValue = data.Strength.Value
-        local nextRebirth = (1e6) + 1e6
+        local nextRebirth = getRebirthRequirement()
         local additionalStrength = lplr.Character and lplr.Character:FindFirstChild("Stats") and lplr.Character.Stats:FindFirstChild("Strength") and lplr.Character.Stats.Strength.Value or 0
         statusLabel.Text = string.format(
             "%s/%s/%s\n%s",
@@ -2095,7 +2098,6 @@ else
         log("Servicio no disponible. No se puede mostrar la GUI.")
     end
 end
-
 
 
 
