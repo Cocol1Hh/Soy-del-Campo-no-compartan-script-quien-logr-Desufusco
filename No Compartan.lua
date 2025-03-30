@@ -1242,16 +1242,6 @@ task.spawn(function()
 end)
 
 
-task.spawn(function()
-    while task.wait() do
-        pcall(function()
-            if getIsActive1() then
-                lplr.Character.Humanoid:ChangeState(11)
-                lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
-            end
-        end)
-    end
-end)
 
 
  local Black = false
@@ -1327,20 +1317,49 @@ end)
       end
   end)
   
-  
+
+local function getRebirthRequirement()
+    local player = game.Players.LocalPlayer
+    local rebirthFrame = player.PlayerGui:FindFirstChild("Main") and player.PlayerGui.Main.MainFrame.Frames:FindFirstChild("Rebirth")
+    if not rebirthFrame then return 0 end
+    for _, child in ipairs(rebirthFrame:GetChildren()) do
+        if child:IsA("TextLabel") or child:IsA("TextButton") then
+            local num = tonumber(child.Text:gsub(",", ""):match("%d+"))
+            if num then
+                return num
+            end
+        end
+    end
+    return 0
+end
+
+task.spawn(function()
+    local invoked = false
+
+    while true do
+        local fuerzaActual = yo()
+        local rebirthReq = getRebirthRequirement()
+
+        if fuerzaActual >= rebirthReq * 2 and not invoked then
+            pcall(function()
+                Ex.reb:InvokeServer()
+            end)
+            invoked = true
+        elseif fuerzaActual < rebirthReq * 2 then
+            invoked = false
+        end
+
+        task.wait(1)
+    end
+end)
 
 task.spawn(function()
     while task.wait() do
         pcall(function()       
-              local rebirths = game.Workspace.Living[lplr.Name].Stats.Rebirth.Value
-           local nextRebirth = (rebirths * 1e6) + 1e6
             if player() then
                 if game.Players.LocalPlayer.Status.Blocking.Value == false and getIsActive1() then
                     game.Players.LocalPlayer.Status.Blocking.Value = true               
-                end                              
-             if yo() < nextRebirth * 2 and getIsActive3() then
-          Ex.reb:InvokeServer()
-          end                                
+                end                                                    
             pcall(function()
             task.spawn(function()
             if player() and game.PlaceId == 3311165597  then
