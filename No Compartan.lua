@@ -1333,7 +1333,7 @@ task.spawn(function()
     while task.wait() do
         pcall(function()       
               local rebirths = game.Workspace.Living[lplr.Name].Stats.Rebirth.Value
-              local nextRebirth = (1e6) + 1e6
+           local nextRebirth = (rebirths * 1e6) + 1e6
             if player() then
                 if game.Players.LocalPlayer.Status.Blocking.Value == false and getIsActive1() then
                     game.Players.LocalPlayer.Status.Blocking.Value = true               
