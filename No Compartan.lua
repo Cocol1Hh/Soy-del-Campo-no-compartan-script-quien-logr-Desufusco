@@ -99,11 +99,6 @@ local function claveEsValida()
 end
 
 local function script()
-
-
-
-    
-
 local fffg = game.CoreGui:FindFirstChild("fffg")
 if fffg then
     return  
@@ -300,7 +295,7 @@ Fps.Parent = Barra1
 
 local VS = Instance.new("TextLabel")
 VS.Parent = Barra1
-VS.Text = "V [0.7.01]"
+VS.Text = "V [0.7.02]"
 VS.Size = UDim2.new(0, 100, 0, 10)
 VS.Position = UDim2.new(0.783, 0, 0.009, 0)
 VS.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -1227,6 +1222,58 @@ task.spawn(function()
     end
 end)
 
+task.spawn(function()
+    while task.wait() do
+        pcall(function()
+            if getIsActive5() and player() then
+                local gokuBlack = game.Workspace.Living:FindFirstChild("Wukong Black")
+                if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack:FindFirstChild("HumanoidRootPart") then
+                    local distance = (gokuBlack.HumanoidRootPart.Position - Vector3.new(718.1, 207.5, 505.4)).Magnitude
+                    if distance <= 900 then
+                        local rootPart = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                        if rootPart then
+                            rootPart.CFrame = gokuBlack.HumanoidRootPart.CFrame + Vector3.new(0, 2, 0) -- TP un poco arriba para evitar colisiones
+                        end
+                    end
+                end
+            end
+        end)
+    end
+end)
+
+
+task.spawn(function()
+    while task.wait() do
+        pcall(function()
+            if getIsActive1() then
+                lplr.Character.Humanoid:ChangeState(11)
+                lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
+            end
+        end)
+    end
+end)
+
+
+ local Black = false
+task.spawn(function()
+    while true do
+        pcall(function()
+            if getIsActive5() and player() then
+                local gokuBlack = game.Workspace.Living:FindFirstChild("Wukong Black")
+                if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack.Humanoid.Health > 0 then
+                    local bossPosition = Vector3.new(718.1,207.5,505.4)
+                    if (gokuBlack.HumanoidRootPart.Position - bossPosition).Magnitude <= 900 then
+                        Black = true
+                        return
+                    end
+                end
+            end
+            Black = false
+        end)
+        task.wait()
+    end
+end)
+
 
 
   task.spawn(function()
@@ -1246,7 +1293,7 @@ end)
                      if getIsActive4() then
                 local questOrder = {
                     {npc = "Wukong", boss = "Oozaru"},
-                    {npc = "Winter Wukong", boss = "Winter Wukong"}
+                    {npc = "SSJG Kakata", boss = "SSJG Kakata"}
                 }
                 
                 if data.Quest.Value == "" and getIsActive4()  then
@@ -1286,7 +1333,7 @@ task.spawn(function()
     while task.wait() do
         pcall(function()       
               local rebirths = game.Workspace.Living[lplr.Name].Stats.Rebirth.Value
-              local nextRebirth = (rebirths * 1.99e6) + 2e6
+              local nextRebirth = (1e6) + 1e6
             if player() then
                 if game.Players.LocalPlayer.Status.Blocking.Value == false and getIsActive1() then
                     game.Players.LocalPlayer.Status.Blocking.Value = true               
@@ -1355,8 +1402,7 @@ local function loadBossList()
             {"Vills (50%)", 300e6, true},
             {"Wukong (Omen)", 200e6, true},
             {"Vegetable (GoD in-training)", 50e6, true},
-            {"Winter Wukong", 120e6, true},
-            {"SSJG Kakata", 100e6, true},
+            {"SSJG Kakata", 120e6, true},
             {"Broccoli", 21.5e6, true},
             {"SSJB Wukong", 4025000, true},
             {"Kai-fist Master", 3025000, true},
@@ -1650,9 +1696,10 @@ task.spawn(function()
         lplr.PlayerGui.Main.MainFrame.Frames.Quest.Visible = false
 
 
+
         local rebirthValue = data.Rebirth.Value
         local strengthValue = data.Strength.Value
-        local nextRebirth = (rebirthValue * 1.99e6) + 2e6
+        local nextRebirth = (1e6) + 1e6
         local additionalStrength = lplr.Character and lplr.Character:FindFirstChild("Stats") and lplr.Character.Stats:FindFirstChild("Strength") and lplr.Character.Stats.Strength.Value or 0
         statusLabel.Text = string.format(
             "%s/%s/%s\n%s",
@@ -1691,7 +1738,7 @@ task.spawn(function()
                local yDirection = 0
                 if humanoid.WalkSpeed >= 32 then
                     if humanoid.Jump then
-                        yDirection = speed * 0.45
+                        yDirection = speed * 0.60
                     end          
                     if moveDir.Magnitude > 0 or yDirection ~= 0 then
                         hum.CFrame = hum.CFrame + Vector3.new(moveDir.X, yDirection, moveDir.Z) * speed
@@ -1713,11 +1760,11 @@ local npcList = {
     {"Winter Wukong", 120e6}, {"Vegetable (GoD in-training)", 50e6},
     {"Wukong (Omen)", 200e6}, {"Vills (50%)", 300e6}, {"Winter Roshi", 500e6},
     {"Vis (20%)", 650e6}, {"Vegetable (LBSSJ4)", 950e6}, {"Wukong (LBSSJ4)", 1.90e9},
-    {"Vekuta (LBSSJ4)", 2.05e9}, {"Wukong Rose", 2.75e9}, {"Vekuta (SSJBUI)", 3.175e9},
-    {"Winter Bills", 4.176e9}
+    {"Vekuta (LBSSJ4)", 2.05e9}, {"Wukong Rose", 2.75e9}, {"Vekuta (SSJBUI)", 3.175e9}
 }
 
 local saveFile = "frame_position.txt"
+
 local function savePosition(frame)
     local pos = frame.Position
     local data = tostring(pos.X.Scale) .. "," .. tostring(pos.X.Offset) .. "," .. tostring(pos.Y.Scale) .. "," .. tostring(pos.Y.Offset)
@@ -1725,7 +1772,7 @@ local function savePosition(frame)
 end
 
 local function resetPosition()
-    return UDim2.new(0.5, -125, 0.5, -30) 
+    return UDim2.new(0.5, -125, 0.5, -30) -- Centrar el cuadro
 end
 
 local function loadPosition()
@@ -1810,7 +1857,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 
     if currentState ~= lastState then
         if not currentState then
-            frame.Position = resetPosition() 
+            frame.Position = resetPosition() -- Reiniciar la posición al centro si se oculta
         end
         lastState = currentState
     end
@@ -1820,8 +1867,11 @@ game:GetService("RunService").RenderStepped:Connect(function()
     if not currentState then return end
 
     local fuerzaActual = yo()
-    local siguienteMision = nil
+    local rebirthReq = getRebirthRequirement()
+    local ultimaMision = getLastMissionByRebirthRequirement(rebirthReq)
 
+    -- Buscar la siguiente misión
+    local siguienteMision = nil
     for i = 1, #npcList do
         if fuerzaActual < npcList[i][2] then
             siguienteMision = npcList[i]
@@ -1829,11 +1879,13 @@ game:GetService("RunService").RenderStepped:Connect(function()
         end
     end
 
-    local rebirthReq = getRebirthRequirement()
-    local ultimaMision = getLastMissionByRebirthRequirement(rebirthReq)
+    local fuerzaUltimoJefe = npcList[#npcList][2] -- Fuerza del último jefe
 
     if fuerzaActual >= rebirthReq then
         textLabel.Text = "🔥 REBIRTH COMPLETE 😃"
+        textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
+    elseif fuerzaActual >= fuerzaUltimoJefe then
+        textLabel.Text = "🔥 QUEST FINAL 😃"
         textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
     elseif siguienteMision then
         local nombreMision = siguienteMision[1]
@@ -1841,7 +1893,8 @@ game:GetService("RunService").RenderStepped:Connect(function()
         textLabel.Text = nombreMision .. " | " .. faltaFuerza .. "\nReq: " .. formatNumber(rebirthReq) .. " | " .. ultimaMision
         textLabel.TextColor3 = Color3.fromRGB(0, 150, 255)
     else
-        frame.Visible = false
+        textLabel.Text = "🔥 QUEST FINAL 😃"
+        textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
     end
 end)
 --Fin/\
