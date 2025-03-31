@@ -1440,6 +1440,19 @@ task.spawn(function()
 end)
 
 task.spawn(function()
+    while true do
+        pcall(function()
+            local rebirths = game.Workspace.Living[lplr.Name].Stats.Rebirth.Value
+        local nextRebirth = (rebirths * 1.99e6) + 2e6
+           if yo() < nextRebirth * 2 and getIsActive3() then
+          Ex.reb:InvokeServer()
+                end
+        end)
+        task.wait(.3)
+    end
+end)
+
+task.spawn(function()
     while task.wait() do
         pcall(function()       
             if player() then
