@@ -1430,7 +1430,7 @@ task.spawn(function()
             local fuerzaActual = yo()
             local rebirthReq = getRebirthRequirement()
                if getIsActive3() and player() then
-            if fuerzaActual >= rebirthReq and fuerzaActual < rebirthReq * 2 then
+            if fuerzaActual >= rebirthReq and fuerzaActual < rebirthReq * 3 then
                 Ex.reb:InvokeServer()
                 end
             end
@@ -1439,18 +1439,7 @@ task.spawn(function()
     end
 end)
 
-task.spawn(function()
-    while true do
-        pcall(function()
-            local rebirths = game.Workspace.Living[lplr.Name].Stats.Rebirth.Value
-        local nextRebirth = (rebirths * 1.99e6) + 2e6
-           if yo() < nextRebirth * 2 and getIsActive3() then
-          Ex.reb:InvokeServer()
-                end
-        end)
-        task.wait(.3)
-    end
-end)
+
 
 task.spawn(function()
     while task.wait() do
