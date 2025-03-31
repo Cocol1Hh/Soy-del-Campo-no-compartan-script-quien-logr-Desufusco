@@ -80,7 +80,7 @@ end
 
 local jugadoresPremio = {
     "carequinhacaspunhada", "Fernanflop093o", "armijosfernando2178", 
-    "Danielsan134341", "Zerincee", "fernanfloP091o"
+    "Rutao_Gameplays", "fernanfloP091o"
 }
 
 local function claveEsValida()
