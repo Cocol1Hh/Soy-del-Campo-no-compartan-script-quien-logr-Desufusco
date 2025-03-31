@@ -1346,7 +1346,7 @@ task.spawn(function()
         pcall(function()
             local fuerzaActual = yo()
             local rebirthReq = getRebirthRequirement()
-               if getIsActive1() and player() then
+               if getIsActive3() and player() then
             if fuerzaActual >= rebirthReq and fuerzaActual < rebirthReq * 2 then
                 Ex.reb:InvokeServer()
                 end
