@@ -2006,9 +2006,12 @@ end)
       
 
 local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
 local timerLabel = Instance.new("TextLabel")
-local timeFileName = "SavedTime.json"
-local rebirthFileName = "SavedRebirth.json"
+local timeFileName = "SavedTime_" .. player.Name .. ".json" -- Nombre del archivo con el nombre del jugador
+local rebirthFileName = "SavedRebirth_" .. player.Name .. ".json" -- Ídem para rebirth
 local savedTimestamp = os.time()
 local savedRebirth = 0
 local elapsedTime = 0
@@ -2035,11 +2038,9 @@ local function loadValue(fileName, default)
     return default
 end
 
-local savedTimestamp = loadValue(timeFileName, os.time())
-local savedRebirth = loadValue(rebirthFileName, data.Rebirth.Value)
-local elapsedTime = os.time() - savedTimestamp
-local isPaused = false
-local rebirthIncreased = false
+savedTimestamp = loadValue(timeFileName, os.time())
+savedRebirth = loadValue(rebirthFileName, data.Rebirth.Value)
+elapsedTime = os.time() - savedTimestamp
 
 local function resetTimer()
     savedTimestamp = os.time()
