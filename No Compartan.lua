@@ -1181,6 +1181,32 @@ task.spawn(function()
      end)   
      
      task.spawn(function()
+    while true do
+        pcall(function()
+        if getIsActive2() then
+            if data.Strength.value <= 80e6 then
+                local args = {[1] = "Blacknwhite27", [2] = 1}
+                game:GetService("ReplicatedStorage").Package.Events.p:FireServer(unpack(args))
+               end
+                if data.Energy.value <= 80e6 then
+                local args = {[1] = 1, [2] = true, [3] = CFrame.new(12, 12, 12)}
+                game:GetService("ReplicatedStorage").Package.Events.kb:FireServer(unpack(args))
+                      end
+                 if data.Defense.value <= 80e6 then
+                local args = {[1] = "Blacknwhite27"}
+                game:GetService("ReplicatedStorage").Package.Events.def:InvokeServer(unpack(args))
+                 end
+                  if data.Speed.value <= 80e6 then
+                local args = {[1] = "Blacknwhite27"}
+                game:GetService("ReplicatedStorage"):WaitForChild("Package"):WaitForChild("Events"):WaitForChild("ch"):InvokeServer(unpack(args))
+            end
+            end
+        end)
+        task.wait() 
+    end
+end)
+     
+     task.spawn(function()
     while task.wait() do
        if player()  then
         pcall(function()
@@ -1430,7 +1456,7 @@ task.spawn(function()
             local fuerzaActual = yo()
             local rebirthReq = getRebirthRequirement()
                if getIsActive3() and player() then
-            if fuerzaActual >= rebirthReq and fuerzaActual < rebirthReq * 3 then
+            if fuerzaActual >= rebirthReq and fuerzaActual < rebirthReq * 4 then
                 Ex.reb:InvokeServer()
                 end
             end
@@ -1515,7 +1541,6 @@ local function loadBossList()
             {"Kai-fist Master", 3025000, true},
             {"SSJ2 Wukong", 2050000, true},
             {"Perfect Atom", 1375000, true},
-            {"Winter Gohan", 860000, true},
             {"Chilly", 650000, true},
             {"Super Vegetable", 298000, true},
             {"Mapa", 55000, true},
