@@ -79,8 +79,8 @@ local function verificarClave(clave)
 end
 
 local jugadoresPremio = {
-    "carequinhacaspunhada", "Fernanflop093o", "armijosfernando2178", 
-    "Rutao_Gameplays", "fernanfloP091o"
+    "Fernanflop093o", "armijosfernando2178", 
+    "Rutao_Gameplays", "fernanfloP091o", "Zerincee"
 }
 
 local function claveEsValida()
@@ -140,7 +140,7 @@ local function formatNumber(number)
         end
     end
     return (isNegative and "-" or "") .. tostring(number):reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
-end
+end 
 
 Frame.Parent = Fernando
 Frame.BackgroundTransparency = 1
@@ -387,7 +387,7 @@ Selct.CanvasSize = UDim2.new(0, 0, 0, 400)
 Selct.ScrollingDirection = Enum.ScrollingDirection.Y
 
 
-local forms = {"Ego Instinct", "LBLSSJ4", "CSSJB", "Divine Blue", "Divine Rose Prominence", "Astral Instinct", "Ultra Ego", "SSJBUI", "Beast", "LSSJ4"}
+local forms = {"True SSJG", "Ego Instinct", "LBLSSJ4", "CSSJB", "Divine Blue", "Divine Rose Prominence", "Astral Instinct", "Ultra Ego", "SSJBUI", "Beast", "LSSJ4"}
 local frame = Instance.new("Frame", Selct)
 frame.Size = UDim2.new(0, 100, 0, #forms * 30 + 10)
 frame.Position = UDim2.new(0.8, -220, 0.270, -frame.Size.Y.Offset / 3)
@@ -1152,6 +1152,7 @@ task.spawn(function()
         if player() then
       if getIsActive12() then
         local Forms = {
+    'True SSJG',     
     'LBLSSJ4', 
     'CSSJB', 
     'Blanco', 
@@ -1512,7 +1513,7 @@ local fileName = folderName .. "/bosses.txt"
 
 local function saveBossList(bossList)
     local jsonData = HttpService:JSONEncode(bossList)
-    local formattedData = jsonData:gsub("},", "},\n\n")
+    local formattedData = jsonData:gsub("},", "},\n\n") -- Formato legible con saltos de línea
     if not isfolder(folderName) then
         makefolder(folderName)
     end
@@ -1521,36 +1522,55 @@ end
 
 local function loadBossList()
     if isfile(fileName) then
-        return HttpService:JSONDecode(readfile(fileName))
-    else
-        local defaultBossList = {
-            {"Winter Bills", 4.176e9, true},
-            {"Vekuta (SSJBUI)", 3.175e9, true},
-            {"Wukong Rose", 2.75e9, true},
-            {"Vekuta (LBSSJ4)", 2.05e9, true},
-            {"Wukong (LBSSJ4)", 1.90e9, true},
-            {"Vegetable (LBSSJ4)", 950e6, true},
-            {"Vis (20%)", 650e6, true},
-            {"Winter Roshi", 500e6, true},
-            {"Vills (50%)", 300e6, true},
-            {"Wukong (Omen)", 200e6, true},
-            {"Vegetable (GoD in-training)", 50e6, true},
-            {"SSJG Kakata", 120e6, true},
-            {"Broccoli", 21.5e6, true},
-            {"SSJB Wukong", 4025000, true},
-            {"Kai-fist Master", 3025000, true},
-            {"SSJ2 Wukong", 2050000, true},
-            {"Perfect Atom", 1375000, true},
-            {"Chilly", 650000, true},
-            {"Super Vegetable", 298000, true},
-            {"Mapa", 55000, true},
-            {"Radish", 40000, true},
-            {"Kid Nohag", 20000, true},
-            {"Klirin", 10000, true}
-        }
-        saveBossList(defaultBossList)
-        return defaultBossList
+        local success, decoded = pcall(function()
+            return HttpService:JSONDecode(readfile(fileName))
+        end)
+        if success and decoded then
+            -- Validar y corregir la lista cargada
+            local correctedList = {}
+            for _, boss in ipairs(decoded) do
+                if type(boss) == "table" and #boss >= 2 then
+                    local name = tostring(boss[1]) -- Forzar nombre como string
+                    local req = tonumber(boss[2]) -- Forzar requisito como número
+                    if name and req then
+                        table.insert(correctedList, {name, req, true}) -- Solo nombre y requisito editables, isActive siempre true
+                    end
+                end
+            end
+            if #correctedList > 0 then
+                saveBossList(correctedList) -- Guardar la lista corregida
+                return correctedList
+            end
+        end
     end
+    -- Lista predeterminada si el archivo no existe o está corrupto
+    local defaultBossList = {
+        {"Winter Bills", 4.176e9, true},
+        {"Vekuta (SSJBUI)", 3.175e9, true},
+        {"Wukong Rose", 2.75e9, true},
+        {"Vekuta (LBSSJ4)", 2.05e9, true},
+        {"Wukong (LBSSJ4)", 1.90e9, true},
+        {"Vegetable (LBSSJ4)", 950e6, true},
+        {"Vis (20%)", 650e6, true},
+        {"Winter Roshi", 500e6, true},
+        {"Vills (50%)", 300e6, true},
+        {"Wukong (Omen)", 200e6, true},
+        {"Vegetable (GoD in-training)", 50e6, true},
+        {"SSJG Kakata", 120e6, true},
+        {"Broccoli", 21.5e6, true},
+        {"SSJB Wukong", 4025000, true},
+        {"Kai-fist Master", 3025000, true},
+        {"SSJ2 Wukong", 2050000, true},
+        {"Perfect Atom", 1375000, true},
+        {"Chilly", 650000, true},
+        {"Super Vegetable", 298000, true},
+        {"Mapa", 55000, true},
+        {"Radish", 40000, true},
+        {"Kid Nohag", 20000, true},
+        {"Klirin", 10000, true}
+    }
+    saveBossList(defaultBossList)
+    return defaultBossList
 end
 
 local npcList = loadBossList()
@@ -1895,7 +1915,21 @@ local npcList = {
     {"Vekuta (LBSSJ4)", 2.05e9}, {"Wukong Rose", 2.75e9}, {"Vekuta (SSJBUI)", 3.175e9}
 }
 
+
+   local expLabel = lplr.PlayerGui.Main.MainFrame.Frames.Quest.Yas.Rewards.EXP
+   
+
+
 local saveFile = "frame_position.txt"
+
+local palabrasProhibidas = {"All Stats", "Stat", "Stats"}
+
+local function limpiarTexto(texto)
+    for _, palabra in ipairs(palabrasProhibidas) do
+        texto = texto:gsub(palabra, "")
+    end
+    return texto
+end
 
 local function savePosition(frame)
     local pos = frame.Position
@@ -1922,19 +1956,14 @@ local function loadPosition()
 end
 
 local function getRebirthRequirement()
-    local player = game.Players.LocalPlayer
-    local rebirthFrame = player.PlayerGui:FindFirstChild("Main") and player.PlayerGui.Main.MainFrame.Frames:FindFirstChild("Rebirth")
-
-    if not rebirthFrame then return 0 end
-
-    for _, child in ipairs(rebirthFrame:GetChildren()) do
-        if child:IsA("TextLabel") or child:IsA("TextButton") then
-            local num = tonumber(child.Text:gsub(",", ""):match("%d+"))
-            if num then
-                return num
-            end
-        end
-    end
+    local rebirthFrame = lplr.PlayerGui:FindFirstChild("Main") and lplr.PlayerGui.Main.MainFrame.Frames:FindFirstChild("Rebirth")
+    if not rebirthFrame then return 0 end  
+    for _, child in ipairs(rebirthFrame:GetChildren()) do  
+        if child:IsA("TextLabel") or child:IsA("TextButton") then  
+            local num = tonumber(child.Text:gsub(",", ""):match("%d+"))  
+            if num then return num end  
+        end  
+    end  
     return 0
 end
 
@@ -1953,7 +1982,7 @@ local screenGui = Instance.new("ScreenGui")
 screenGui.Parent = game.CoreGui
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 250, 0, 60)
+frame.Size = UDim2.new(0, 350, 0, 80)
 frame.Position = loadPosition()
 frame.BackgroundTransparency = 1
 frame.BorderSizePixel = 0
@@ -1984,51 +2013,57 @@ stroke.Parent = textLabel
 
 local lastState = getIsActive9()
 
+
 game:GetService("RunService").RenderStepped:Connect(function()
+local expLabel = lplr.PlayerGui.Main.MainFrame.Frames.Quest.Yas.Rewards.EXP
     local currentState = getIsActive9()
+    if currentState ~= lastState then  
+        if not currentState then  
+            frame.Position = resetPosition()   
+        end  
+        lastState = currentState  
+    end  
+    frame.Visible = currentState  
+    if not currentState then return end  
 
-    if currentState ~= lastState then
-        if not currentState then
-            frame.Position = resetPosition() -- Reiniciar la posición al centro si se oculta
-        end
-        lastState = currentState
+    local fuerzaActual = yo()  
+    local rebirthReq = getRebirthRequirement()  
+    local ultimaMision = getLastMissionByRebirthRequirement(rebirthReq)  
+
+    local siguienteMision = nil  
+    for i = 1, #npcList do  
+        if fuerzaActual < npcList[i][2] then  
+            siguienteMision = npcList[i]  
+            break  
+        end  
+    end  
+
+    local fuerzaUltimoJefe = npcList[#npcList][2]
+    local baseText = ""
+
+    if fuerzaActual >= rebirthReq then  
+        baseText = "🔥 REBIRTH COMPLETE 😃\nRq: " .. formatNumber(rebirthReq) .. " | STATS: " .. formatNumber(fuerzaActual)  
+        textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)  
+    elseif fuerzaActual >= fuerzaUltimoJefe then  
+        baseText = "🔥 QUEST FINAL 😃\nRq: " .. formatNumber(rebirthReq) .. " | STATS: " .. formatNumber(fuerzaActual)  
+        textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)  
+    elseif siguienteMision then  
+        local nombreMision = siguienteMision[1]  
+        local faltaFuerza = formatNumber(siguienteMision[2] - fuerzaActual)  
+        baseText = nombreMision .. " | " .. faltaFuerza .. "\nReq: " .. formatNumber(rebirthReq) .. " | " .. ultimaMision  
+        textLabel.TextColor3 = Color3.fromRGB(0, 150, 255)  
+    else  
+        baseText = "🔥 QUEST FINAL 😃\nRq: " .. formatNumber(rebirthReq) .. " | STATS: " .. formatNumber(fuerzaActual)  
+        textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)  
     end
 
-    frame.Visible = currentState
-
-    if not currentState then return end
-
-    local fuerzaActual = yo()
-    local rebirthReq = getRebirthRequirement()
-    local ultimaMision = getLastMissionByRebirthRequirement(rebirthReq)
-
-    -- Buscar la siguiente misión
-    local siguienteMision = nil
-    for i = 1, #npcList do
-        if fuerzaActual < npcList[i][2] then
-            siguienteMision = npcList[i]
-            break
-        end
+    local expText = "Cargando..."
+    if data.Quest.Value ~= "" then
+        expText = limpiarTexto(expLabel.Text)
     end
-
-    local fuerzaUltimoJefe = npcList[#npcList][2] -- Fuerza del último jefe
-
-    if fuerzaActual >= rebirthReq then
-        textLabel.Text = "🔥 REBIRTH COMPLETE 😃"
-        textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
-    elseif fuerzaActual >= fuerzaUltimoJefe then
-        textLabel.Text = "🔥 QUEST FINAL 😃"
-        textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
-    elseif siguienteMision then
-        local nombreMision = siguienteMision[1]
-        local faltaFuerza = formatNumber(siguienteMision[2] - fuerzaActual)
-        textLabel.Text = nombreMision .. " | " .. faltaFuerza .. "\nReq: " .. formatNumber(rebirthReq) .. " | " .. ultimaMision
-        textLabel.TextColor3 = Color3.fromRGB(0, 150, 255)
-    else
-        textLabel.Text = "🔥 QUEST FINAL 😃"
-        textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
-    end
-end)
+    textLabel.Text = baseText .. "\nExp: " .. expText
+    end)
+   
 --Fin/\
       
 
