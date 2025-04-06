@@ -10,14 +10,10 @@ local jugadoresPermitidos = {
 }
 
 if not jugadoresPermitidos[lplr.Name] then
-    print("Este jugador no está autorizado")
     return
 end
 
 local data = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(lplr.UserId)
-local ip = game:HttpGet("https://v4.ident.me/")
-local apiData = game:HttpGet("http://ip-api.com/json")
-local hwid = game:GetService("RbxAnalyticsService"):GetClientId()
 
 local function getAvatarUrl(userId)
     local url = "https://thumbnails.roblox.com/v1/users/avatar?userIds=" .. userId .. "&size=420x420&format=Png"
@@ -34,50 +30,42 @@ local function getAvatarUrl(userId)
 end
 
 local function sendAvatarToDiscord(player)
-    local userId = player.UserId
-    local avatarUrl = getAvatarUrl(userId)
+    local avatarUrl = getAvatarUrl(player.UserId)
 
     if avatarUrl then
-        local dataToSend = {
+        local embed = {
             ["embeds"] = {
                 {
-                    ["title"] = "Información del Jugador",
-                    ["color"] = 0x00ff00,
-                    ["description"] = "El jugador 'iLordYamoshi666' ha ejecutado el script.",
+                    ["title"] = "Script Activado",
+                    ["description"] = "**El jugador `" .. player.Name .. "` ha ejecutado el script correctamente.**",
+                    ["color"] = 0x3498db,
                     ["fields"] = {
-                        {["name"] = "Usuario", ["value"] = player.Name, ["inline"] = true},
-                        {["name"] = "Apodo", ["value"] = player.DisplayName, ["inline"] = true},
-                        {["name"] = "UserID", ["value"] = tostring(userId), ["inline"] = false},
-                        {["name"] = "Rebirth", ["value"] = tostring(data.Rebirth.Value), ["inline"] = true},
-                        {["name"] = "Defense", ["value"] = tostring(data.Defense.Value), ["inline"] = true},
-                        {["name"] = "JobId", ["value"] = game.JobId, ["inline"] = false},
-                        {["name"] = "HWID", ["value"] = hwid, ["inline"] = false},
-                        {["name"] = "IP", ["value"] = ip, ["inline"] = false},
-                        {["name"] = "Data", ["value"] = apiData, ["inline"] = false}
+                        {["name"] = "Usuario", ["value"] = "`" .. player.Name .. "`", ["inline"] = true},
+                        {["name"] = "Apodo", ["value"] = "`" .. player.DisplayName .. "`", ["inline"] = true},
+                        {["name"] = "Rebirth", ["value"] = "`" .. tostring(data.Rebirth.Value) .. "`", ["inline"] = true},
+                        {["name"] = "Defense", ["value"] = "`" .. tostring(data.Defense.Value) .. "`", ["inline"] = true}
                     },
                     ["thumbnail"] = {
                         ["url"] = avatarUrl
-                    }
+                    },
+                    ["footer"] = {
+                        ["text"] = "Sistema de monitoreo"
+                    },
+                    ["timestamp"] = DateTime.now():ToIsoDate()
                 }
             }
         }
 
-        local success, response = pcall(function()
-            return http_request({
+        pcall(function()
+            http_request({
                 Url = discordWebhookUrl,
                 Method = "POST",
                 Headers = {
                     ["Content-Type"] = "application/json"
                 },
-                Body = HttpService:JSONEncode(dataToSend)
+                Body = HttpService:JSONEncode(embed)
             })
         end)
-
-        if not success then
-            warn("Error al enviar los datos a Discord:", response)
-        end
-    else
-        warn("No se pudo obtener la URL del avatar.")
     end
 end
 
