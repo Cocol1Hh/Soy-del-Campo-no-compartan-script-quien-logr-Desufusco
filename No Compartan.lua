@@ -14,8 +14,8 @@ screenGui.Name = "EnhancedAutoFarmGUI"
 screenGui.Parent = game.CoreGui
 
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 200, 0, 30) -- Tamaño inicial minimizado
-mainFrame.Position = UDim2.new(0.5, -100, 0, 10) -- Posición inicial minimizada
+mainFrame.Size = UDim2.new(0, 200, 0, 30)
+mainFrame.Position = UDim2.new(0.5, -100, 0, 10)
 mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 35)
 mainFrame.BorderSizePixel = 0
 mainFrame.Draggable = true
@@ -26,36 +26,36 @@ local mainStroke = Instance.new("UIStroke") mainStroke.Color = Color3.new(1, 0, 
 local mainShadow = Instance.new("ImageLabel") mainShadow.Image = "rbxassetid://1316045217" mainShadow.ImageColor3 = Color3.fromRGB(0, 0, 0) mainShadow.ImageTransparency = 0.5 mainShadow.Size = UDim2.new(1, 40, 1, 40) mainShadow.Position = UDim2.new(0, -20, 0, -20) mainShadow.BackgroundTransparency = 1 mainShadow.Parent = mainFrame
 
 local titleLabel = Instance.new("TextLabel")
-titleLabel.Size = UDim2.new(0.8, 0, 0, 30) -- Tamaño inicial minimizado
-titleLabel.Position = UDim2.new(0.1, 0, 0, 0) -- Posición inicial minimizada
+titleLabel.Size = UDim2.new(0.8, 0, 0, 30) 
+titleLabel.Position = UDim2.new(0.1, 0, 0, 0) 
 titleLabel.BackgroundTransparency = 1
 titleLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
 titleLabel.TextScaled = true
 titleLabel.Font = Enum.Font.GothamBlack
-titleLabel.Text = "DBU" -- Texto inicial minimizado
+titleLabel.Text = "DBU" 
 titleLabel.TextXAlignment = Enum.TextXAlignment.Center
 titleLabel.Parent = mainFrame
 
 local minMaxButton = Instance.new("TextButton")
 minMaxButton.Size = UDim2.new(0, 25, 0, 25)
-minMaxButton.Position = UDim2.new(1, -30, 0, 2) -- Posición inicial minimizada
+minMaxButton.Position = UDim2.new(1, -30, 0, 2) 
 minMaxButton.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
 minMaxButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-minMaxButton.Text = "+" -- Texto inicial para minimizado
+minMaxButton.Text = "+" 
 minMaxButton.Font = Enum.Font.GothamBold
 minMaxButton.TextScaled = true
 minMaxButton.Parent = mainFrame
 local minMaxCorner = Instance.new("UICorner") minMaxCorner.CornerRadius = UDim.new(0, 12) minMaxCorner.Parent = minMaxButton
 
-local isMinimized = true -- Estado inicial cambiado a true
-local originalSize = UDim2.new(0, 450, 0, 350) -- Guardamos el tamaño original
-local originalPosition = UDim2.new(0.5, -225, 0.5, -175) -- Guardamos la posición original
+local isMinimized = true
+local originalSize = UDim2.new(0, 450, 0, 350)
+local originalPosition = UDim2.new(0.5, -225, 0.5, -175)
 
 local tabFrame = Instance.new("Frame")
 tabFrame.Size = UDim2.new(1, -20, 0, 50)
 tabFrame.Position = UDim2.new(0, 10, 0, 60)
 tabFrame.BackgroundTransparency = 1
-tabFrame.Visible = false -- Ocultar pestañas al inicio (minimizado)
+tabFrame.Visible = false
 tabFrame.Parent = mainFrame
 
 local tabs = {"Farm", "Teleport", "Extras"}
@@ -362,7 +362,6 @@ local function formatNumber(number)
 end 
 
 
-  local HttpService = game:GetService("HttpService")
 local folderName = "Missiones"
 local fileName = folderName .. "/bosses.txt"
 
@@ -723,14 +722,13 @@ end
         local RunService = game:GetService("RunService")
         local LocalPlayer = Players.LocalPlayer
 
-        -- M�todo 1: Simulaci�n con VirtualUser (clics y movimientos)
         LocalPlayer.Idled:Connect(function()
             VirtualUser:CaptureController()
-            VirtualUser:ClickButton1(Vector2.new(math.random(0, 500), math.random(0, 500))) -- Clic izquierdo aleatorio
-            VirtualUser:ClickButton2(Vector2.new(math.random(0, 500), math.random(0, 500))) -- Clic derecho aleatorio
-            VirtualUser:SetKeyDown("w") -- Simula presionar la tecla W
+            VirtualUser:ClickButton1(Vector2.new(math.random(0, 500), math.random(0, 500)))
+            VirtualUser:ClickButton2(Vector2.new(math.random(0, 500), math.random(0, 500))) 
+            VirtualUser:SetKeyDown("w") 
             task.wait(0.1)
-            VirtualUser:SetKeyUp("w") -- Suelta la tecla W
+            VirtualUser:SetKeyUp("w")
             task.wait(2)
         end)
 
@@ -748,7 +746,7 @@ end
         end
 
         RunService.Heartbeat:Connect(function()
-            if math.random(1, 100) <= 10 then -- 10% de probabilidad por frame
+            if math.random(1, 100) <= 10 then
                 simulateInput()
                 simulateMovement()
             end
@@ -830,8 +828,8 @@ end)
              end)
           end)
           end
-          task.spawn(function()
-        pcall(function()
+         task.spawn(function()
+             pcall(function()
             if AutoFarm() and player() then
                 lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
             end
@@ -852,7 +850,7 @@ end)
         local ki = stats:FindFirstChild("Ki")
         local maxKi = stats:FindFirstChild("MaxKi")
         if ki and maxKi and ki:IsA("NumberValue") and maxKi:IsA("NumberValue") then
-            local porcentaje = game.PlaceId == 5151400895 and 0.25 or 0.70
+            local porcentaje = game.PlaceId == 5151400895 and 0.25 or 0.50
             if ki.Value <= (maxKi.Value * porcentaje) and player() and AutoFarm() and yo() <= 800e9 then
                 Ex.cha:InvokeServer("Blacknwhite27")
             end
@@ -929,13 +927,9 @@ local npcList = {
     {"Vekuta (LBSSJ4)", 2.05e9}, {"Wukong Rose", 2.75e9}, {"Vekuta (SSJBUI)", 3.175e9}
 }
 
-
-   local expLabel = lplr.PlayerGui.Main.MainFrame.Frames.Quest.Yas.Rewards.EXP
+local expLabel = lplr.PlayerGui.Main.MainFrame.Frames.Quest.Yas.Rewards.EXP
    
-
-
 local saveFile = "frame_position.txt"
-
 local palabrasProhibidas = {"All Stats", "Stat", "Stats"}
 
 local function limpiarTexto(texto)
@@ -952,7 +946,7 @@ local function savePosition(frame)
 end
 
 local function resetPosition()
-    return UDim2.new(0.5, -125, 0.5, -30) -- Centrar el cuadro
+    return UDim2.new(0.5, -125, 0.5, -30) 
 end
 
 local function loadPosition()
@@ -969,17 +963,6 @@ local function loadPosition()
     return resetPosition()
 end
 
-local function getRebirthRequirement()
-    local rebirthFrame = lplr.PlayerGui:FindFirstChild("Main") and lplr.PlayerGui.Main.MainFrame.Frames:FindFirstChild("Rebirth")
-    if not rebirthFrame then return 0 end  
-    for _, child in ipairs(rebirthFrame:GetChildren()) do  
-        if child:IsA("TextLabel") or child:IsA("TextButton") then  
-            local num = tonumber(child.Text:gsub(",", ""):match("%d+"))  
-            if num then return num end  
-        end  
-    end  
-    return 0
-end
 
 local function getLastMissionByRebirthRequirement(rebirthReq)
     local lastMission = "Ninguna"
@@ -1079,12 +1062,8 @@ local expLabel = lplr.PlayerGui.Main.MainFrame.Frames.Quest.Yas.Rewards.EXP
     end)   
     
  local TeleportService = game:GetService("TeleportService")
-local HttpService = game:GetService("HttpService")
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local timerLabel = Instance.new("TextLabel")
-local timeFileName = "SavedTime_" .. player.Name .. ".json" -- Nombre del archivo con el nombre del jugador
-local rebirthFileName = "SavedRebirth_" .. player.Name .. ".json" -- Ídem para rebirth
+local timeFileName = "SavedTime_" .. lplr.Name .. ".json" -- Nombre del archivo con el nombre del jugador
+local rebirthFileName = "SavedRebirth_" .. lplr.Name .. ".json" -- Ídem para rebirth
 local savedTimestamp = os.time()
 local savedRebirth = 0
 local elapsedTime = 0
@@ -1125,6 +1104,7 @@ local function resetTimer()
     rebirthIncreased = false
 end
 
+local timerLabel = Instance.new("TextLabel")
 timerLabel.Size = UDim2.new(0, 200, 0, 50)
 timerLabel.Position = UDim2.new(0.200, 0, -0.5, 0)
 timerLabel.Text = "Cargando..."
