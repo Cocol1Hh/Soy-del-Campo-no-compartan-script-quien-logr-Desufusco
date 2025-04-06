@@ -14,8 +14,8 @@ screenGui.Name = "EnhancedAutoFarmGUI"
 screenGui.Parent = game.CoreGui
 
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 450, 0, 350)
-mainFrame.Position = UDim2.new(0.5, -225, 0.5, -175)
+mainFrame.Size = UDim2.new(0, 200, 0, 30) -- Tamaño inicial minimizado
+mainFrame.Position = UDim2.new(0.5, -100, 0, 10) -- Posición inicial minimizada
 mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 35)
 mainFrame.BorderSizePixel = 0
 mainFrame.Draggable = true
@@ -26,34 +26,36 @@ local mainStroke = Instance.new("UIStroke") mainStroke.Color = Color3.new(1, 0, 
 local mainShadow = Instance.new("ImageLabel") mainShadow.Image = "rbxassetid://1316045217" mainShadow.ImageColor3 = Color3.fromRGB(0, 0, 0) mainShadow.ImageTransparency = 0.5 mainShadow.Size = UDim2.new(1, 40, 1, 40) mainShadow.Position = UDim2.new(0, -20, 0, -20) mainShadow.BackgroundTransparency = 1 mainShadow.Parent = mainFrame
 
 local titleLabel = Instance.new("TextLabel")
-titleLabel.Size = UDim2.new(1, 0, 0, 50)
+titleLabel.Size = UDim2.new(0.8, 0, 0, 30) -- Tamaño inicial minimizado
+titleLabel.Position = UDim2.new(0.1, 0, 0, 0) -- Posición inicial minimizada
 titleLabel.BackgroundTransparency = 1
 titleLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
 titleLabel.TextScaled = true
 titleLabel.Font = Enum.Font.GothamBlack
-titleLabel.Text = "Auto Farm DBU"
+titleLabel.Text = "DBU" -- Texto inicial minimizado
 titleLabel.TextXAlignment = Enum.TextXAlignment.Center
 titleLabel.Parent = mainFrame
 
 local minMaxButton = Instance.new("TextButton")
 minMaxButton.Size = UDim2.new(0, 25, 0, 25)
-minMaxButton.Position = UDim2.new(1, -35, 0, 12)
+minMaxButton.Position = UDim2.new(1, -30, 0, 2) -- Posición inicial minimizada
 minMaxButton.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
 minMaxButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-minMaxButton.Text = "-"
+minMaxButton.Text = "+" -- Texto inicial para minimizado
 minMaxButton.Font = Enum.Font.GothamBold
 minMaxButton.TextScaled = true
 minMaxButton.Parent = mainFrame
 local minMaxCorner = Instance.new("UICorner") minMaxCorner.CornerRadius = UDim.new(0, 12) minMaxCorner.Parent = minMaxButton
 
-local isMinimized = false
-local originalSize = mainFrame.Size
-local originalPosition = mainFrame.Position
+local isMinimized = true -- Estado inicial cambiado a true
+local originalSize = UDim2.new(0, 450, 0, 350) -- Guardamos el tamaño original
+local originalPosition = UDim2.new(0.5, -225, 0.5, -175) -- Guardamos la posición original
 
 local tabFrame = Instance.new("Frame")
 tabFrame.Size = UDim2.new(1, -20, 0, 50)
 tabFrame.Position = UDim2.new(0, 10, 0, 60)
 tabFrame.BackgroundTransparency = 1
+tabFrame.Visible = false -- Ocultar pestañas al inicio (minimizado)
 tabFrame.Parent = mainFrame
 
 local tabs = {"Farm", "Teleport", "Extras"}
@@ -199,10 +201,10 @@ farmScroll.Parent = farmFrame
 
 local AutoFarm = createToggle("Auto Farm", 0, savedStates["Auto Farm"] or false, farmScroll)
 local AutoForm = createToggle("Auto Form", 1, savedStates["Auto Form"] or false, farmScroll)
-local FormVip = createToggle("Form|Vip", 2, savedStates["Farm|Vip"] or false, farmScroll)
+local FormVip = createToggle("Form|Vip", 2, savedStates["Form|Vip"] or false, farmScroll)
 local Planet = createToggle("Tp|Planet", 3, savedStates["Tp|Planet"] or false, farmScroll)
 local RbStats = createToggle("Reb|Stats", 4, savedStates["Reb|Stats"] or false, farmScroll)
-local Dupli = createToggle("Rest|Planet", 5, savedStates["Rest|Planet"] or false, farmScroll)
+local Dupli = createToggle("Rest|Server", 5, savedStates["Rest|Server"] or false, farmScroll)
 local Ozaru = createToggle("Ozaru", 6, savedStates["Ozaru"] or false, farmScroll)
 local GokuBlack = createToggle("GokuBlack", 7, savedStates["GokuBlack"] or false, farmScroll)
 
@@ -695,6 +697,23 @@ pcall(function()
         bb:ClickButton2(Vector2.new())
         task.wait(2)
     end)
+  
+  local GC = getconnections or get_signal_cons
+if GC then
+	for i,v in pairs(GC(lplr.Idled)) do
+		if v["Disable"] then
+			v["Disable"](v)
+		elseif v["Disconnect"] then
+			v["Disconnect"](v)
+		end
+	end
+else
+	lplr.Idled:Connect(function()
+		local VirtualUser = game:GetService("VirtualUser")
+		VirtualUser:CaptureController()
+		VirtualUser:ClickButton2(Vector2.new())
+	end)
+end
     
  task.spawn(function()
     pcall(function()
@@ -766,6 +785,7 @@ task.spawn(function()
                 Ex.reb:InvokeServer()
                 end
             end
+            lplr.PlayerGui.Main.MainFrame.Frames.Quest.Visible = false
         end)
         task.wait(.3)
     end
@@ -1045,7 +1065,7 @@ local expLabel = lplr.PlayerGui.Main.MainFrame.Frames.Quest.Yas.Rewards.EXP
         local nombreMision = siguienteMision[1]  
         local faltaFuerza = formatNumber(siguienteMision[2] - fuerzaActual)  
         baseText = nombreMision .. " | " .. faltaFuerza .. "\nReq: " .. formatNumber(rebirthReq) .. " | " .. ultimaMision  
-        textLabel.TextColor3 = Color3.fromRGB(0, 150, 255)  
+        textLabel.TextColor3 = Color3.fromRGB(150, 250, 255)  
     else  
         baseText = " QUEST FINAL \nRq: " .. formatNumber(rebirthReq) .. " | STATS: " .. formatNumber(fuerzaActual)  
         textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)  
@@ -1058,6 +1078,109 @@ local expLabel = lplr.PlayerGui.Main.MainFrame.Frames.Quest.Yas.Rewards.EXP
     textLabel.Text = baseText .. "\nExp: " .. expText
     end)   
     
+ local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local timerLabel = Instance.new("TextLabel")
+local timeFileName = "SavedTime_" .. player.Name .. ".json" -- Nombre del archivo con el nombre del jugador
+local rebirthFileName = "SavedRebirth_" .. player.Name .. ".json" -- Ídem para rebirth
+local savedTimestamp = os.time()
+local savedRebirth = 0
+local elapsedTime = 0
+local isPaused = false
+local rebirthIncreased = false
+
+local function createOrUpdateFile(fileName, value)
+    writefile(fileName, HttpService:JSONEncode({v = value}))
+end
+
+if not isfile(timeFileName) then
+    createOrUpdateFile(timeFileName, os.time())
+end
+
+if not isfile(rebirthFileName) then
+    createOrUpdateFile(rebirthFileName, data.Rebirth.Value)
+end
+
+local function loadValue(fileName, default)
+    if isfile(fileName) then
+        local data = HttpService:JSONDecode(readfile(fileName))
+        return data.v
+    end
+    return default
+end
+
+savedTimestamp = loadValue(timeFileName, os.time())
+savedRebirth = loadValue(rebirthFileName, data.Rebirth.Value)
+elapsedTime = os.time() - savedTimestamp
+
+local function resetTimer()
+    savedTimestamp = os.time()
+    elapsedTime = 0
+    createOrUpdateFile(timeFileName, savedTimestamp)
+    savedRebirth = data.Rebirth.Value
+    createOrUpdateFile(rebirthFileName, savedRebirth)
+    isPaused = false
+    rebirthIncreased = false
+end
+
+timerLabel.Size = UDim2.new(0, 200, 0, 50)
+timerLabel.Position = UDim2.new(0.200, 0, -0.5, 0)
+timerLabel.Text = "Cargando..."
+timerLabel.BackgroundTransparency = 1  
+timerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+timerLabel.TextStrokeTransparency = 0  
+timerLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0) 
+timerLabel.Font = Enum.Font.SourceSansBold
+timerLabel.TextSize = 30
+timerLabel.Parent = frame
+
+spawn(function()
+    while true do
+        if game.PlaceId == 3311165597 then
+            if isPaused then
+                savedTimestamp = os.time() - elapsedTime
+                isPaused = false
+            end
+            elapsedTime = os.time() - savedTimestamp
+        elseif rebirthIncreased then
+            if not isPaused then
+                elapsedTime = os.time() - savedTimestamp
+                isPaused = true
+            end
+        else
+            elapsedTime = os.time() - savedTimestamp
+        end
+
+        local minutes = math.floor(elapsedTime / 60)
+        local seconds = elapsedTime % 60
+        timerLabel.Text = isPaused 
+            and string.format("%02d:%02d (Stop)", minutes, seconds)
+            or string.format("Time:|%02d:%02d", minutes, seconds)
+        task.wait(1)
+    end
+end)
+
+spawn(function()
+    while true do
+        if data.Rebirth.Value > savedRebirth then
+            if game.PlaceId == 3311165597 then
+                resetTimer()
+            else
+                rebirthIncreased = true
+                isPaused = true
+            end
+        end
+        task.wait(1)
+    end
+end)
+
+TeleportService.LocalPlayerArrivedFromTeleport:Connect(function()
+    if game.PlaceId == 3311165597 and rebirthIncreased then
+        resetTimer()
+    end
+end)
     
 end)
 end)
