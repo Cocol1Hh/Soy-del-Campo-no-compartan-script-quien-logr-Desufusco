@@ -22,7 +22,7 @@ mainFrame.Draggable = true
 mainFrame.Active = true
 mainFrame.Parent = screenGui
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 20) mainCorner.Parent = mainFrame
-local mainStroke = Instance.new("UIStroke") mainStroke.Color = Color3.new(1, 0, 1) mainStroke.Thickness = 3 mainStroke.Parent = mainFrame
+local mainStroke = Instance.new("UIStroke") mainStroke.Color = Color3.new(1, 0, 1) mainStroke.Thickness = 1 mainStroke.Parent = mainFrame
 local mainShadow = Instance.new("ImageLabel") mainShadow.Image = "rbxassetid://1316045217" mainShadow.ImageColor3 = Color3.fromRGB(0, 0, 0) mainShadow.ImageTransparency = 0.5 mainShadow.Size = UDim2.new(1, 40, 1, 40) mainShadow.Position = UDim2.new(0, -20, 0, -20) mainShadow.BackgroundTransparency = 1 mainShadow.Parent = mainFrame
 
 local titleLabel = Instance.new("TextLabel")
