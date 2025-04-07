@@ -717,6 +717,7 @@ end
     
  task.spawn(function()
     pcall(function()
+    while task.wait() do
         local VirtualUser = game:GetService("VirtualUser")
         local UserInputService = game:GetService("UserInputService")
         local Players = game:GetService("Players")
@@ -744,14 +745,12 @@ end
                 local humanoid = LocalPlayer.Character.Humanoid
                 humanoid:Move(Vector3.new(math.random(-1, 1), 0, math.random(-1, 1)), true)
             end
-        end
-
-        RunService.Heartbeat:Connect(function()
+        end      
             if math.random(1, 100) <= 10 then
                 simulateInput()
                 simulateMovement()
             end
-        end)
+            end
     end)
 end)
     
@@ -819,8 +818,8 @@ end)
         for _, boss in ipairs(game.Workspace.Living:GetChildren()) do
             if boss.Name == "X Fighter" and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
                 lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.5)
-                               game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
+                          local args = {[1] = "Blacknwhite27",[2] = 1}
+        game:GetService("ReplicatedStorage").Package.Events.p:FireServer(unpack(args))
                 break
                   end
                   end
@@ -870,14 +869,12 @@ task.spawn(function()
         pcall(function()
         if player() then
           if AutoFarm()  and data.Quest.Value ~= ""  then
-           if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then           
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
-                     end
+                                        local args = {[1] = "Blacknwhite27",[2] = 1}
+              game:GetService("ReplicatedStorage").Package.Events.p:FireServer(unpack(args))
                      end
                      if Ozaru()  and data.Quest.Value ~= ""  then
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
+                                        local args = {[1] = "Blacknwhite27",[2] = 1}
+        game:GetService("ReplicatedStorage").Package.Events.p:FireServer(unpack(args))
                      end								
                      if Ozaru() then
                 local questOrder = {
@@ -1012,7 +1009,9 @@ stroke.Parent = textLabel
 local lastState = Calculo1()
 
 
-game:GetService("RunService").RenderStepped:Connect(function()
+task.spawn(function()
+    while wait() do
+        pcall(function()
 local expLabel = lplr.PlayerGui.Main.MainFrame.Frames.Quest.Yas.Rewards.EXP
     local currentState = Calculo1() 
     if currentState ~= lastState then  
@@ -1060,7 +1059,9 @@ local expLabel = lplr.PlayerGui.Main.MainFrame.Frames.Quest.Yas.Rewards.EXP
         expText = limpiarTexto(expLabel.Text)
     end
     textLabel.Text = baseText .. "\nExp: " .. expText
-    end)   
+    end)
+        end
+     end)   
     
  local TeleportService = game:GetService("TeleportService")
 local timeFileName = "SavedTime_" .. lplr.Name .. ".json" -- Nombre del archivo con el nombre del jugador
@@ -1233,8 +1234,13 @@ spawn(function()
     end
 end)
 
-RunService.RenderStepped:Connect(function()
+task.spawn(function()
+    while wait() do
+        pcall(function()
     for name, getState in pairs(toggleStates) do
         getState()
     end
-end)
+    end)
+        end
+     end)   
+
