@@ -1002,7 +1002,7 @@ end)
  end)
  
  task.spawn(function()
-    while true do
+    while task.wait()  do
        if player()  then
         pcall(function()
         local char = game.Workspace.Living:FindFirstChild(lplr.Name)
@@ -1021,8 +1021,7 @@ end)
             end
            end)
            end
-        end
-        task.wait() 
+        end    
      end)
      
 
@@ -1409,4 +1408,3 @@ else
         log("Servicio no disponible. No se puede mostrar la GUI.")
     end
 end
-
