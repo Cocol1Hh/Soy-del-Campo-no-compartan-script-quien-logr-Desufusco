@@ -943,7 +943,7 @@ task.spawn(function()
                if RbStats() and player() then
             if fuerzaActual >= rebirthReq and fuerzaActual < rebirthReq * 4 then
                 Ex.reb:InvokeServer()
-                lplr.Character.Humanoid:ChangeState(15)
+             
                 end
             end
             lplr.PlayerGui.Main.MainFrame.Frames.Quest.Visible = false
