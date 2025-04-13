@@ -860,46 +860,22 @@ pcall(function()
         task.wait(2)
     end)
   
-  task.spawn(function()
-    pcall(function()
-    while task.wait(.6) do
-        local VirtualUser = game:GetService("VirtualUser")
-        local UserInputService = game:GetService("UserInputService")
-        local Players = game:GetService("Players")
-        local RunService = game:GetService("RunService")
-        local LocalPlayer = Players.LocalPlayer
-
-        LocalPlayer.Idled:Connect(function()
-            VirtualUser:CaptureController()
-            VirtualUser:ClickButton1(Vector2.new(math.random(0, 500), math.random(0, 500)))
-            VirtualUser:ClickButton2(Vector2.new(math.random(0, 500), math.random(0, 500))) 
-            VirtualUser:SetKeyDown("w") 
-            task.wait(0.1)
-            VirtualUser:SetKeyUp("w")
-            task.wait(2)
-        end)
-
-        local function simulateInput()
-            UserInputService:SendMouseButtonEvent(true, Enum.UserInputType.MouseButton1, Vector2.new(math.random(0, 500), math.random(0, 500)))
-            task.wait(0.5)
-            UserInputService:SendMouseButtonEvent(false, Enum.UserInputType.MouseButton1, Vector2.new(math.random(0, 500), math.random(0, 500)))
-        end
-
-        local function simulateMovement()
-            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-                local humanoid = LocalPlayer.Character.Humanoid
-                humanoid:Move(Vector3.new(math.random(-1, 1), 0, math.random(-1, 1)), true)
-            end
-        end      
-            if math.random(1, 100) <= 10 then
-                simulateInput()
-                simulateMovement()
-            end
-            end
-    end)
-end)
-    
- 
+  local GC = getconnections or get_signal_cons
+if GC then
+	for i,v in pairs(GC(lplr.Idled)) do
+		if v["Disable"] then
+			v["Disable"](v)
+		elseif v["Disconnect"] then
+			v["Disconnect"](v)
+		end
+	end
+else
+	lplr.Idled:Connect(function()
+		local VirtualUser = game:GetService("VirtualUser")
+		VirtualUser:CaptureController()
+		VirtualUser:ClickButton2(Vector2.new())
+	end)
+end
     
     
  task.spawn(function()
