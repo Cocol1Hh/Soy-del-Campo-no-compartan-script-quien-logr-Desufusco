@@ -295,7 +295,7 @@ Fps.Parent = Barra1
 
 local VS = Instance.new("TextLabel")
 VS.Parent = Barra1
-VS.Text = "V [0.7.02]"
+VS.Text = "V [0.8]"
 VS.Size = UDim2.new(0, 100, 0, 10)
 VS.Position = UDim2.new(0.783, 0, 0.009, 0)
 VS.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -440,7 +440,7 @@ local textProperties = {
     {text = "Reb|Stats", position = UDim2.new(-0.160 + 0.170, 0, 0.195, 0), color = Color3.fromRGB(0, 255, 255), parent = Barra1, size = UDim2.new(0, 75, 0, 36)},
     {text = "Ozaru", position = UDim2.new(0.360 + 0, 0, 0.195, 0), color = Color3.fromRGB(0, 0, 255), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Black", position = UDim2.new(-0.160 + 0, 0, 0.270, 0), color = Color3.fromRGB(255, 255, 0), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Evil", position = UDim2.new(0.350 + 0, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 255), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
+    {text = "...", position = UDim2.new(0.350 + 0, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 255), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Fly", position = UDim2.new(-0.04 + 0, 0, 0.320, 0), color = Color3.fromRGB(200, 200, 200), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Brillo", position = UDim2.new(0.473 + 0, 0, 0.320, 0), color = Color3.fromRGB(180, 200, 100), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Duck", position = UDim2.new(-0.160 + 0, 0, 0.420, 0), color = Color3.fromRGB(200, 100, 200), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
@@ -1478,7 +1478,7 @@ task.spawn(function()
             pcall(function()
             task.spawn(function()
             if player() and game.PlaceId == 3311165597  then
-            if getIsActive6()  then
+            if getIsActive1() and yo() <= 10000  and data.Rebirth.Value >= 5000 then
         for _, boss in ipairs(game.Workspace.Living:GetChildren()) do
             if boss.Name == "Evil Saya" and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
                 lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.5)
@@ -1488,16 +1488,16 @@ task.spawn(function()
                  end
                   end
                   end--  if getIsActive6()  then
-          if getIsActive1() and  yo() <= 10000   then
+                   if getIsActive1() and  yo() <= 10000  and data.Rebirth.Value <= 5000 then
         for _, boss in ipairs(game.Workspace.Living:GetChildren()) do
             if boss.Name == "X Fighter" and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
                 lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.5)
-                               game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
+                          local args = {[1] = "Blacknwhite27",[2] = 1}
+        game:GetService("ReplicatedStorage").Package.Events.p:FireServer(unpack(args))
                 break
                   end
-                  end
                   end                           
+                  end--  if getIsActive6()  then
                 end--if fin if game.PlaceId == 3311165597 then                
              end)
           end)
@@ -1506,14 +1506,14 @@ task.spawn(function()
     end
  end)
  
- 
+
 local HttpService = game:GetService("HttpService")
 local folderName = "Missiones🤑🤑"
 local fileName = folderName .. "/bosses.txt"
 
 local function saveBossList(bossList)
     local jsonData = HttpService:JSONEncode(bossList)
-    local formattedData = jsonData:gsub("},", "},\n\n") -- Formato legible con saltos de línea
+    local formattedData = jsonData:gsub("},", "},\n\n") 
     if not isfolder(folderName) then
         makefolder(folderName)
     end
@@ -1526,7 +1526,6 @@ local function loadBossList()
             return HttpService:JSONDecode(readfile(fileName))
         end)
         if success and decoded then
-            -- Validar y corregir la lista cargada
             local correctedList = {}
             for _, boss in ipairs(decoded) do
                 if type(boss) == "table" and #boss >= 2 then
@@ -2001,7 +2000,7 @@ local lastState = getIsActive9()
 
 
 task.spawn(function()
-    while wait(.7) do
+    while task.wait() do
         pcall(function()
 local expLabel = lplr.PlayerGui.Main.MainFrame.Frames.Quest.Yas.Rewards.EXP
     local currentState = getIsActive9()
