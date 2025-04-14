@@ -705,6 +705,7 @@ Kill.ScrollBarThickness = 9
 Kill.CanvasSize = UDim2.new(0, 0, 0, 400)
 Kill.ScrollingDirection = Enum.ScrollingDirection.Y
 
+
 local selectedPlayerValue = Instance.new("ObjectValue", ReplicatedStorage)
 selectedPlayerValue.Name = "SelectedPlayer"
 local selectedRow = nil
@@ -914,7 +915,7 @@ local function updateTag(player)
         nameLabel.Text = fullName  
         textLabel.Text = string.format("F: %s | R: %s", formatNumber(strength), formatNumber(rebirth))  
         healthBar.Size = UDim2.new(math.clamp(health / maxHealth, 0, 1), 0, 1, 0)
-        kiBar.Size = UDim2.new(math.clamp(kiValue / maxKi, 0, 1), 0, 1, 0) -- Actualiza la barra de Ki correctamente
+        kiBar.Size = UDim2.new(math.clamp(kiValue / maxKi, 0, 1), 0, 1, 0) 
     end
 end
 
