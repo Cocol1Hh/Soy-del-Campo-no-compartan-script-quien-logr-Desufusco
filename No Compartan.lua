@@ -1910,7 +1910,7 @@ local npcList = {
     {"Perfect Atom", 1375000}, {"SSJ2 Wukong", 2050000}, {"Kai-fist Master", 3025000},
     {"SSJB Wukong", 4025000}, {"Broccoli", 21.5e6}, {"SSJG Kakata", 100e6},
     {"Winter Wukong", 120e6}, {"Vegetable (GoD in-training)", 50e6},
-    {"Wukong (Omen)", 200e6}, {"Vills (50%)", 300e6}, {"Winter Roshi", 500e6},
+    {"Wukong (Omen)", 200e6}, {"Vills (50%)", 300e6},
     {"Vis (20%)", 650e6}, {"Vegetable (LBSSJ4)", 950e6}, {"Wukong (LBSSJ4)", 1.90e9},
     {"Vekuta (LBSSJ4)", 2.05e9}, {"Wukong Rose", 2.75e9}, {"Vekuta (SSJBUI)", 3.175e9}
 }
@@ -2053,14 +2053,18 @@ local expLabel = lplr.PlayerGui.Main.MainFrame.Frames.Quest.Yas.Rewards.EXP
         end
      end)   
     
- local TeleportService = game:GetService("TeleportService")
-local timeFileName = "SavedTime_" .. lplr.Name .. ".json" -- Nombre del archivo con el nombre del jugador
-local rebirthFileName = "SavedRebirth_" .. lplr.Name .. ".json" -- Ídem para rebirth
+local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
+local lplr = game.Players.LocalPlayer
+local timeFileName = "SavedTime_" .. lplr.Name .. ".json"
+local rebirthFileName = "SavedRebirth_" .. lplr.Name .. ".json"
+local lastRebirthTimeFileName = "LastRebirthTime_" .. lplr.Name .. ".json"
 local savedTimestamp = os.time()
 local savedRebirth = 0
 local elapsedTime = 0
 local isPaused = false
 local rebirthIncreased = false
+local lastRebirthTime = 0
 
 local function createOrUpdateFile(fileName, value)
     writefile(fileName, HttpService:JSONEncode({v = value}))
@@ -2074,6 +2078,10 @@ if not isfile(rebirthFileName) then
     createOrUpdateFile(rebirthFileName, data.Rebirth.Value)
 end
 
+if not isfile(lastRebirthTimeFileName) then
+    createOrUpdateFile(lastRebirthTimeFileName, 0)
+end
+
 local function loadValue(fileName, default)
     if isfile(fileName) then
         local data = HttpService:JSONDecode(readfile(fileName))
@@ -2084,6 +2092,7 @@ end
 
 savedTimestamp = loadValue(timeFileName, os.time())
 savedRebirth = loadValue(rebirthFileName, data.Rebirth.Value)
+lastRebirthTime = loadValue(lastRebirthTimeFileName, 0)
 elapsedTime = os.time() - savedTimestamp
 
 local function resetTimer()
@@ -2098,7 +2107,7 @@ end
 
 local timerLabel = Instance.new("TextLabel")
 timerLabel.Size = UDim2.new(0, 200, 0, 50)
-timerLabel.Position = UDim2.new(0.200, 0, -0.5, 0)
+timerLabel.Position = UDim2.new(0.200, 0, -0.7, 0)
 timerLabel.Text = "Cargando..."
 timerLabel.BackgroundTransparency = 1  
 timerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -2108,21 +2117,45 @@ timerLabel.Font = Enum.Font.SourceSansBold
 timerLabel.TextSize = 30
 timerLabel.Parent = frame
 
+local lastRecordLabel = Instance.new("TextLabel")
+lastRecordLabel.Size = UDim2.new(0, 200, 0, 50)
+lastRecordLabel.Position = UDim2.new(0.200, 0, -0.4, 0)
+lastRecordLabel.Text = "Ultimo record:| 00:00"
+lastRecordLabel.BackgroundTransparency = 1  
+lastRecordLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+lastRecordLabel.TextStrokeTransparency = 0  
+lastRecordLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0) 
+lastRecordLabel.Font = Enum.Font.SourceSansBold
+lastRecordLabel.TextSize = 24
+lastRecordLabel.Parent = frame
+
 spawn(function()
     while true do
+        local playerStats = yo()
+        local rebirthRequirement = getRebirthRequirement()
+        if playerStats >= rebirthRequirement then
+            if not isPaused then
+                isPaused = true
+            end
+        else
+            isPaused = false
+        end
+
         if game.PlaceId == 3311165597 then
             if isPaused then
                 savedTimestamp = os.time() - elapsedTime
-                isPaused = false
+            else
+                elapsedTime = os.time() - savedTimestamp
             end
-            elapsedTime = os.time() - savedTimestamp
         elseif rebirthIncreased then
             if not isPaused then
                 elapsedTime = os.time() - savedTimestamp
                 isPaused = true
             end
         else
-            elapsedTime = os.time() - savedTimestamp
+            if not isPaused then
+                elapsedTime = os.time() - savedTimestamp
+            end
         end
 
         local minutes = math.floor(elapsedTime / 60)
@@ -2130,13 +2163,21 @@ spawn(function()
         timerLabel.Text = isPaused 
             and string.format("%02d:%02d (Stop)", minutes, seconds)
             or string.format("Time:|%02d:%02d", minutes, seconds)
-        task.wait(1)
+
+        local lastMinutes = math.floor(lastRebirthTime / 60)
+        local lastSeconds = lastRebirthTime % 60
+        lastRecordLabel.Text = string.format("Ultimo record:| %02d:%02d", lastMinutes, lastSeconds)
+        task.wait()
     end
 end)
 
 spawn(function()
     while true do
         if data.Rebirth.Value > savedRebirth then
+            if game.PlaceId == 5151400895 then
+                lastRebirthTime = elapsedTime
+                createOrUpdateFile(lastRebirthTimeFileName, lastRebirthTime)
+            end
             if game.PlaceId == 3311165597 then
                 resetTimer()
             else
@@ -2144,7 +2185,7 @@ spawn(function()
                 isPaused = true
             end
         end
-        task.wait(1)
+        task.wait()
     end
 end)
 
@@ -2153,7 +2194,6 @@ TeleportService.LocalPlayerArrivedFromTeleport:Connect(function()
         resetTimer()
     end
 end)
-
 
 --fin de todo \/
        end)    
