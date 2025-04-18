@@ -1187,7 +1187,7 @@ task.spawn(function()
         pcall(function()
         if getIsActive2() then
             if data.Strength.value <= 80e6 then
-                local args = {[1] = "Blacknwhite27", [2] = 1}
+                local args = {[1] = "dbuexploiterssucklol", [2] = 1}
                 game:GetService("ReplicatedStorage").Package.Events.p:FireServer(unpack(args))
                end
                 if data.Energy.value <= 80e6 then
@@ -1195,11 +1195,11 @@ task.spawn(function()
                 game:GetService("ReplicatedStorage").Package.Events.kb:FireServer(unpack(args))
                       end
                  if data.Defense.value <= 80e6 then
-                local args = {[1] = "Blacknwhite27"}
+                local args = {[1] = "dbuexploiterssucklol"}
                 game:GetService("ReplicatedStorage").Package.Events.def:InvokeServer(unpack(args))
                  end
                   if data.Speed.value <= 80e6 then
-                local args = {[1] = "Blacknwhite27"}
+                local args = {[1] = "dbuexploiterssucklol"}
                 game:GetService("ReplicatedStorage"):WaitForChild("Package"):WaitForChild("Events"):WaitForChild("ch"):InvokeServer(unpack(args))
             end
             end
@@ -1209,27 +1209,34 @@ task.spawn(function()
 end)
      
      task.spawn(function()
+    local chaEnabled = false
     while task.wait() do
-       if player()  then
-        pcall(function()
-        local char = game.Workspace.Living:FindFirstChild(lplr.Name)
-       if char then
-    local stats = char:FindFirstChild("Stats")
-    if stats then
-        local ki = stats:FindFirstChild("Ki")
-        local maxKi = stats:FindFirstChild("MaxKi")
-        if ki and maxKi and ki:IsA("NumberValue") and maxKi:IsA("NumberValue") then
-            local porcentaje = game.PlaceId == 5151400895 and 0.25 or 0.70
-            if ki.Value <= (maxKi.Value * porcentaje) and player() and getIsActive1() and yo() <= 800e9 then
-                Ex.cha:InvokeServer("Blacknwhite27")
-            end
-            end
-            end
-            end
-           end)
-           end
+        if player() then
+            pcall(function()
+                local char = game.Workspace.Living:FindFirstChild(lplr.Name)
+                if char then
+                    local stats = char:FindFirstChild("Stats")
+                    if stats then
+                        local ki = stats:FindFirstChild("Ki")
+                        local maxKi = stats:FindFirstChild("MaxKi")
+                        if ki and maxKi and ki:IsA("NumberValue") and maxKi:IsA("NumberValue") then
+                            local min = 0.25
+                            local max = 0.40
+                            if ki.Value <= (maxKi.Value * min) and not chaEnabled and getIsActive1() then
+                                game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer(true, "dbuexploiterssucklol")
+                                chaEnabled = true
+                            end
+                            if ki.Value >= (maxKi.Value * max) and chaEnabled then
+                                game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer(false, "dbuexploiterssucklol")
+                                chaEnabled = false
+                            end
+                        end
+                    end
+                end
+            end)
         end
-     end)
+    end
+end)
      
 
 task.spawn(function()
@@ -1260,7 +1267,7 @@ task.spawn(function()
                     for _, Mel in ipairs(Mel) do
                         if not dat.Status:FindFirstChild(Mel) then
                             task.spawn(function()
-                                Ex.mel:InvokeServer(Mel, "Blacknwhite27")
+                                Ex.mel:InvokeServer(Mel, "dbuexploiterssucklol")
                             end)
                         end
                     end
@@ -1383,13 +1390,13 @@ end)
         if player() then
           if getIsActive1()  and data.Quest.Value ~= ""  then
            if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then           
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
+                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol",1)
+                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol",2)
                      end
                      end
                      if getIsActive4()  and data.Quest.Value ~= ""  then
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
+                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol",1)
+                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol",2)
                      end								
                      if getIsActive4() then
                 local questOrder = {
@@ -1483,8 +1490,8 @@ task.spawn(function()
         for _, boss in ipairs(game.Workspace.Living:GetChildren()) do
             if boss.Name == "Evil Saya" and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
                 lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.5)
-                               game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",1)
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27",2)
+                               game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol",1)
+                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol",2)
                 break
                  end
                   end
@@ -1493,7 +1500,7 @@ task.spawn(function()
         for _, boss in ipairs(game.Workspace.Living:GetChildren()) do
             if boss.Name == "X Fighter" and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
                 lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.5)
-                          local args = {[1] = "Blacknwhite27",[2] = 1}
+                          local args = {[1] = "dbuexploiterssucklol",[2] = 1}
         game:GetService("ReplicatedStorage").Package.Events.p:FireServer(unpack(args))
                 break
                   end
@@ -1545,7 +1552,6 @@ local function loadBossList()
     end
     -- Lista predeterminada si el archivo no existe o está corrupto
     local defaultBossList = {
-        {"Winter Bills", 4.176e9, true},
         {"Vekuta (SSJBUI)", 3.175e9, true},
         {"Wukong Rose", 2.75e9, true},
         {"Vekuta (LBSSJ4)", 2.05e9, true},
@@ -1556,18 +1562,18 @@ local function loadBossList()
         {"Vills (50%)", 300e6, true},
         {"Wukong (Omen)", 200e6, true},
         {"Vegetable (GoD in-training)", 50e6, true},
-        {"SSJG Kakata", 120e6, true},
-        {"Broccoli", 21.5e6, true},
-        {"SSJB Wukong", 4025000, true},
-        {"Kai-fist Master", 3025000, true},
-        {"SSJ2 Wukong", 2050000, true},
-        {"Perfect Atom", 1375000, true},
-        {"Chilly", 650000, true},
-        {"Super Vegetable", 298000, true},
-        {"Mapa", 55000, true},
-        {"Radish", 40000, true},
-        {"Kid Nohag", 20000, true},
-        {"Klirin", 10000, true}
+        {"SSJG Kakata", 150e6, true},
+        {"Broccoli", 61.5e6, true},
+        {"SSJB Wukong", 8025000, true},
+        {"Kai-fist Master", 6025000, true},
+        {"SSJ2 Wukong", 4050000, true},
+        {"Perfect Atom", 2375000, true},
+        {"Chilly", 950000, true},
+        {"Super Vegetable", 798000, true},
+        {"Mapa", 75000, true},
+        {"Radish", 60000, true},
+        {"Kid Nohag", 40000, true},
+        {"Klirin", 20000, true}
     }
     saveBossList(defaultBossList)
     return defaultBossList
@@ -1645,7 +1651,7 @@ task.spawn(function()
                     for i, move in pairs(moves) do
                         if not lplr.Status:FindFirstChild(move) then
                             spawn(function()
-                                game:GetService("ReplicatedStorage").Package.Events.mel:InvokeServer(move, "Blacknwhite27")                                        
+                                game:GetService("ReplicatedStorage").Package.Events.mel:InvokeServer(move, "dbuexploiterssucklol")                                        
                             end)
                             attacked = true
                         end
@@ -1658,7 +1664,7 @@ task.spawn(function()
                             game:GetService("ReplicatedStorage").Package.Events.voleys:InvokeServer(
                                 "Energy Volley", 
                                 {["MouseHit"] = boss.HumanoidRootPart.CFrame, ["FaceMouse"] = true}, 
-                                "Blacknwhite27"
+                                "dbuexploiterssucklol"
                             )
                         end
                         attacked = true
@@ -2269,5 +2275,4 @@ else
         log("Servicio no disponible. No se puede mostrar la GUI.")
     end
 end
-
 
