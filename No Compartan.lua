@@ -1070,7 +1070,15 @@ task.spawn(function()
         if player() then
       if getIsActive11() then                       
             local Forms = {
-            	["Ultra Ego"] = 600000000000, 
+            	["Ego Instinct"] = 600e15, 
+            	["SSJR3"] = 20e15, 
+            	["SSJB3"] = 20e15, 
+            	["SSJ5"] = 4e15, 
+            	["Divine Rose Prominence"] = 450e12, 
+            	["Divine Blue"] = 450e12, 
+            	["God of Destruction"] = 28e12, 
+                ["God of Creation"] = 28e12, 
+            	["Beast"] = 1.30e12, 
             	["Mastered Ultra Instinct"] = 600000000000, 
             	["SSJR2"] = 130000000000, 
             	["SSJB2"] = 130000000000, 
@@ -1443,12 +1451,15 @@ end
 task.spawn(function()
     while true do
         pcall(function()
-            local fuerzaActual = yo()
-            local rebirthReq = getRebirthRequirement()
                if getIsActive3() and player() then
-            if fuerzaActual >= rebirthReq and fuerzaActual < rebirthReq * 4 then
-                Ex.reb:InvokeServer()
-                end
+local args = {
+    [1] = true
+}
+
+game:GetService("ReplicatedStorage").Package.Events.reb:InvokeServer(unpack(args))
+
+
+
             end
         end)
         task.wait(.3)
@@ -1497,8 +1508,8 @@ task.spawn(function()
  
 
 local HttpService = game:GetService("HttpService")
-local folderName = "Missiones🤑🤑"
-local fileName = folderName .. "/bosses.txt"
+local folderName = "Missiones"
+local fileName = folderName .. "/Bosses.txt"
 
 local function saveBossList(bossList)
     local jsonData = HttpService:JSONEncode(bossList)
@@ -1533,15 +1544,14 @@ local function loadBossList()
     end
     -- Lista predeterminada si el archivo no existe o está corrupto
     local defaultBossList = {
-        {"Vekuta (SSJBUI)", 3.175e9, true},
-        {"Wukong Rose", 2.75e9, true},
-        {"Vekuta (LBSSJ4)", 2.05e9, true},
-        {"Wukong (LBSSJ4)", 1.90e9, true},
-        {"Vegetable (LBSSJ4)", 950e6, true},
-        {"Vis (20%)", 650e6, true},
-        {"Vills (50%)", 300e6, true},
-        {"Wukong (Omen)", 200e6, true},
-        {"Vegetable (GoD in-training)", 50e6, true},
+        {"Kakata (Ego Instinct)", 10e15, true},
+        {"Wukong (SSJB3)", 550e12, true},
+        {"Xicor", 200e12, true},
+        {"Vis (Ultra Instinct)", 40e12, true},
+        {"Vills (True God of Destruction)", 9.5e12, true},
+        {"Black Chilly", 900e9, true},
+        {"Vegetable (Ultra Ego)", 250e9, true},
+        {"Jiran The Gray", 80e9, true},
         {"Broccoli", 112e9, true},
         {"Merged Zamas", 18e9, true},
         {"Gold Chilly", 3.5e9, true},
@@ -1615,7 +1625,7 @@ task.spawn(function()
                     local moves = {}
                     local attacked = false
 
-                    if stats < 900e9 then
+                    if stats < 900e19 then
                         if stats >= 5000 then table.insert(moves, "Wolf Fang Fist") end
                         if stats >= 40000 then table.insert(moves, "Meteor Crash") end
                         if stats >= 100000 then table.insert(moves, "High Power Rush") end
@@ -1623,7 +1633,7 @@ task.spawn(function()
                         if stats < 4e9 and game.PlaceId == 5151400895 then
                             table.insert(moves, "Super Dragon Fist")
                         end
-                        if stats < 40e9 and stats >= 60e6 then
+                        if stats < 40e9 and stats >= 60e17 then
                             if data.Allignment.Value == "Good" then
                                 table.insert(moves, "Spirit Barrage")
                             else
@@ -1641,7 +1651,7 @@ task.spawn(function()
                         end
                     end
 
-                    if stats < 10e9 and stats > 10000 and canvolley then
+                    if stats < 10e17 and stats > 10000 and canvolley then
                         canvolley = false
                         local boss = game.Workspace.Living:FindFirstChild(data.Quest.Value)
                         if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
