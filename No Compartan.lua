@@ -1513,7 +1513,7 @@ local fileName = folderName .. "/Bosses.txt"
 
 local function saveBossList(bossList)
     local jsonData = HttpService:JSONEncode(bossList)
-    local formattedData = jsonData:gsub("},", "},\n\n") 
+    local formattedData = jsonData:gsub("},", "},\n\n")
     if not isfolder(folderName) then
         makefolder(folderName)
     end
@@ -1529,20 +1529,19 @@ local function loadBossList()
             local correctedList = {}
             for _, boss in ipairs(decoded) do
                 if type(boss) == "table" and #boss >= 2 then
-                    local name = tostring(boss[1]) -- Forzar nombre como string
-                    local req = tonumber(boss[2]) -- Forzar requisito como número
+                    local name = tostring(boss[1])
+                    local req = tonumber(boss[2])
                     if name and req then
-                        table.insert(correctedList, {name, req, true}) -- Solo nombre y requisito editables, isActive siempre true
+                        table.insert(correctedList, {name, req, true})
                     end
                 end
             end
             if #correctedList > 0 then
-                saveBossList(correctedList) -- Guardar la lista corregida
+                saveBossList(correctedList)
                 return correctedList
             end
         end
     end
-    -- Lista predeterminada si el archivo no existe o está corrupto
     local defaultBossList = {
         {"Kakata (Ego Instinct)", 10e15, true},
         {"Wukong (SSJB3)", 550e12, true},
@@ -1579,27 +1578,30 @@ task.spawn(function()
     while true do
         pcall(function()
             if player() and getIsActive1() then
-                if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then  
-                    for i, npc in ipairs(npcList) do
-                        local npcName, requisito, isActive = npc[1], npc[2], npc[3]
-                        if isActive then
-                            if yo() >= requisito then
-                                local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
-                                local bossInstance = game.Workspace.Living:FindFirstChild(npcName)                  
-                                local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
-                                if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
-                                   (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
-                                   if getIsActive1() and player() and data.Quest.Value == "" then
-                                        lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.4)  
-                                        local args = {
-                                            [1] = npcInstance
-                                        }
-                                        game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(unpack(args))        
-                                    end
-                                    lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Jefe.HumanoidRootPart.CFrame * CFrame.new(0,0,6.2).p, Jefe.HumanoidRootPart.Position)
-                                    break
-                                end
+                if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then
+                    if data.Quest.Value ~= "" then
+                        local currentQuest = data.Quest.Value
+                        local playerStats = yo()
+                        for _, npc in ipairs(npcList) do
+                            if npc[1] == currentQuest and playerStats < npc[2] then
+                                data.Quest.Value = "" 
+                                break
                             end
+                        end
+                    end
+                    for _, npc in ipairs(npcList) do
+                        local npcName, requisito, isActive = npc[1], npc[2], npc[3]
+                        if isActive and yo() >= requisito then
+                            local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
+                            local bossInstance = game.Workspace.Living:FindFirstChild(npcName)
+                            local jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
+                            if data.Quest.Value == "" and npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") then
+                                lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.4)
+                                game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(npcInstance)
+                            elseif jefe and jefe:FindFirstChild("HumanoidRootPart") and jefe:FindFirstChild("Humanoid") and jefe.Humanoid.Health > 0 then
+                                lplr.Character.HumanoidRootPart.CFrame = CFrame.new(jefe.HumanoidRootPart.CFrame * CFrame.new(0, 0, 6.2).p, jefe.HumanoidRootPart.Position)
+                            end
+                            break
                         end
                     end
                 end
@@ -1744,7 +1746,7 @@ end)
     while task.wait() do       
 pcall(function() 
             if getIsActive10() then
-            if yo() >= 150e6  and game.PlaceId == 3311165597  then
+            if yo() >= 250e9  and game.PlaceId == 3311165597  then
                 game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
                 wait(5)
             end
