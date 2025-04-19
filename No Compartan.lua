@@ -1209,13 +1209,11 @@ end)
                         local ki = stats:FindFirstChild("Ki")
                         local maxKi = stats:FindFirstChild("MaxKi")
                         if ki and maxKi and ki:IsA("NumberValue") and maxKi:IsA("NumberValue") then
-                            local min = 0
-                            local max = 0.40
-                            if ki.Value <= (maxKi.Value * min) and not chaEnabled and getIsActive1() then
+                            if ki.Value <= (maxKi.Value * 0.25) and not chaEnabled and getIsActive1() then
                                 game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer(true, "dbuexploiterssucklol")
                                 chaEnabled = true
                             end
-                            if ki.Value >= (maxKi.Value * max) and chaEnabled then
+                            if ki.Value >= (maxKi.Value * 0.50) and chaEnabled then
                                 game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer(false, "dbuexploiterssucklol")
                                 chaEnabled = false
                             end
@@ -1226,7 +1224,6 @@ end)
         end
     end
 end)
-     
 
 task.spawn(function()
 while task.wait() do
