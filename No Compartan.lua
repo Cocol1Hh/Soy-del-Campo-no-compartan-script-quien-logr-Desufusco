@@ -1064,6 +1064,7 @@ function player()
 end
 
 
+local forms = {"Ego Instinct", "SSJR3", "SSJB3", "SSJ5", "Divine Blue", "Divine Rose Prominence", "God of Destruction", "Ultra Ego", "God of Creation", "Beast", "LSSJ4"}
 task.spawn(function()
     while task.wait() do
         pcall(function()
@@ -1198,32 +1199,29 @@ task.spawn(function()
 end)
      
      task.spawn(function()
-    local chaEnabled = false
     while task.wait() do
-        if player() then
-            pcall(function()
-                local char = game.Workspace.Living:FindFirstChild(lplr.Name)
-                if char then
-                    local stats = char:FindFirstChild("Stats")
-                    if stats then
-                        local ki = stats:FindFirstChild("Ki")
-                        local maxKi = stats:FindFirstChild("MaxKi")
-                        if ki and maxKi and ki:IsA("NumberValue") and maxKi:IsA("NumberValue") then
-                            if ki.Value <= (maxKi.Value * 0.25) and not chaEnabled and getIsActive1() then
-                                game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer(true, "dbuexploiterssucklol")
-                                chaEnabled = true
-                            end
-                            if ki.Value >= (maxKi.Value * 0.50) and chaEnabled then
-                                game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer(false, "dbuexploiterssucklol")
-                                chaEnabled = false
-                            end
-                        end
-                    end
-                end
-            end)
+       if player()  then
+        pcall(function()
+        local char = game.Workspace.Living:FindFirstChild(lplr.Name)
+       if char then
+    local stats = char:FindFirstChild("Stats")
+    if stats then
+        local ki = stats:FindFirstChild("Ki")
+        local maxKi = stats:FindFirstChild("MaxKi")
+        if ki and maxKi and ki:IsA("NumberValue") and maxKi:IsA("NumberValue") then
+            local porcentaje = game.PlaceId == 5151400895 and 0.25 or 0.70
+            if ki.Value <= (maxKi.Value * porcentaje) and player() and getIsActive1()  then               
+                game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer(true, "dbuexploiterssucklol")
+                else
+                  game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer(false, "dbuexploiterssucklol")
+            end
+            end
+            end
+            end
+           end)
+           end
         end
-    end
-end)
+     end)
 
 task.spawn(function()
 while task.wait() do
@@ -1506,10 +1504,10 @@ task.spawn(function()
 
 local npcList = {
     {"Kakata (Ego Instinct)", 10e15, true},
-    {"Wukong (SSJB3)", 1e15, true},
-    {"Xicor", 500e12, true},
-    {"Vis (Ultra Instinct)", 100e12, true},
-    {"Vills (True God of Destruction)", 15e12, true},
+    {"Wukong (SSJB3)", 5e15, true},
+    {"Xicor", 800e12, true},
+    {"Vis (Ultra Instinct)", 300e12, true},
+    {"Vills (True God of Destruction)", 19e12, true},
     {"Black Chilly", 900e9, true},
     {"Vegetable (Ultra Ego)", 250e9, true},
     {"Jiran The Gray", 80e9, true},
