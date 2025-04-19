@@ -1507,72 +1507,32 @@ task.spawn(function()
  end)
  
 
-local HttpService = game:GetService("HttpService")
-local folderName = "Missiones"
-local fileName = folderName .. "/Bosses.txt"
-
-local function saveBossList(bossList)
-    local jsonData = HttpService:JSONEncode(bossList)
-    local formattedData = jsonData:gsub("},", "},\n\n")
-    if not isfolder(folderName) then
-        makefolder(folderName)
-    end
-    writefile(fileName, formattedData)
-end
-
-local function loadBossList()
-    if isfile(fileName) then
-        local success, decoded = pcall(function()
-            return HttpService:JSONDecode(readfile(fileName))
-        end)
-        if success and decoded then
-            local correctedList = {}
-            for _, boss in ipairs(decoded) do
-                if type(boss) == "table" and #boss >= 2 then
-                    local name = tostring(boss[1])
-                    local req = tonumber(boss[2])
-                    if name and req then
-                        table.insert(correctedList, {name, req, true})
-                    end
-                end
-            end
-            if #correctedList > 0 then
-                saveBossList(correctedList)
-                return correctedList
-            end
-        end
-    end
-    local defaultBossList = {
-        {"Kakata (Ego Instinct)", 10e15, true},
-        {"Wukong (SSJB3)", 550e12, true},
-        {"Xicor", 200e12, true},
-        {"Vis (Ultra Instinct)", 40e12, true},
-        {"Vills (True God of Destruction)", 9.5e12, true},
-        {"Black Chilly", 900e9, true},
-        {"Vegetable (Ultra Ego)", 250e9, true},
-        {"Jiran The Gray", 80e9, true},
-        {"Broccoli", 112e9, true},
-        {"Merged Zamas", 18e9, true},
-        {"Gold Chilly", 3.5e9, true},
-        {"Vills (1%)", 150000001, true},
-        {"Kakata (SSJ)", 60000001, true},
-        {"Super Boo", 11250001, true},
-        {"Z Broccoli", 4500001, true},
-        {"Perfect Atom", 1250001, true},
-        {"Chilly", 225001, true},
-        {"Lord Sloog", 45001, true},
-        {"Vegetable (Saya Saga)", 20001, true},
-        {"Mapa", 8001, true},
-        {"Radish", 3501, true},
-        {"Kid Nohag", 1801, true},
-        {"Roshi", 871, true},
-        {"Klirin", 351, true}
-    }
-    saveBossList(defaultBossList)
-    return defaultBossList
-end
-
-local npcList = loadBossList()
+local npcList = {
+    {"Kakata (Ego Instinct)", 10e15, true},
+    {"Wukong (SSJB3)", 550e12, true},
+    {"Xicor", 200e12, true},
+    {"Vis (Ultra Instinct)", 40e12, true},
+    {"Vills (True God of Destruction)", 9.5e12, true},
+    {"Black Chilly", 900e9, true},
+    {"Vegetable (Ultra Ego)", 250e9, true},
+    {"Jiran The Gray", 80e9, true},
+    {"Broccoli", 112e9, true},
+    {"Merged Zamas", 18e9, true},
+    {"Gold Chilly", 3.5e9, true},
+    {"Vills (1%)", 150000001, true},
+    {"Kakata (SSJ)", 60000001, true},
+    {"Super Boo", 11250001, true},
+    {"Z Broccoli", 4500001, true},
+    {"Perfect Atom", 1250001, true},
+    {"Chilly", 225001, true},
+    {"Lord Sloog", 45001, true},
+    {"Vegetable (Saya Saga)", 20001, true},
+    {"Mapa", 8001, true},
+    {"Radish", 3501, true},
+    {"Kid Nohag", 1801, true},
+    {"Roshi", 871, true},
+    {"Klirin", 351, true}
+}
 
 task.spawn(function()
     while true do
@@ -1584,7 +1544,7 @@ task.spawn(function()
                         local playerStats = yo()
                         for _, npc in ipairs(npcList) do
                             if npc[1] == currentQuest and playerStats < npc[2] then
-                                data.Quest.Value = "" 
+                                data.Quest.Value = ""
                                 break
                             end
                         end
