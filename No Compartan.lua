@@ -1172,31 +1172,7 @@ task.spawn(function()
         end
      end)   
      
-     task.spawn(function()
-    while true do
-        pcall(function()
-        if getIsActive2() then
-            if data.Strength.value <= 80e6 then
-                local args = {[1] = "dbuexploiterssucklol", [2] = 1}
-                game:GetService("ReplicatedStorage").Package.Events.p:FireServer(unpack(args))
-               end
-                if data.Energy.value <= 80e6 then
-                local args = {[1] = 1, [2] = true, [3] = CFrame.new(12, 12, 12)}
-                game:GetService("ReplicatedStorage").Package.Events.kb:FireServer(unpack(args))
-                      end
-                 if data.Defense.value <= 80e6 then
-                local args = {[1] = "dbuexploiterssucklol"}
-                game:GetService("ReplicatedStorage").Package.Events.def:InvokeServer(unpack(args))
-                 end
-                  if data.Speed.value <= 80e6 then
-                local args = {[1] = "dbuexploiterssucklol"}
-                game:GetService("ReplicatedStorage"):WaitForChild("Package"):WaitForChild("Events"):WaitForChild("ch"):InvokeServer(unpack(args))
-            end
-            end
-        end)
-        task.wait() 
-    end
-end)
+     
      
      task.spawn(function()
     while task.wait() do
