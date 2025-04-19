@@ -1509,10 +1509,10 @@ task.spawn(function()
 
 local npcList = {
     {"Kakata (Ego Instinct)", 10e15, true},
-    {"Wukong (SSJB3)", 550e12, true},
-    {"Xicor", 200e12, true},
-    {"Vis (Ultra Instinct)", 40e12, true},
-    {"Vills (True God of Destruction)", 9.5e12, true},
+    {"Wukong (SSJB3)", 1e15, true},
+    {"Xicor", 500e12, true},
+    {"Vis (Ultra Instinct)", 100e12, true},
+    {"Vills (True God of Destruction)", 15e12, true},
     {"Black Chilly", 900e9, true},
     {"Vegetable (Ultra Ego)", 250e9, true},
     {"Jiran The Gray", 80e9, true},
@@ -1534,12 +1534,13 @@ local npcList = {
     {"Klirin", 351, true}
 }
 
+    
 task.spawn(function()
-    while true do
-        pcall(function()
-            if player() and getIsActive1() then
-                if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then
-                    if data.Quest.Value ~= "" then
+while true do
+pcall(function()
+if getIsActive1() and player()  then
+if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then  
+               if data.Quest.Value ~= "" then
                         local currentQuest = data.Quest.Value
                         local playerStats = yo()
                         for _, npc in ipairs(npcList) do
@@ -1549,27 +1550,34 @@ task.spawn(function()
                             end
                         end
                     end
-                    for _, npc in ipairs(npcList) do
-                        local npcName, requisito, isActive = npc[1], npc[2], npc[3]
-                        if isActive and yo() >= requisito then
+                for i, npc in ipairs(npcList) do
+                    local npcName, requisito, isActive = npc[1], npc[2], npc[3]
+                    if isActive then
+                        if yo() >= requisito then
                             local npcInstance = game.Workspace.Others.NPCs:FindFirstChild(npcName)
-                            local bossInstance = game.Workspace.Living:FindFirstChild(npcName)
-                            local jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
-                            if data.Quest.Value == "" and npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") then
-                                lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.4)
-                                game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(npcInstance)
-                            elseif jefe and jefe:FindFirstChild("HumanoidRootPart") and jefe:FindFirstChild("Humanoid") and jefe.Humanoid.Health > 0 then
-                                lplr.Character.HumanoidRootPart.CFrame = CFrame.new(jefe.HumanoidRootPart.CFrame * CFrame.new(0, 0, 6.2).p, jefe.HumanoidRootPart.Position)
-                            end
-                            break
-                        end
-                    end
-                end
-            end
-        end)
-        task.wait()
+                            local bossInstance = game.Workspace.Living:FindFirstChild(npcName)                  
+                            local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
+                            if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
+                               (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
+                               if getIsActive1() and player()  and data.Quest.Value == ""  then
+                                lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.4)  
+                                local args = {
+                                    [1] = npcInstance
+                                }
+                                game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(unpack(args))        
+                                end
+                                lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Jefe.HumanoidRootPart.CFrame * CFrame.new(0,0,6.2).p, Jefe.HumanoidRootPart.Position)	           
+                                break
+                         end
+                   end
+                 end
+                end 
+           end
+       end
+     end)
+     task.wait()
     end
-end)
+end) 
 
 
 canvolley = true        
