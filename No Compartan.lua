@@ -1484,7 +1484,7 @@ local npcList = {
     {"Xicor", 800e12, true},
     {"Vis (Ultra Instinct)", 300e12, true},
     {"Vills (True God of Destruction)", 19e12, true},
-    {"Black Chilly", 900e9, true},
+    {"Black Chilly", 3e12, true},
     {"Vegetable (Ultra Ego)", 250e9, true},
     {"Jiran The Gray", 80e9, true},
     {"Broccoli", 112e9, true},
