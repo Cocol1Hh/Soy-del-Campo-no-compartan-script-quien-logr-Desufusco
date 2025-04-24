@@ -1531,7 +1531,12 @@ if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then
                             if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
                                (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
                                if getIsActive1() and player()  and data.Quest.Value == ""  then
-                                lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.4)  
+                                local hrp = lplr.Character and lplr.Character:FindFirstChild("HumanoidRootPart")
+local npcRp = npcInstance and npcInstance:FindFirstChild("HumanoidRootPart")
+
+if hrp and npcRp then
+    hrp.CFrame = hrp.CFrame:Lerp(npcRp.CFrame * CFrame.new(0, 0, 4.4), 0.1)
+end
                                 local args = {
                                     [1] = npcInstance
                                 }
