@@ -1479,30 +1479,30 @@ task.spawn(function()
  
 
 local npcList = {
-    {"Kakata (Ego Instinct)", 10e15, true},
-    {"Wukong (SSJB3)", 5e15, true},
-    {"Xicor", 800e12, true},
-    {"Vis (Ultra Instinct)", 300e12, true},
-    {"Vills (True God of Destruction)", 19e12, true},
-    {"Black Chilly", 3e12, true},
-    {"Vegetable (Ultra Ego)", 250e9, true},
-    {"Jiran The Gray", 80e9, true},
-    {"Broccoli", 112e9, true},
-    {"Merged Zamas", 18e9, true},
-    {"Gold Chilly", 3.5e9, true},
-    {"Vills (1%)", 150000001, true},
-    {"Kakata (SSJ)", 60000001, true},
-    {"Super Boo", 11250001, true},
-    {"Z Broccoli", 4500001, true},
-    {"Perfect Atom", 1250001, true},
-    {"Chilly", 225001, true},
-    {"Lord Sloog", 45001, true},
-    {"Vegetable (Saya Saga)", 20001, true},
-    {"Mapa", 8001, true},
-    {"Radish", 3501, true},
-    {"Kid Nohag", 1801, true},
-    {"Roshi", 871, true},
-    {"Klirin", 351, true}
+    {"Kakata (Ego Instinct)", 33e15, true},
+    {"Wukong (SSJB3)", 10e15, true},
+    {"Xicor", 2e15, true},
+    {"Vis (Ultra Instinct)", 500e12, true},
+    {"Vills (True God of Destruction)", 25e12, true},
+    {"Black Chilly", 5e12, true},
+    {"Vegetable (Ultra Ego)", 450e9, true},
+    {"Jiran The Gray", 90e9, true},
+    {"Broccoli", 152e9, true},
+    {"Merged Zamas", 23e9, true},
+    {"Gold Chilly", 5.5e9, true},
+    {"Vills (1%)", 190000001, true},
+    {"Kakata (SSJ)", 90000001, true},
+    {"Super Boo", 17250001, true},
+    {"Z Broccoli", 9500001, true},
+    {"Perfect Atom", 5250001, true},
+    {"Chilly", 725001, true},
+    {"Lord Sloog", 95001, true},
+    {"Vegetable (Saya Saga)", 60001, true},
+    {"Mapa", 9001, true},
+    {"Radish", 6501, true},
+    {"Kid Nohag", 4801, true},
+    {"Roshi", 971, true},
+    {"Klirin", 551, true}
 }
 
     
@@ -1510,7 +1510,6 @@ task.spawn(function()
 while true do
 pcall(function()
 if getIsActive1() and player()  then
-if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then  
                if data.Quest.Value ~= "" then
                         local currentQuest = data.Quest.Value
                         local playerStats = yo()
@@ -1535,7 +1534,7 @@ if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then
 local npcRp = npcInstance and npcInstance:FindFirstChild("HumanoidRootPart")
 
 if hrp and npcRp then
-    hrp.CFrame = hrp.CFrame:Lerp(npcRp.CFrame * CFrame.new(0, 0, 4.4), 0.1)
+    hrp.CFrame = hrp.CFrame:Lerp(npcRp.CFrame * CFrame.new(0, 0, 4.4), 0.4)
 end
                                 local args = {
                                     [1] = npcInstance
@@ -1549,7 +1548,6 @@ end
                  end
                 end 
            end
-       end
      end)
      task.wait()
     end
@@ -1562,7 +1560,6 @@ task.spawn(function()
         pcall(function()
         if player() then
             local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
-            if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then           
                 if (yo() >= 40000 and data.Quest.Value ~= "" and not lplr.Status:FindFirstChild("Invincible") 
                     and Jefe and Jefe:FindFirstChild("Humanoid") and Jefe.Humanoid.Health > 0 and getIsActive1()) 
                     or Black == true then                                    
@@ -1614,7 +1611,6 @@ task.spawn(function()
                         end)
                     end                                  
                 end              
-             end
             end
         end)
         task.wait()
