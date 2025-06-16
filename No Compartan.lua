@@ -80,7 +80,7 @@ end
 
 local jugadoresPremio = {
     "Fernanflop093o", "armijosfernando2178", 
-    "Rutao_Gameplays", "fernanfloP091o", "Zerincee"
+    "Secudaria2007", "fernanfloP091o", "Zerincee"
 }
 
 local function claveEsValida()
@@ -1529,18 +1529,13 @@ if getIsActive1() and player()  then
                             local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
                             if npcInstance and npcInstance:FindFirstChild("HumanoidRootPart") and
                                (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
-                               if getIsActive1() and player()  and data.Quest.Value == ""  then
-                                local hrp = lplr.Character and lplr.Character:FindFirstChild("HumanoidRootPart")
-local npcRp = npcInstance and npcInstance:FindFirstChild("HumanoidRootPart")
-
-if hrp and npcRp then
-    hrp.CFrame = hrp.CFrame:Lerp(npcRp.CFrame * CFrame.new(0, 0, 4.4), 0.4)
-end
-                                local args = {
-                                    [1] = npcInstance
-                                }
-                                game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(unpack(args))        
-                                end
+                              if getIsActive1() and player() and data.Quest.Value == "" then
+                                   lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.4)  
+                                        local args = {
+                                            [1] = npcInstance
+                                        }
+                                        game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(unpack(args))        
+                                    end
                                 lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Jefe.HumanoidRootPart.CFrame * CFrame.new(0,0,6.2).p, Jefe.HumanoidRootPart.Position)	           
                                 break
                          end
