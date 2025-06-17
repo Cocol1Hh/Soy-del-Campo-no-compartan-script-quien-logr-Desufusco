@@ -1479,14 +1479,14 @@ task.spawn(function()
  
 
 local npcList = {
-    {"Kakata (Ego Instinct)", 33e15, true},
-    {"Wukong (SSJB3)", 10e15, true},
-    {"Xicor", 2e15, true},
-    {"Vis (Ultra Instinct)", 500e12, true},
-    {"Vills (True God of Destruction)", 25e12, true},
-    {"Black Chilly", 5e12, true},
-    {"Vegetable (Ultra Ego)", 450e9, true},
-    {"Jiran The Gray", 90e9, true},
+    {"Kakata (Ego Instinct)", 60e12, true},
+    {"Wukong (SSJB3)", 35e12, true},
+    {"Xicor", 26e12, true},
+    {"Vis (Ultra Instinct)", 15e12, true},
+    {"Vills (True God of Destruction)", 3e12, true},
+    {"Black Chilly", 1e12, true},
+    {"Vegetable (Ultra Ego)", 815e6, true},
+    {"Jiran The Gray", 300e6, true},
     {"Broccoli", 152e9, true},
     {"Merged Zamas", 23e9, true},
     {"Gold Chilly", 5.5e9, true},
@@ -1661,27 +1661,12 @@ else
 	end)
 end
 
-task.spawn(function()
-    local yaEnElServidor = {}
-    for _, player in ipairs(game.Players:GetPlayers()) do
-        yaEnElServidor[player] = true
-    end
-    game.Players.PlayerAdded:Connect(function(player)
-        if not yaEnElServidor[player] and getIsActive8() then
-            pcall(function()
-                local destino = (game.PlaceId == 5151400895) and "Vills Planet" or "Earth"
-                game.ReplicatedStorage.Package.Events.TP:InvokeServer(destino)
-            end)
-        end
-    end)
-end)
- 
  
  task.spawn(function()
     while task.wait() do       
 pcall(function() 
             if getIsActive10() then
-            if yo() >= 250e9  and game.PlaceId == 3311165597  then
+            if yo() >= 300e6  and game.PlaceId == 3311165597  then
                 game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
                 wait(5)
             end
