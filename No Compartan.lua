@@ -1666,7 +1666,7 @@ end
     while task.wait() do       
 pcall(function() 
             if getIsActive10() then
-            if yo() >= 300e6  and game.PlaceId == 3311165597  then
+            if yo() >= 200e7  and game.PlaceId == 3311165597  then
                 game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
                 wait(5)
             end
