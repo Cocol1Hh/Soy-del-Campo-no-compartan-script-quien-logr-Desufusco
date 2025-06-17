@@ -1563,7 +1563,7 @@ task.spawn(function()
                     local moves = {}
                     local attacked = false
 
-                    if stats < 900e19 then
+                    if stats < 900e16 then
                         if stats >= 5000 then table.insert(moves, "Wolf Fang Fist") end
                         if stats >= 40000 then table.insert(moves, "Meteor Crash") end
                         if stats >= 100000 then table.insert(moves, "High Power Rush") end
@@ -1571,7 +1571,7 @@ task.spawn(function()
                         if stats < 4e9 and game.PlaceId == 5151400895 then
                             table.insert(moves, "Super Dragon Fist")
                         end
-                        if stats < 40e9 and stats >= 60e17 then
+                        if stats < 40e9 and stats >= 60e14 then
                             if data.Allignment.Value == "Good" then
                                 table.insert(moves, "Spirit Barrage")
                             else
@@ -1589,7 +1589,7 @@ task.spawn(function()
                         end
                     end
 
-                    if stats < 10e17 and stats > 10000 and canvolley then
+                    if stats < 10e14 and stats > 10000 and canvolley then
                         canvolley = false
                         local boss = game.Workspace.Living:FindFirstChild(data.Quest.Value)
                         if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
