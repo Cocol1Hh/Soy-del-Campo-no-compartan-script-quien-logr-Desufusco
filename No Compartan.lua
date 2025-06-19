@@ -1006,23 +1006,8 @@ createBar(0.513, "Ambient", Color3.fromRGB(0, 255, 0), 0.37, 700, function(v) Li
 
 --Ciclo Para Auto = Main y Start
 spawn(function()
-    if lplr.PlayerGui:FindFirstChild("Start") then
-        Ex.Start:InvokeServer()
-        if game:GetService("Workspace").Others:FindFirstChild("Title") then
-            game:GetService("Workspace").Others.Title:Destroy()
-        end
-        local cam = Workspace.CurrentCamera
-        cam.CameraType = Enum.CameraType.Custom
-        cam.CameraSubject = lplr.Character.Humanoid
-        _G.Ready = true
-        game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
-        lplr.PlayerGui.Main.Enabled = true
-        if lplr.PlayerGui:FindFirstChild("Start") then
-            lplr.PlayerGui.Start:Destroy()
-        end
-        lplr.PlayerGui.Main.bruh.Enabled = false
-        lplr.PlayerGui.Main.bruh.Enabled = true
-    end
+    Ex.Start:InvokeServer()
+    lplr.Character.Humanoid:ChangeState(15)
 end)
 
 
@@ -1163,7 +1148,7 @@ local forms = {"Ego Instinct", "SSJR3", "SSJB3", "SSJ5", "Divine Blue", "Divine 
         local ki = stats:FindFirstChild("Ki")
         local maxKi = stats:FindFirstChild("MaxKi")
         if ki and maxKi and ki:IsA("NumberValue") and maxKi:IsA("NumberValue") then
-            local porcentaje = game.PlaceId == 5151400895 and 0.25 or 0.70
+            local porcentaje = game.PlaceId == 5151400895 and 0.0 or 0.20
             if ki.Value <= (maxKi.Value * porcentaje) and player() and getIsActive1()  then               
                 game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer(true, "dbuexploiterssucklol")
                 else
@@ -1278,48 +1263,6 @@ task.spawn(function()
     end
 end)
 
-task.spawn(function()
-    while task.wait() do
-        pcall(function()
-            if getIsActive5() and player() then
-                local gokuBlack = game.Workspace.Living:FindFirstChild("Wukong Black")
-                if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack:FindFirstChild("HumanoidRootPart") then
-                    local distance = (gokuBlack.HumanoidRootPart.Position - Vector3.new(718.1, 207.5, 505.4)).Magnitude
-                    if distance <= 900 then
-                        local rootPart = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-                        if rootPart then
-                            rootPart.CFrame = gokuBlack.HumanoidRootPart.CFrame + Vector3.new(0, 2, 0)
-                        end
-                    end
-                end
-            end
-        end)
-    end
-end)
-
-
-
-
- local Black = false
-task.spawn(function()
-    while true do
-        pcall(function()
-            if getIsActive5() and player() then
-                local gokuBlack = game.Workspace.Living:FindFirstChild("Wukong Black")
-                if gokuBlack and gokuBlack:FindFirstChild("Humanoid") and gokuBlack.Humanoid.Health > 0 then
-                    local bossPosition = Vector3.new(718.1,207.5,505.4)
-                    if (gokuBlack.HumanoidRootPart.Position - bossPosition).Magnitude <= 900 then
-                        Black = true
-                        return
-                    end
-                end
-            end
-            Black = false
-        end)
-        task.wait()
-    end
-end)
-
 
 
   task.spawn(function()
@@ -1336,38 +1279,6 @@ end)
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol",1)
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol",2)
                      end								
-                     if getIsActive4() then
-                local questOrder = {
-                    {npc = "Wukong", boss = "Oozaru"},
-                    {npc = "SSJG Kakata", boss = "SSJG Kakata"}
-                }
-                
-                if data.Quest.Value == "" and getIsActive4()  then
-                    for _, quest in ipairs(questOrder) do
-                        local boss = game.Workspace.Living:FindFirstChild(quest.boss)
-                        local npc = game.Workspace.Others.NPCs:FindFirstChild(quest.npc)
-                        
-                        if boss and boss:FindFirstChild("HumanoidRootPart") and 
-                           boss.Humanoid.Health > 0 and npc then
-                            lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
-                            game.ReplicatedStorage.Package.Events.Qaction:InvokeServer(npc)
-                            break
-                        end
-                    end
-                elseif data.Quest.Value == "Wukong" and getIsActive4()  then
-                    local oozaru = game.Workspace.Living:FindFirstChild("Oozaru")
-                    if oozaru and oozaru:FindFirstChild("HumanoidRootPart") and 
-                       oozaru.Humanoid.Health > 0 then
-                        lplr.Character.HumanoidRootPart.CFrame = oozaru.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
-                    end
-                else
-                    local boss = game.Workspace.Living:FindFirstChild(data.Quest.Value)
-                    if boss and boss:FindFirstChild("HumanoidRootPart") and 
-                       boss.Humanoid.Health > 0 then
-                        lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
-                    end
-                end
-            end
             end --player() 
          end)         
       end
@@ -1398,7 +1309,7 @@ local function getRebirthRequirement()
 end
 
 local specialUsers = {
-    Armijosfernando2178 = true,
+    armijosfernando2178 = true,
     FreireBG = true,
     Rutao_Gameplays = true
 }
@@ -1539,27 +1450,20 @@ canvolley = true
 task.spawn(function() 
     while true do
         pcall(function()
-        if player() and game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None"  then
-            local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
-                if (yo() >= 40000 and data.Quest.Value ~= "" and not lplr.Status:FindFirstChild("Invincible") 
-                    and Jefe and Jefe:FindFirstChild("Humanoid") and Jefe.Humanoid.Health > 0 and getIsActive1()) 
-                    or Black == true then                                    
-                    
+        if player() then       
+                if (yo() >= 40000 and data.Quest.Value ~= "" and getIsActive1())  then                                                     
                     local stats = yo()
                     local moves = {}
                     local attacked = false
 
-                    
+                    if stats < 900e16 then
+              
                         if stats >= 5000 then table.insert(moves, "Wolf Fang Fist") end
                         if stats >= 40000 then table.insert(moves, "Meteor Crash") end
                         if stats >= 100000 then table.insert(moves, "High Power Rush") end
-                        if stats >= 125000 then table.insert(moves, "Mach Kick") end
-                        if stats >= 400e6  then table.insert(moves, "Super Dragon Fist") end
-                        if stats >= 60e6 then table.insert(moves, "Spirit Barrage") end 
-                        if stats >= 60e6 then table.insert(moves, "God Slicer") end                                                         
-                       
-   
-
+                        if stats >= 125000 then table.insert(moves, "Mach Kick") end                  
+                             if stats >= 125000 then table.insert(moves, "Super Dragon Fist") end                               
+                    end
                     for i, move in pairs(moves) do
                         if not lplr.Status:FindFirstChild(move) then
                             spawn(function()
@@ -1568,13 +1472,12 @@ task.spawn(function()
                             attacked = true
                         end
                     end
-
-                    if stats >= 5000 and  canvolley then
+                    if stats > 5000 and canvolley then
                         canvolley = false
-        game:GetService("ReplicatedStorage").Package.Events.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, target)
+                           game.ReplicatedStorage.Package.Events.voleys:InvokeServer("Energy Volley", {FaceMouse = false, MouseHit = CFrame.new()}, "dbuexploiterssucklol")
                         attacked = true
                         spawn(function()
-                            wait()
+                            wait(.01)
                             canvolley = true
                         end)
                     end                                  
@@ -1584,7 +1487,6 @@ task.spawn(function()
         task.wait()
     end
 end)
-
 
 
 
