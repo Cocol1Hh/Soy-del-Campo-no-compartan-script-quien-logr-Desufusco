@@ -1028,7 +1028,6 @@ end)
 
 task.spawn(function()
     pcall(function()
-    
 local sts = {"Strength","Speed","Defense","Energy"}
 function yo()
     local l = math.huge
@@ -1039,8 +1038,6 @@ function yo()
     end
     return l
 end
-
-
 
 local stats = getgenv().Stats
 function checkplr()
@@ -1480,7 +1477,7 @@ end
  
 
 local npcList = {
-    {"Kakata (Ego Instinct)", 60e9 true},
+    {"Kakata (Ego Instinct)", 60e9, true},
     {"Wukong (SSJB3)", 39e9, true},
     {"Xicor", 26e9, true},
     {"Vis (Ultra Instinct)", 20e9, true},
@@ -1488,11 +1485,11 @@ local npcList = {
     {"Black Chilly", 5e9, true},
     {"Vegetable (Ultra Ego)", 3e9, true},
     {"Jiran The Gray", 2e9, true},
-    {"Broccoli", 600e6, true},
-    {"Merged Zamas", 400e6, true},
-    {"Gold Chilly", 300e6, true},
-    {"Vills (1%)", 200e6, true},
-    {"Kakata (SSJ)", 100000001, true},
+    {"Broccoli", 1e9, true},
+    {"Merged Zamas", 800e6, true},
+    {"Gold Chilly", 600e6, true},
+    {"Vills (1%)", 400e6, true},
+    {"Kakata (SSJ)", 100e6, true},
     {"Super Boo", 25250001, true},
     {"Z Broccoli", 10500001, true},
     {"Perfect Atom", 7250001, true},
@@ -1505,7 +1502,6 @@ local npcList = {
     {"Roshi", 1071, true},
     {"Klirin", 551, true}
 }
-
     
 task.spawn(function()
 while true do
@@ -1664,21 +1660,21 @@ end
 
  
  task.spawn(function()
-    while task.wait() do
-        pcall(function()
+    while task.wait() do       
+pcall(function() 
             if getIsActive10() then
-                local amount = yo()
-                if amount >= 2e9 and game.PlaceId == 3311165597 then
-                    game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
-                    wait(5)
-                elseif amount < 2e9 and game.PlaceId == 5151400895 then
-                    game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
-                    wait(5)
-                end
+            if yo() >= 2e9  and game.PlaceId == 3311165597  then
+                game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
+                wait(5)
             end
-        end)
-    end
-end)
+            if yo() < 2e9 and game.PlaceId == 5151400895  then
+                game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
+                wait(5)
+            end
+         end 
+         end)
+      end
+ end)          
 
 
 task.spawn(function()
