@@ -1400,7 +1400,7 @@ end
 local specialUsers = {
     Armijosfernando2178 = true,
     FreireBG = true,
-    fitiouu = true
+    Rutao_Gameplays = true
 }
 
 task.spawn(function()
@@ -1569,16 +1569,9 @@ task.spawn(function()
                         end
                     end
 
-                    if stats < 10e14 and stats > 10000 and canvolley then
+                    if stats >= 5000 and  canvolley then
                         canvolley = false
-                        local boss = game.Workspace.Living:FindFirstChild(data.Quest.Value)
-                        if boss and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
-                            game:GetService("ReplicatedStorage").Package.Events.voleys:InvokeServer(
-                                "Energy Volley", 
-                                {["MouseHit"] = boss.HumanoidRootPart.CFrame, ["FaceMouse"] = true}, 
-                                "dbuexploiterssucklol"
-                            )
-                        end
+        game:GetService("ReplicatedStorage").Package.Events.voleys:InvokeServer("Energy Volley", { FaceMouse = false, MouseHit = CFrame.new() }, target)
                         attacked = true
                         spawn(function()
                             wait()
