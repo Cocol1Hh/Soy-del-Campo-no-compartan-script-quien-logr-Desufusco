@@ -1071,9 +1071,7 @@ local forms = {"Ego Instinct", "SSJR3", "SSJB3", "SSJ5", "Divine Blue", "Divine 
         if player() then
       if getIsActive11() then
         local Forms = {
-'Ego Instinct',
-'SSJR3',
-'SSJB3',
+
 'SSJ5',
 'Divine Rose Prominence',
 'Divine Blue',
@@ -1116,9 +1114,6 @@ local forms = {"Ego Instinct", "SSJR3", "SSJB3", "SSJ5", "Divine Blue", "Divine 
         if player() then
       if getIsActive12() then
         local Forms = {
-'Ego Instinct',
-'SSJR3',
-'SSJB3',
 'SSJ5',
 'Divine Rose Prominence',
 'Divine Blue',
@@ -1406,8 +1401,8 @@ task.spawn(function()
     while true do
         pcall(function()
                if getIsActive3() and player() then
-               if game.Players.LocalPlayer.PlayerGui.Main.MainFrame.Frames.Rebirth.MultiRebirth.TextLabel.Text == "MAX REBIRTH(10)" then
-    game.ReplicatedStorage.Package.Events.reb:InvokeServer(1)
+               if game.Players.LocalPlayer.PlayerGui.Main.MainFrame.Frames.Rebirth.MultiRebirth.TextLabel.Text == "MAX REBIRTH(3)" then
+    game.ReplicatedStorage.Package.Events.reb:InvokeServer(10)
              end
             end
         end)
