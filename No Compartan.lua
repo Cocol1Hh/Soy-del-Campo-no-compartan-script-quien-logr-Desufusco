@@ -1175,7 +1175,7 @@ task.spawn(function()
      
      
      task.spawn(function()
-    while task.wait() do
+    while task.wait(0.5) do
        if player()  then
         pcall(function()
         local char = game.Workspace.Living:FindFirstChild(lplr.Name)
@@ -1423,7 +1423,9 @@ task.spawn(function()
     while true do
         pcall(function()
                if getIsActive3() and player() then
-               game.ReplicatedStorage.Package.Events.reb:InvokeServer(23)
+               if game.Players.LocalPlayer.PlayerGui.Main.MainFrame.Frames.Rebirth.MultiRebirth.TextLabel.Text == "MAX REBIRTH(10)" then
+    game.ReplicatedStorage.Package.Events.reb:InvokeServer(1)
+             end
             end
         end)
         task.wait(.3)
@@ -1452,16 +1454,19 @@ task.spawn(function()
                  end
                   end
                   end--  if getIsActive6()  then
-                   if getIsActive1() and  yo() <= 10000  and data.Rebirth.Value <= 5000 then
-        for _, boss in ipairs(game.Workspace.Living:GetChildren()) do
-            if boss.Name == "X Fighter" and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
-                lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.5)
-                          local args = {[1] = "dbuexploiterssucklol",[2] = 1}
-        game:GetService("ReplicatedStorage").Package.Events.p:FireServer(unpack(args))
-                break
-                  end
-                  end                           
-                  end--  if getIsActive6()  then
+                 if data.Quest.Value ~= "X Fighter Trainer" and yo() <= 20001 then
+    local npc = workspace.Others.NPCs["X Fighter Trainer"]
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)
+    game.ReplicatedStorage.Package.Events.Qaction:InvokeServer(npc)
+elseif data.Quest.Value == "X Fighter Trainer" then
+    for _, boss in ipairs(workspace.Living:GetChildren()) do
+        if boss.Name == "X Fighter" and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.5)
+            game.ReplicatedStorage.Package.Events.p:FireServer("dbuexploiterssucklol", 1)
+            break
+        end
+    end
+end 
                 end--if fin if game.PlaceId == 3311165597 then                
              end)
           end)
@@ -1488,10 +1493,10 @@ local npcList = {
     {"Super Boo", 17250001, true},
     {"Z Broccoli", 9500001, true},
     {"Perfect Atom", 5250001, true},
-    {"Chilly", 725001, true},
-    {"Lord Sloog", 95001, true},
-    {"Vegetable (Saya Saga)", 60001, true},
-    {"Mapa", 9001, true},
+    {"Chilly", 925001, true},
+    {"Lord Sloog", 250001, true},
+    {"Vegetable (Saya Saga)", 80001, true},
+    {"Mapa", 20001, true},
     {"Radish", 6501, true},
     {"Kid Nohag", 4801, true},
     {"Roshi", 971, true},
