@@ -1065,100 +1065,83 @@ end
 
 
 local forms = {"Ego Instinct", "SSJR3", "SSJB3", "SSJ5", "Divine Blue", "Divine Rose Prominence", "God of Destruction", "Ultra Ego", "God of Creation", "Beast", "LSSJ4"}
-task.spawn(function()
-    while task.wait() do
+  task.spawn(function()
+    while wait() do
         pcall(function()
         if player() then
-      if getIsActive11() then                       
-            local Forms = {
-            	["Ego Instinct"] = 600e15, 
-            	["SSJR3"] = 20e15, 
-            	["SSJB3"] = 20e15, 
-            	["SSJ5"] = 4e15, 
-            	["Divine Rose Prominence"] = 450e12, 
-            	["Divine Blue"] = 450e12, 
-            	["God of Destruction"] = 28e12, 
-                ["God of Creation"] = 28e12, 
-            	["Beast"] = 1.30e12, 
-            	["Mastered Ultra Instinct"] = 600000000000, 
-            	["SSJR2"] = 130000000000, 
-            	["SSJB2"] = 130000000000, 
-                ["Ultra Instinct Omen"] = 50000000000, 
-                ["Dark Rose"] = 25000000000,  
-                ["Blue Evolution"] = 25000000000,                    
-                ["SSJ Rose"] = 7000000000, 
-                ["SSJ Blue"] = 7000000000,            
-                ["SSJ4"] = 2500000000, 
-                ["SSJG"] = 1000000000,                 
-                ["Mystic"] = 2000000000,                 
-                ["SSJ3"] = 90000000, 
-                ["LSSJ"] = 40000000, 
-                ["SSJ2"] = 10000000, 
-                ["SSJ"] = 2000000, 
-                ["FSSJ"] = 100000, 
-                ["Kaioken"] = 1000
-            }
-            local status = lplr.Status
-            local Requisito = data.Defense.Value 
-            local selectedForm = nil
-            for form, requirement in pairs(Forms) do
-                if requirement <= Requisito then
-                    if Ex.equipskill:InvokeServer(form) then
-                        selectedForm = form
-                        break
-                    end
-                end
-            end
-            local maxForm = nil
-            local maxRequirement = -1
-            for form, requirement in pairs(Forms) do
-                if requirement <= Requisito and requirement > maxRequirement then
-                    if Ex.equipskill:InvokeServer(form) then
-                        maxForm = form
-                        maxRequirement = requirement
-                    end
-                end
-            end
-            if status and status.SelectedTransformation.Value ~= status.Transformation.Value then
-                Ex.ta:InvokeServer()
-            end
-                    end
-                       if not getIsActive2() and selectedForm and not transforming and lplr.Status.Transformation.Value ~= selectedForm  then
-                  transforming = true
-                    pcall(function()
-                if Ex.equipskill:InvokeServer(selectedForm) then
-                    Ex.ta:InvokeServer()
-                    end
-                  end)
-                transforming = false
-              end
+      if getIsActive11() then
+        local Forms = {
+'Ego Instinct',
+'SSJR3',
+'SSJB3',
+'SSJ5',
+'Divine Rose Prominence',
+'Divine Blue',
+'God of Destruction',
+'God of Creation',
+'Beast',
+'Mastered Ultra Instinct',
+'SSJR2',
+'SSJB2',
+'Ultra Instinct Omen',
+'Dark Rose',
+'Blue Evolution',
+'SSJ Rose',
+'SSJ Blue',
+'SSJ4',
+'SSJG',
+'Mystic',
+'SSJ3',
+'LSSJ',
+'SSJ2',
+'SSJ',
+'FSSJ',
+'Kaioken'}
+        local status = lplr.Status    
+        for _, form in ipairs(Forms) do 
+            if Ex.equipskill:InvokeServer(form) then break end  
+     end
+        if status and status.SelectedTransformation.Value ~= status.Transformation.Value then
+            Ex.ta:InvokeServer()
+                       end                
+                    end      
               end
            end)
         end
-     end)
+     end)   
      
-  task.spawn(function()
+     task.spawn(function()
     while wait() do
         pcall(function()
         if player() then
       if getIsActive12() then
         local Forms = {
-    'True SSJG',     
-    'LBLSSJ4', 
-    'CSSJB', 
-    'Blanco', 
-    'SSJB4', 
-    'True God of Creation', 
-    'True God of Destruction', 
-    'Super Broly', 
-    'LSSJG', 
-    'LSSJ4', 
-    'SSJG4', 
-    'LSSJ3', 
-    'SSJ5', 
-    'Mystic Kaioken', 
-    'LSSJ Kaioken', 
-    'SSJ2 Kaioken'}
+'Ego Instinct',
+'SSJR3',
+'SSJB3',
+'SSJ5',
+'Divine Rose Prominence',
+'Divine Blue',
+'God of Destruction',
+'God of Creation',
+'Beast',
+'Mastered Ultra Instinct',
+'SSJR2',
+'SSJB2',
+'Ultra Instinct Omen',
+'Dark Rose',
+'Blue Evolution',
+'SSJ Rose',
+'SSJ Blue',
+'SSJ4',
+'SSJG',
+'Mystic',
+'SSJ3',
+'LSSJ',
+'SSJ2',
+'SSJ',
+'FSSJ',
+'Kaioken'}
         local status = lplr.Status    
         for _, form in ipairs(Forms) do 
             if Ex.equipskill:InvokeServer(form) then break end  
@@ -1477,19 +1460,19 @@ end
  
 
 local npcList = {
-    {"Kakata (Ego Instinct)", 60e9, true},
-    {"Wukong (SSJB3)", 39e9, true},
-    {"Xicor", 26e9, true},
-    {"Vis (Ultra Instinct)", 20e9, true},
-    {"Vills (True God of Destruction)", 9e9, true},
-    {"Black Chilly", 5e9, true},
-    {"Vegetable (Ultra Ego)", 3e9, true},
-    {"Jiran The Gray", 2e9, true},
-    {"Broccoli", 1e9, true},
-    {"Merged Zamas", 800e6, true},
-    {"Gold Chilly", 600e6, true},
-    {"Vills (1%)", 400e6, true},
-    {"Kakata (SSJ)", 100e6, true},
+    {"Kakata (Ego Instinct)", 90e9, true},
+    {"Wukong (SSJB3)", 45e9, true},
+    {"Xicor", 36e9, true},
+    {"Vis (Ultra Instinct)", 25e9, true},
+    {"Vills (True God of Destruction)", 15e9, true},
+    {"Black Chilly", 9e9, true},
+    {"Vegetable (Ultra Ego)", 6e9, true},
+    {"Jiran The Gray", 3e9, true},
+    {"Broccoli", 2e9, true},
+    {"Merged Zamas", 1e9, true},
+    {"Gold Chilly", 800e6, true},
+    {"Vills (1%)", 600e6, true},
+    {"Kakata (SSJ)", 300e6, true},
     {"Super Boo", 25250001, true},
     {"Z Broccoli", 10500001, true},
     {"Perfect Atom", 7250001, true},
@@ -1550,7 +1533,7 @@ canvolley = true
 task.spawn(function() 
     while true do
         pcall(function()
-        if player() then
+        if player() and game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None"  then
             local Jefe = game.Workspace.Living:FindFirstChild(data.Quest.Value)
                 if (yo() >= 40000 and data.Quest.Value ~= "" and not lplr.Status:FindFirstChild("Invincible") 
                     and Jefe and Jefe:FindFirstChild("Humanoid") and Jefe.Humanoid.Health > 0 and getIsActive1()) 
@@ -1560,22 +1543,16 @@ task.spawn(function()
                     local moves = {}
                     local attacked = false
 
-                    if stats < 900e16 then
+                    
                         if stats >= 5000 then table.insert(moves, "Wolf Fang Fist") end
                         if stats >= 40000 then table.insert(moves, "Meteor Crash") end
                         if stats >= 100000 then table.insert(moves, "High Power Rush") end
                         if stats >= 125000 then table.insert(moves, "Mach Kick") end
-                        if stats < 4e9 and game.PlaceId == 5151400895 then
-                            table.insert(moves, "Super Dragon Fist")
-                        end
-                        if stats < 40e9 and stats >= 60e14 then
-                            if data.Allignment.Value == "Good" then
-                                table.insert(moves, "Spirit Barrage")
-                            else
-                                table.insert(moves, "God Slicer")
-                            end
-                        end
-                    end
+                        if stats >= 400e6  then table.insert(moves, "Super Dragon Fist") end
+                        if stats >= 60e6 then table.insert(moves, "Spirit Barrage") end 
+                        if stats >= 60e6 then table.insert(moves, "God Slicer") end                                                         
+                       
+   
 
                     for i, move in pairs(moves) do
                         if not lplr.Status:FindFirstChild(move) then
@@ -1598,7 +1575,7 @@ task.spawn(function()
                         end
                         attacked = true
                         spawn(function()
-                            wait(.01)
+                            wait()
                             canvolley = true
                         end)
                     end                                  
