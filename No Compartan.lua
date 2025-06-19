@@ -1066,7 +1066,7 @@ end
 
 local forms = {"Ego Instinct", "SSJR3", "SSJB3", "SSJ5", "Divine Blue", "Divine Rose Prominence", "God of Destruction", "Ultra Ego", "God of Creation", "Beast", "LSSJ4"}
   task.spawn(function()
-    while wait() do
+    while task.wait() do
         pcall(function()
         if player() then
       if getIsActive11() then
@@ -1397,16 +1397,27 @@ local function getRebirthRequirement()
     return 0
 end
 
+local specialUsers = {
+    Armijosfernando2178 = true,
+    FreireBG = true,
+    fitiouu = true
+}
+
 task.spawn(function()
     while true do
         pcall(function()
-               if getIsActive3() and player() then
-               if game.Players.LocalPlayer.PlayerGui.Main.MainFrame.Frames.Rebirth.MultiRebirth.TextLabel.Text == "MAX REBIRTH(3)" then
-    game.ReplicatedStorage.Package.Events.reb:InvokeServer(10)
-             end
+            local localPlayer = game.Players.LocalPlayer
+            local name = localPlayer.Name
+            if getIsActive3() and player() then
+                local rebirthText = localPlayer.PlayerGui.Main.MainFrame.Frames.Rebirth.MultiRebirth.TextLabel.Text
+                if specialUsers[name] and rebirthText == "MAX REBIRTH(1)" then
+                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(9999)
+                elseif not specialUsers[name] and rebirthText == "MAX REBIRTH(3)" then
+                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(10)
+                end
             end
         end)
-        task.wait(.3)
+        task.wait(0.3)
     end
 end)
 
@@ -1635,11 +1646,11 @@ end
     while task.wait() do       
 pcall(function() 
             if getIsActive10() then
-            if yo() >= 2e9  and game.PlaceId == 3311165597  then
+            if yo() >= 3e9  and game.PlaceId == 3311165597  then
                 game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
                 wait(5)
             end
-            if yo() < 2e9 and game.PlaceId == 5151400895  then
+            if yo() < 3e9 and game.PlaceId == 5151400895  then
                 game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
                 wait(5)
             end
