@@ -1423,14 +1423,7 @@ task.spawn(function()
     while true do
         pcall(function()
                if getIsActive3() and player() then
-local args = {
-    [1] = true
-}
-
-game:GetService("ReplicatedStorage").Package.Events.reb:InvokeServer(unpack(args))
-
-
-
+               game.ReplicatedStorage.Package.Events.reb:InvokeServer(23)
             end
         end)
         task.wait(.3)
@@ -1666,7 +1659,7 @@ end
     while task.wait() do       
 pcall(function() 
             if getIsActive10() then
-            if yo() >= 200e7  and game.PlaceId == 3311165597  then
+            if yo() >= 300e6  and game.PlaceId == 3311165597  then
                 game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
                 wait(5)
             end
