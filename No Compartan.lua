@@ -1028,6 +1028,7 @@ end)
 
 task.spawn(function()
     pcall(function()
+    
 local sts = {"Strength","Speed","Defense","Energy"}
 function yo()
     local l = math.huge
@@ -1038,6 +1039,8 @@ function yo()
     end
     return l
 end
+
+
 
 local stats = getgenv().Stats
 function checkplr()
@@ -1477,29 +1480,29 @@ end
  
 
 local npcList = {
-    {"Kakata (Ego Instinct)", 60e12, true},
-    {"Wukong (SSJB3)", 39e12, true},
-    {"Xicor", 26e12, true},
-    {"Vis (Ultra Instinct)", 20e12, true},
-    {"Vills (True God of Destruction)", 9e12, true},
-    {"Black Chilly", 5e12, true},
-    {"Vegetable (Ultra Ego)", 3e12, true},
-    {"Jiran The Gray", 2e12, true},
-    {"Broccoli", 152e9, true},
-    {"Merged Zamas", 23e9, true},
-    {"Gold Chilly", 5.5e9, true},
-    {"Vills (1%)", 190000001, true},
-    {"Kakata (SSJ)", 90000001, true},
-    {"Super Boo", 17250001, true},
-    {"Z Broccoli", 9500001, true},
-    {"Perfect Atom", 5250001, true},
-    {"Chilly", 925001, true},
-    {"Lord Sloog", 250001, true},
-    {"Vegetable (Saya Saga)", 80001, true},
+    {"Kakata (Ego Instinct)", 60e9 true},
+    {"Wukong (SSJB3)", 39e9, true},
+    {"Xicor", 26e9, true},
+    {"Vis (Ultra Instinct)", 20e9, true},
+    {"Vills (True God of Destruction)", 9e9, true},
+    {"Black Chilly", 5e9, true},
+    {"Vegetable (Ultra Ego)", 3e9, true},
+    {"Jiran The Gray", 2e9, true},
+    {"Broccoli", 600e6, true},
+    {"Merged Zamas", 400e6, true},
+    {"Gold Chilly", 300e6, true},
+    {"Vills (1%)", 200e6, true},
+    {"Kakata (SSJ)", 100000001, true},
+    {"Super Boo", 25250001, true},
+    {"Z Broccoli", 10500001, true},
+    {"Perfect Atom", 7250001, true},
+    {"Chilly", 1425001, true},
+    {"Lord Sloog", 450001, true},
+    {"Vegetable (Saya Saga)", 100001, true},
     {"Mapa", 20001, true},
-    {"Radish", 6501, true},
-    {"Kid Nohag", 4801, true},
-    {"Roshi", 971, true},
+    {"Radish", 8501, true},
+    {"Kid Nohag", 6801, true},
+    {"Roshi", 1071, true},
     {"Klirin", 551, true}
 }
 
@@ -1661,21 +1664,21 @@ end
 
  
  task.spawn(function()
-    while task.wait() do       
-pcall(function() 
+    while task.wait() do
+        pcall(function()
             if getIsActive10() then
-            if yo() >= 300e6  and game.PlaceId == 3311165597  then
-                game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
-                wait(5)
+                local amount = yo()
+                if amount >= 2e9 and game.PlaceId == 3311165597 then
+                    game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
+                    wait(5)
+                elseif amount < 2e9 and game.PlaceId == 5151400895 then
+                    game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
+                    wait(5)
+                end
             end
-            if yo() < 150e6 and game.PlaceId == 5151400895  then
-                game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
-                wait(5)
-            end
-         end 
-         end)
-      end
- end)          
+        end)
+    end
+end)
 
 
 task.spawn(function()
