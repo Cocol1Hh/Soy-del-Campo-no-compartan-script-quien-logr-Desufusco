@@ -1313,6 +1313,7 @@ local specialUsers = {
     fernanfloP091o= true,
     FreireBG = true,
     Rutao_Gameplays = true
+    lixXpixi = true
 }
 
 task.spawn(function()
