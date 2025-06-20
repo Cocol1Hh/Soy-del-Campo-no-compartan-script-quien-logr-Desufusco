@@ -933,6 +933,61 @@ for _, player in ipairs(Players:GetPlayers()) do
     onPlayerAdded(player)
 end
 
+local lplr = game.Players.LocalPlayer
+local data = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(lplr.UserId)
+local gui = Instance.new("ScreenGui")
+gui.Name = "TimerGui"
+gui.ResetOnSpawn = false
+gui.Parent = game:GetService("CoreGui")
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 180, 0, 40)
+frame.Position = UDim2.new(0, 20, 0, 20)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BackgroundTransparency = 0.3
+frame.Active = true
+frame.Draggable = true
+
+local lbl = Instance.new("TextLabel", frame)
+lbl.Size = UDim2.new(1, 0, 1, 0)
+lbl.BackgroundTransparency = 1
+lbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+lbl.TextScaled = true
+lbl.Font = Enum.Font.SourceSansBold
+lbl.Text = "Tiempo: 0:00:00"
+
+local function mundo()
+	local id = game.PlaceId
+	if id == 3311165597 then
+		return "Earth"
+	elseif id == 5151400895 then
+		return "Vills Planet"
+	end
+end
+
+local function formatTime(seconds)
+	local h = math.floor(seconds / 3600)
+	local m = math.floor((seconds % 3600) / 60)
+	local s = seconds % 60
+	return string.format("%d:%02d:%02d", h, m, s)
+end
+
+task.spawn(function()
+	local t = 0
+	while task.wait(1) do
+		t += 1
+		lbl.Text = "Tiempo: " .. formatTime(t)
+		pcall(function()
+			local m = mundo()
+			if t >= 5400 and m then
+				game.ReplicatedStorage.Package.Events.TP:InvokeServer(m)
+				t = 0
+			end
+		end)
+	end
+end)
+
+
 --Tp Players
 local getIsActive15 = createSwitch(Barra3, UDim2.new(0.2, 0, 0.275, 0), "Switch15", LoadSwitchState("Switch15"))--Tp
 local getIsActive17 = createSwitch(Barra3, UDim2.new(0.2, 0, 0.345, 0), "Switch17", LoadSwitchState("Switch17"))--Tp
@@ -1312,7 +1367,7 @@ local specialUsers = {
     armijosfernando2178 = true,
     fernanfloP091o= true,
     FreireBG = true,
-    Rutao_Gameplays = true
+    Rutao_Gameplays  = true,
     lixXpixi = true
 }
 
@@ -1735,6 +1790,7 @@ task.spawn(function()
         task.wait()
     end
 end)
+
 
 
 --REQUISITOS LEER
