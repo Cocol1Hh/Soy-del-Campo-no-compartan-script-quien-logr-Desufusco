@@ -1310,6 +1310,7 @@ end
 
 local specialUsers = {
     armijosfernando2178 = true,
+    fernanfloP091o= true,
     FreireBG = true,
     Rutao_Gameplays = true
 }
@@ -1323,8 +1324,8 @@ task.spawn(function()
                 local rebirthText = localPlayer.PlayerGui.Main.MainFrame.Frames.Rebirth.MultiRebirth.TextLabel.Text
                 if specialUsers[name] and rebirthText == "MAX REBIRTH(1)" then
                     game.ReplicatedStorage.Package.Events.reb:InvokeServer(9999)
-                elseif not specialUsers[name] and rebirthText == "MAX REBIRTH(3)" then
-                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(10)
+                elseif not specialUsers[name] and rebirthText == "MAX REBIRTH(5)" then
+                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(14)
                 end
             end
         end)
@@ -1333,6 +1334,51 @@ task.spawn(function()
 end)
 
 
+local emptyStartTime = nil
+local sameQuestStartTime = nil
+local lastQuest = nil
+local lastExecutionTime = 0
+local cooldown = 15
+task.spawn(function()
+    while task.wait() do
+        pcall(function()
+        if getIsActive1() then 
+            local char = lplr.Character
+            local humanoid = char and char:FindFirstChild("Humanoid")
+            if humanoid and humanoid.Health > 0 then
+                local currentQuest = data.Quest.Value
+                local now = os.clock()
+                if currentQuest == "" then
+                    sameQuestStartTime = nil
+                    if not emptyStartTime then
+                        emptyStartTime = now
+                    elseif now - emptyStartTime >= 15 then
+                        if now - lastExecutionTime >= cooldown then
+                            humanoid:ChangeState(15)
+                            lastExecutionTime = now
+                        end
+                    end
+                else
+                    emptyStartTime = nil
+                    if lastQuest == currentQuest then
+                        if not sameQuestStartTime then
+                            sameQuestStartTime = now
+                        elseif now - sameQuestStartTime >= 50 then
+                            if now - lastExecutionTime >= cooldown then
+                                humanoid:ChangeState(15)
+                                lastExecutionTime = now
+                            end
+                        end
+                    else
+                        sameQuestStartTime = now
+                    end
+                end
+                lastQuest = currentQuest
+            end
+            end
+        end)
+    end
+end)
 
 task.spawn(function()
     while task.wait() do
@@ -1344,29 +1390,19 @@ task.spawn(function()
             pcall(function()
             task.spawn(function()
             if player() and game.PlaceId == 3311165597  then
-            if getIsActive1() and yo() <= 10000  and data.Rebirth.Value >= 5000 then
-        for _, boss in ipairs(game.Workspace.Living:GetChildren()) do
-            if boss.Name == "Evil Saya" and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
-                lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.5)
-                               game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol",1)
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol",2)
-                break
-                 end
-                  end
-                  end--  if getIsActive6()  then
                  if data.Quest.Value ~= "X Fighter Trainer" and yo() <= 20001 then
-    local npc = workspace.Others.NPCs["X Fighter Trainer"]
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)
-    game.ReplicatedStorage.Package.Events.Qaction:InvokeServer(npc)
-elseif data.Quest.Value == "X Fighter Trainer" then
-    for _, boss in ipairs(workspace.Living:GetChildren()) do
-        if boss.Name == "X Fighter" and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.5)
-            game.ReplicatedStorage.Package.Events.p:FireServer("dbuexploiterssucklol", 1)
-            break
-        end
-    end
-end 
+                 local npc = workspace.Others.NPCs["X Fighter Trainer"]
+                    lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)
+                       Ex.Qaction:InvokeServer(npc)
+             elseif data.Quest.Value == "X Fighter Trainer" then
+                  for _, boss in ipairs(workspace.Living:GetChildren()) do
+             if boss.Name == "X Fighter" and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
+                 lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.5)
+                   Ex.p:FireServer("dbuexploiterssucklol", 1)
+                       break
+                       end
+                    end
+                 end 
                 end--if fin if game.PlaceId == 3311165597 then                
              end)
           end)
