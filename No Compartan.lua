@@ -1195,32 +1195,31 @@ local forms = {"Ego Instinct", "SSJR3", "SSJB3", "SSJ5", "Divine Blue", "Divine 
         end
      end)   
      
-     
-     
-     task.spawn(function()
-    while task.wait(0.5) do
-       if player()  then
-        pcall(function()
-        local char = game.Workspace.Living:FindFirstChild(lplr.Name)
-       if char then
-    local stats = char:FindFirstChild("Stats")
-    if stats then
-        local ki = stats:FindFirstChild("Ki")
-        local maxKi = stats:FindFirstChild("MaxKi")
-        if ki and maxKi and ki:IsA("NumberValue") and maxKi:IsA("NumberValue") then
-            local porcentaje = game.PlaceId == 5151400895 and 0.0 or 0.20
-            if ki.Value <= (maxKi.Value * porcentaje) and player() and getIsActive1()  then               
-                game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer(true, "dbuexploiterssucklol")
-                else
-                  game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer(false, "dbuexploiterssucklol")
+
+task.spawn(function()
+    while task.wait() do        
+            pcall(function()
+            if player() and getIsActive1() then
+                local char = game.Workspace.Living:FindFirstChild(lplr.Name)
+                if char then
+                    local stats = char:FindFirstChild("Stats")
+                    if stats then
+                        local ki = stats:FindFirstChild("Ki")
+                        local maxKi = stats:FindFirstChild("MaxKi")
+                        if ki and maxKi and ki:IsA("NumberValue") and maxKi:IsA("NumberValue") then
+                            local porcentaje = 0.20
+                            if ki.Value < maxKi.Value * porcentaje then
+                                game.ReplicatedStorage.Package.Events.cha:InvokeServer(true, "dbuexploiterssucklol")
+                            elseif ki.Value >= maxKi.Value * porcentaje then
+                                game.ReplicatedStorage.Package.Events.cha:InvokeServer(false, "dbuexploiterssucklol")
+                            end
+                        end
+                    end
+                end
             end
-            end
-            end
-            end
-           end)
-           end
-        end
-     end)
+        end)
+    end
+end)
 
 task.spawn(function()
 while task.wait() do
@@ -1368,30 +1367,45 @@ local function getRebirthRequirement()
     return 0
 end
 
+
 local specialUsers = {
     armijosfernando2178 = true,
-    fernanfloP091o= true,
+    fernanfloP091o = true,
     FreireBG = true,
-    Rutao_Gameplays  = true,
-    lixXpixi = true,
+    Rutao_Gameplays = true,
     Azeldex = true
 }
-
 task.spawn(function()
     while true do
         pcall(function()
-            local localPlayer = game.Players.LocalPlayer
-            local name = localPlayer.Name
             if getIsActive3() and player() then
-                local rebirthText = localPlayer.PlayerGui.Main.MainFrame.Frames.Rebirth.MultiRebirth.TextLabel.Text
-                if specialUsers[name] and rebirthText == "MAX REBIRTH(1)" then
+                local text = lplr.PlayerGui.Main.MainFrame.Frames.Rebirth.MultiRebirth.TextLabel.Text
+                local count = tonumber(text:match("%((%d+)%)")) or 0
+                if specialUsers[lplr.Name] and count >= 1 then
                     game.ReplicatedStorage.Package.Events.reb:InvokeServer(9999)
-                elseif not specialUsers[name] and rebirthText == "MAX REBIRTH(5)" then
-                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(14)
+                elseif not specialUsers[lplr.Name] and count >= 2 then
+                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(12)
                 end
             end
         end)
         task.wait(0.3)
+    end
+end)
+
+task.spawn(function()
+    while true do
+        pcall(function()
+  if data.Quest.Value ~= "" and player() and getIsActive1() then
+         wait(2)
+       for _, npc in ipairs(game.Workspace.Others.NPCs:GetChildren()) do
+          if npc:FindFirstChild("HumanoidRootPart") and (npc.HumanoidRootPart.Position - lplr.Character.HumanoidRootPart.Position).Magnitude <= 500 and npc.Name ~= "X Fighter Trainer" then
+              data.Quest.Value = ""
+                break
+               end
+          end
+       end
+        end)
+        task.wait()
     end
 end)
 
@@ -1451,11 +1465,13 @@ task.spawn(function()
                 end                                                    
             pcall(function()
             task.spawn(function()
-            if player() and game.PlaceId == 3311165597  then
-                 if data.Quest.Value ~= "X Fighter Trainer" and yo() <= 20001 then
+            if player() and game.PlaceId == 3311165597 and getIsActive1() then
+                 if data.Quest.Value ~= "X Fighter Trainer" and yo() <= 90551 then
                  local npc = workspace.Others.NPCs["X Fighter Trainer"]
                     lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)
-                       Ex.Qaction:InvokeServer(npc)
+                       local args = {
+                          [1] = npc }
+                   game:GetService("ReplicatedStorage").Package.Events.Qaction:InvokeServer(unpack(args))        
              elseif data.Quest.Value == "X Fighter Trainer" then
                   for _, boss in ipairs(workspace.Living:GetChildren()) do
              if boss.Name == "X Fighter" and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
@@ -1477,35 +1493,35 @@ task.spawn(function()
 
 
 local npcList = {
-    {"Kakata (Ego Instinct)", 90e9, true},
-    {"Wukong (SSJB3)", 45e9, true},
-    {"Xicor", 36e9, true},
-    {"Vis (Ultra Instinct)", 25e9, true},
-    {"Vills (True God of Destruction)", 15e9, true},
-    {"Black Chilly", 9e9, true},
-    {"Vegetable (Ultra Ego)", 6e9, true},
-    {"Jiran The Gray", 3e9, true},
+    {"Kakata (Ego Instinct)", 150e9, true},
+    {"Wukong (SSJB3)", 75e9, true},
+    {"Xicor", 46e9, true},
+    {"Vis (Ultra Instinct)", 35e9, true},
+    {"Vills (True God of Destruction)", 25e9, true},
+    {"Black Chilly", 15e9, true},
+    {"Vegetable (Ultra Ego)", 9e9, true},
+    {"Jiran The Gray", 7e9, true},
     {"Broccoli", 2e9, true},
     {"Merged Zamas", 1e9, true},
     {"Gold Chilly", 800e6, true},
     {"Vills (1%)", 600e6, true},
     {"Kakata (SSJ)", 300e6, true},
     {"Super Boo", 25250001, true},
-    {"Z Broccoli", 10500001, true},
-    {"Perfect Atom", 7250001, true},
-    {"Chilly", 1425001, true},
-    {"Lord Sloog", 450001, true},
-    {"Vegetable (Saya Saga)", 100001, true},
-    {"Mapa", 20001, true},
-    {"Radish", 8501, true},
-    {"Kid Nohag", 6801, true},
-    {"Roshi", 1071, true},
-    {"Klirin", 551, true}
+    {"Z Broccoli", 15500001, true},
+    {"Perfect Atom", 7750001, true},
+    {"Chilly", 6525001, true},
+    {"Lord Sloog", 500001, true},   
+    {"Mapa", 350001, true},
+    {"Radish", 200501, true},
+    {"Kid Nohag", 17801, true},
+    {"Roshi", 130071, true},
+    {"Klirin", 90551, true}
 }
     
 task.spawn(function()
 while true do
 pcall(function()
+if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then   
 if getIsActive1() and player()  then
                if data.Quest.Value ~= "" then
                         local currentQuest = data.Quest.Value
@@ -1540,6 +1556,7 @@ if getIsActive1() and player()  then
                  end
                 end 
            end
+           end
      end)
      task.wait()
     end
@@ -1550,7 +1567,8 @@ canvolley = true
 task.spawn(function() 
     while true do
         pcall(function()
-        if player() then       
+        if player() then  
+       if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then        
                 if (yo() >= 40000 and data.Quest.Value ~= "" and getIsActive1())  then                                                     
                     local stats = yo()
                     local moves = {}
@@ -1581,7 +1599,8 @@ task.spawn(function()
                             canvolley = true
                         end)
                     end                                  
-                end              
+                  end              
+                end
             end
         end)
         task.wait()
@@ -1641,11 +1660,11 @@ end
     while task.wait() do       
 pcall(function() 
             if getIsActive10() then
-            if yo() >= 3e9  and game.PlaceId == 3311165597  then
+            if yo() >= 7e9  and game.PlaceId == 3311165597  then
                 game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
                 wait(5)
             end
-            if yo() < 3e9 and game.PlaceId == 5151400895  then
+            if yo() < 7e9 and game.PlaceId == 5151400895  then
                 game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
                 wait(5)
             end
