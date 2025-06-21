@@ -1068,15 +1068,20 @@ end)
 
 task.spawn(function()
     pcall(function()
-local sts = {"Strength","Speed","Defense","Energy"}
+local sts = {"Strength", "Speed", "Defense", "Energy"}
 function yo()
-    local l = math.huge
-    for i,v in pairs(sts) do
-        if not data:FindFirstChild(v) then return end
-        local st = data[v]
-        if st.Value < l then l = st.Value end
-    end
-    return l
+	local min = nil
+	for _, statName in ipairs(sts) do
+		local stat = data:FindFirstChild(statName)
+		if stat and stat:IsA("IntValue") or stat:IsA("NumberValue") then
+			if min == nil or stat.Value < min then
+				min = stat.Value
+			end
+		else
+			return 0
+		end
+	end
+	return min or 0
 end
 
 local stats = getgenv().Stats
@@ -1468,6 +1473,8 @@ task.spawn(function()
     end
  end)
  
+
+
 
 local npcList = {
     {"Kakata (Ego Instinct)", 90e9, true},
