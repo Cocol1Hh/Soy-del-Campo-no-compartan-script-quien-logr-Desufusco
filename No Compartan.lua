@@ -1113,84 +1113,79 @@ local forms = {"Ego Instinct", "SSJR3", "SSJB3", "SSJ5", "Divine Blue", "Divine 
   task.spawn(function()
     while task.wait() do
         pcall(function()
-        if player() then
-      if getIsActive11() then
+      if getIsActive11() and player() then
         local Forms = {
-
-'SSJ5',
-'Divine Rose Prominence',
-'Divine Blue',
-'God of Destruction',
-'God of Creation',
-'Beast',
-'Mastered Ultra Instinct',
-'SSJR2',
-'SSJB2',
-'Ultra Instinct Omen',
-'Dark Rose',
-'Blue Evolution',
-'SSJ Rose',
-'SSJ Blue',
-'SSJ4',
-'SSJG',
-'Mystic',
-'SSJ3',
-'LSSJ',
-'SSJ2',
-'SSJ',
-'FSSJ',
-'Kaioken'}
-        local status = lplr.Status    
-        for _, form in ipairs(Forms) do 
-            if Ex.equipskill:InvokeServer(form) then break end  
-     end
+                                  'SSJ5',
+                                  'Divine Rose Prominence',
+                                  'Divine Blue',
+                                  'God of Destruction',
+                                  'God of Creation',
+                                  'Beast',
+                                  'Mastered Ultra Instinct',
+                                  'SSJR2',
+                                  'SSJB2',
+                                  'Ultra Instinct Omen',
+                                  'Dark Rose',
+                                  'Blue Evolution',
+                                  'SSJ Rose',
+                                  'SSJ Blue',
+                                  'SSJ4',
+                                  'SSJG',
+                                  'Mystic',
+                                  'SSJ3',
+                                  'LSSJ',
+                                  'SSJ2',
+                                  'SSJ',
+                                  'FSSJ',
+                                  'Kaioken'}
+                             local status = lplr.Status    
+                           for _, form in ipairs(Forms) do 
+                   if Ex.equipskill:InvokeServer(form) then break end  
+             end
         if status and status.SelectedTransformation.Value ~= status.Transformation.Value then
             Ex.ta:InvokeServer()
                        end                
                     end      
-              end
            end)
         end
      end)   
      
      task.spawn(function()
-    while wait() do
+    while task.wait() do
         pcall(function()
-        if player() then
-      if getIsActive12() then
+      if getIsActive12() and player() then
         local Forms = {
-'SSJ5',
-'Divine Rose Prominence',
-'Divine Blue',
-'God of Destruction',
-'God of Creation',
-'Beast',
-'Mastered Ultra Instinct',
-'SSJR2',
-'SSJB2',
-'Ultra Instinct Omen',
-'Dark Rose',
-'Blue Evolution',
-'SSJ Rose',
-'SSJ Blue',
-'SSJ4',
-'SSJG',
-'Mystic',
-'SSJ3',
-'LSSJ',
-'SSJ2',
-'SSJ',
-'FSSJ',
-'Kaioken'}
-        local status = lplr.Status    
-        for _, form in ipairs(Forms) do 
-            if Ex.equipskill:InvokeServer(form) then break end  
-     end
+                                  'SSJ5',
+                                  'Divine Rose Prominence',
+                                  'Divine Blue',
+                                  'God of Destruction',
+                                  'God of Creation',
+                                  'Beast',
+                                  'Mastered Ultra Instinct',
+                                  'SSJR2',
+                                  'SSJB2',
+                                  'Ultra Instinct Omen',
+                                  'Dark Rose',
+                                  'Blue Evolution',
+                                  'SSJ Rose',
+                                  'SSJ Blue',
+                                  'SSJ4',
+                                  'SSJG',
+                                  'Mystic',
+                                  'SSJ3',
+                                  'LSSJ',
+                                  'SSJ2',
+                                  'SSJ',
+                                  'FSSJ',
+                                  'Kaioken'}
+                             local status = lplr.Status    
+                           for _, form in ipairs(Forms) do 
+                   if Ex.equipskill:InvokeServer(form) then break end  
+             end
         if status and status.SelectedTransformation.Value ~= status.Transformation.Value then
             Ex.ta:InvokeServer()
                        end                
                     end      
-              end
            end)
         end
      end)   
@@ -1377,8 +1372,7 @@ local specialUsers = {
     armijosfernando2178 = true,
     fernanfloP091o = true,
     FreireBG = true,
-    Rutao_Gameplays = true,
-    Azeldex = true
+    Rutao_Gameplays = true
 }
 task.spawn(function()
     while true do
