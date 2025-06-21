@@ -1368,7 +1368,8 @@ local specialUsers = {
     fernanfloP091o= true,
     FreireBG = true,
     Rutao_Gameplays  = true,
-    lixXpixi = true
+    lixXpixi = true,
+    Azeldex = true
 }
 
 task.spawn(function()
