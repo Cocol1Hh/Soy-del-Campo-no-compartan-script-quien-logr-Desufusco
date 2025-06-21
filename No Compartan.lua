@@ -1211,9 +1211,9 @@ task.spawn(function()
             if not ki:IsA("NumberValue") or not maxKi:IsA("NumberValue") then return end
             local limite = maxKi.Value * 0.20
             if ki.Value < limite then
-                if tick() - tiempo >= 3 then
+                if tick() - tiempo >= 2 then
                     game.ReplicatedStorage.Package.Events.cha:InvokeServer(false, "dbuexploiterssucklol")
-                    task.wait(0.5)
+                    task.wait(0.1)
                     tiempo = tick()
                 end
                 game.ReplicatedStorage.Package.Events.cha:InvokeServer(true, "dbuexploiterssucklol")
