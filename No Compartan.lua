@@ -1197,27 +1197,27 @@ local forms = {"Ego Instinct", "SSJR3", "SSJB3", "SSJ5", "Divine Blue", "Divine 
      
 
 task.spawn(function()
-    while task.wait() do        
-            pcall(function()
-            if player() and getIsActive1() then
-                local char = game.Workspace.Living:FindFirstChild(lplr.Name)
-                if char then
-                    local stats = char:FindFirstChild("Stats")
-                    if stats then
-                        local ki = stats:FindFirstChild("Ki")
-                        local maxKi = stats:FindFirstChild("MaxKi")
-                        if ki and maxKi and ki:IsA("NumberValue") and maxKi:IsA("NumberValue") then
-                            local porcentaje = 0.20
-                            if ki.Value < maxKi.Value * porcentaje then
-                                game.ReplicatedStorage.Package.Events.cha:InvokeServer(true, "dbuexploiterssucklol")
-                            elseif ki.Value >= maxKi.Value * porcentaje then
-                                game.ReplicatedStorage.Package.Events.cha:InvokeServer(false, "dbuexploiterssucklol")
-                            end
+    while true do
+        pcall(function()
+            local char = game.Workspace.Living:FindFirstChild(lplr.Name)
+            if char then
+                local stats = char:FindFirstChild("Stats")
+                if stats then
+                    local ki = stats:FindFirstChild("Ki")
+                    local maxKi = stats:FindFirstChild("MaxKi")
+                    if ki and maxKi and ki:IsA("NumberValue") and maxKi:IsA("NumberValue") then
+                        local porcentaje = 0.20
+                        local limite = maxKi.Value * porcentaje
+                        if ki.Value < limite then
+                            game.ReplicatedStorage.Package.Events.cha:InvokeServer(true, "dbuexploiterssucklol")
+                        else
+                            game.ReplicatedStorage.Package.Events.cha:InvokeServer(false, "dbuexploiterssucklol")
                         end
                     end
                 end
             end
         end)
+        task.wait()
     end
 end)
 
@@ -2175,6 +2175,7 @@ local function crearGUI()
         end
     end)
 end
+
 if claveEsValida() then
     log("Clave válida detectada. Ejecutando script principal.")
     script()
