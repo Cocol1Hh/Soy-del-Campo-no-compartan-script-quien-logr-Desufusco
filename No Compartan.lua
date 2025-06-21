@@ -1196,7 +1196,8 @@ local forms = {"Ego Instinct", "SSJR3", "SSJB3", "SSJ5", "Divine Blue", "Divine 
      end)   
      
 
-local lplr = game.Players.LocalPlayer
+
+local tiempo = tick()
 task.spawn(function()
     while true do
         pcall(function()
@@ -1210,9 +1211,15 @@ task.spawn(function()
             if not ki:IsA("NumberValue") or not maxKi:IsA("NumberValue") then return end
             local limite = maxKi.Value * 0.20
             if ki.Value < limite then
+                if tick() - tiempo >= 3 then
+                    game.ReplicatedStorage.Package.Events.cha:InvokeServer(false, "dbuexploiterssucklol")
+                    task.wait(0.5)
+                    tiempo = tick()
+                end
                 game.ReplicatedStorage.Package.Events.cha:InvokeServer(true, "dbuexploiterssucklol")
             else
                 game.ReplicatedStorage.Package.Events.cha:InvokeServer(false, "dbuexploiterssucklol")
+                tiempo = tick()
             end
         end)
         task.wait()
