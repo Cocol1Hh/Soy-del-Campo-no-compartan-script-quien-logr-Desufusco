@@ -1196,25 +1196,23 @@ local forms = {"Ego Instinct", "SSJR3", "SSJB3", "SSJ5", "Divine Blue", "Divine 
      end)   
      
 
+local lplr = game.Players.LocalPlayer
 task.spawn(function()
     while true do
         pcall(function()
-            local char = game.Workspace.Living:FindFirstChild(lplr.Name)
-            if char then
-                local stats = char:FindFirstChild("Stats")
-                if stats then
-                    local ki = stats:FindFirstChild("Ki")
-                    local maxKi = stats:FindFirstChild("MaxKi")
-                    if ki and maxKi and ki:IsA("NumberValue") and maxKi:IsA("NumberValue") then
-                        local porcentaje = 0.20
-                        local limite = maxKi.Value * porcentaje
-                        if ki.Value < limite then
-                            game.ReplicatedStorage.Package.Events.cha:InvokeServer(true, "dbuexploiterssucklol")
-                        else
-                            game.ReplicatedStorage.Package.Events.cha:InvokeServer(false, "dbuexploiterssucklol")
-                        end
-                    end
-                end
+            local char = workspace.Living:FindFirstChild(lplr.Name)
+            if not char then return end
+            local stats = char:FindFirstChild("Stats")
+            if not stats then return end
+            local ki = stats:FindFirstChild("Ki")
+            local maxKi = stats:FindFirstChild("MaxKi")
+            if not ki or not maxKi then return end
+            if not ki:IsA("NumberValue") or not maxKi:IsA("NumberValue") then return end
+            local limite = maxKi.Value * 0.20
+            if ki.Value < limite then
+                game.ReplicatedStorage.Package.Events.cha:InvokeServer(true, "dbuexploiterssucklol")
+            else
+                game.ReplicatedStorage.Package.Events.cha:InvokeServer(false, "dbuexploiterssucklol")
             end
         end)
         task.wait()
