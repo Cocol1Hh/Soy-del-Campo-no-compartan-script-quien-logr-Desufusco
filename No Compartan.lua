@@ -2175,7 +2175,6 @@ local function crearGUI()
         end
     end)
 end
-
 if claveEsValida() then
     log("Clave válida detectada. Ejecutando script principal.")
     script()
