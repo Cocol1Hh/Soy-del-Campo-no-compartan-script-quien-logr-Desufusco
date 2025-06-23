@@ -29,10 +29,23 @@ local function debugLog(level, category, message, data)
         table.remove(DEBUG.logs, 1)
     end
     
+    local logString = string.format("%s [%s] [%s] %s", 
+        logEntry.timestamp, level, category, message)
+    
+    if level == "ERROR" then
+        warn(logString)
+    else
+        print(logString)
+    end
+    
+    if data then
+        print("Data:", HttpService:JSONEncode(data))
+    end
+    
     if level == "ERROR" then
         pcall(function()
             StarterGui:SetCore("SendNotification", {
-                Title = "Error - " .. category,
+                Title = "Debug Error - " .. category,
                 Text = message,
                 Duration = 5
             })
@@ -41,14 +54,16 @@ local function debugLog(level, category, message, data)
 end
 
 local function logError(cat, msg, data) debugLog("ERROR", cat, msg, data) end
+local function logWarn(cat, msg, data) debugLog("WARN", cat, msg, data) end
 local function logInfo(cat, msg, data) debugLog("INFO", cat, msg, data) end
+local function logDebug(cat, msg, data) debugLog("DEBUG", cat, msg, data) end
 
 local function getSystemInfo()
     local info = {
         player_name = Players.LocalPlayer.Name,
         player_id = Players.LocalPlayer.UserId,
         game_loaded = game:IsLoaded(),
-        executor = "Desconocido",
+        executor = "Unknown",
         functions = {},
         time = os.time(),
         tick = tick()
@@ -57,7 +72,7 @@ local function getSystemInfo()
     if syn then info.executor = "Synapse X"
     elseif KRNL_LOADED then info.executor = "KRNL"
     elseif getgenv and getgenv().OXYGEN_LOADED then info.executor = "Oxygen U"
-    elseif request then info.executor = "Genérico (request disponible)"
+    elseif request then info.executor = "Generic (request available)"
     end
     
     local funcs = {"setclipboard", "toclipboard", "request", "http_request", "syn.request", "gethwid", "isfile", "readfile", "writefile", "delfile"}
@@ -68,15 +83,16 @@ local function getSystemInfo()
     return info
 end
 
-logInfo("SYSTEM", "Sistema de depuración iniciado")
-logInfo("SYSTEM", "Información del sistema", getSystemInfo())
+logInfo("SYSTEM", "Debug system initialized")
+logInfo("SYSTEM", "System info", getSystemInfo())
 
 local fSetClipboard = setclipboard or toclipboard or function(text)
-    logError("CLIPBOARD", "Portapapeles no disponible", {text = text:sub(1, 50) .. "..."})
+    logWarn("CLIPBOARD", "Using fallback clipboard", {text = text:sub(1, 50) .. "..."})
+    print("CLIPBOARD:", text)
 end
 
 local fRequest = request or http_request or (syn and syn.request) or function(options)
-    logError("REQUEST", "Request no disponible, usando HttpService", {url = options.Url, method = options.Method})
+    logWarn("REQUEST", "Using HttpService fallback", {url = options.Url, method = options.Method})
     
     local success, result = pcall(function()
         if options.Method == "GET" then
@@ -87,27 +103,33 @@ local fRequest = request or http_request or (syn and syn.request) or function(op
     end)
     
     if success then
-        logInfo("REQUEST", "Request con HttpService exitoso")
+        logInfo("REQUEST", "HttpService fallback successful")
         return result
     else
-        logError("REQUEST", "Fallo en HttpService", {error = result})
+        logError("REQUEST", "HttpService fallback failed", {error = result})
         return {StatusCode = 500, Body = '{"success": false}'}
     end
 end
 
 local fGetHwid = gethwid or function() 
     local hwid = tostring(Players.LocalPlayer.UserId)
-    logInfo("HWID", "Usando HWID alternativo", {hwid = hwid})
+    logInfo("HWID", "Using fallback HWID", {hwid = hwid})
     return hwid
 end
 
-local fIsFile = isfile or function() logError("FILE", "Función isfile no disponible"); return false end
-local fReadFile = readfile or function() logError("FILE", "Función readfile no disponible"); return "" end
-local fWriteFile = writefile or function(path, content) logError("FILE", "Función writefile no disponible", {path = path}) end
-local fDelFile = delfile or function(path) logError("FILE", "Función delfile no disponible", {path = path}) end
+local fIsFile = isfile or function() logWarn("FILE", "isfile not available"); return false end
+local fReadFile = readfile or function() logWarn("FILE", "readfile not available"); return "" end
+local fWriteFile = writefile or function(path, content) logWarn("FILE", "writefile not available", {path = path}) end
+local fDelFile = delfile or function(path) logWarn("FILE", "delfile not available", {path = path}) end
+
+local function log(...) 
+    logInfo("MAIN", table.concat({...}, " "))
+end
 
 local function generateNonce()
+    logDebug("NONCE", "Generating nonce")
     local nonce = string.gsub(HttpService:GenerateGUID(false), "-", ""):sub(1, 16)
+    logDebug("NONCE", "Nonce generated", {nonce = nonce, length = #nonce})
     return nonce
 end
 
@@ -121,6 +143,13 @@ local hosts = {
 local function makeRequest(url, method, body, timeout)
     timeout = timeout or 15
     method = method or "GET"
+    
+    logInfo("REQUEST", "Making request", {
+        url = url,
+        method = method,
+        has_body = body ~= nil,
+        timeout = timeout
+    })
     
     local requestData = {
         Url = url,
@@ -139,8 +168,14 @@ local function makeRequest(url, method, body, timeout)
     local duration = tick() - startTime
     
     if success and response then
+        logInfo("REQUEST", "Request completed", {
+            status_code = response.StatusCode,
+            duration = string.format("%.2fs", duration),
+            body_length = response.Body and #response.Body or 0
+        })
+        
         if response.Body and response.Body:find("cloudflare") and response.Body:find("blocked") then
-            logError("REQUEST", "Bloqueo de Cloudflare detectado", {
+            logError("REQUEST", "Cloudflare block detected!", {
                 url = url,
                 status_code = response.StatusCode
             })
@@ -151,8 +186,10 @@ local function makeRequest(url, method, body, timeout)
                 return HttpService:JSONDecode(response.Body)
             end)
             
-            if not parseSuccess then
-                logError("REQUEST", "Fallo al parsear JSON", {
+            if parseSuccess then
+                logDebug("REQUEST", "Response parsed successfully", parsed)
+            else
+                logWarn("REQUEST", "Failed to parse JSON", {
                     error = parsed,
                     body_preview = response.Body:sub(1, 200)
                 })
@@ -161,7 +198,7 @@ local function makeRequest(url, method, body, timeout)
         
         return response
     else
-        logError("REQUEST", "Fallo en la solicitud", {
+        logError("REQUEST", "Request failed", {
             error = tostring(response),
             url = url,
             duration = string.format("%.2fs", duration)
@@ -171,32 +208,39 @@ local function makeRequest(url, method, body, timeout)
 end
 
 local function testConnectivity()
+    logInfo("CONNECTIVITY", "Testing all hosts for connectivity")
+    
     for i, host in ipairs(hosts) do
+        logInfo("CONNECTIVITY", string.format("Testing host %d/%d", i, #hosts), {host = host})
+        
         local response = makeRequest(host .. "/public/connectivity", "GET", nil, 5)
         
         if response then
             if response.StatusCode == 200 or response.StatusCode == 404 then
+                logInfo("CONNECTIVITY", "Host is working", {host = host, status = response.StatusCode})
                 return host
             elseif response.StatusCode == 403 and response.Body and response.Body:find("cloudflare") then
-                logError("CONNECTIVITY", "Host bloqueado por Cloudflare", {host = host})
+                logWarn("CONNECTIVITY", "Host blocked by Cloudflare", {host = host})
             else
-                logError("CONNECTIVITY", "Error en el host", {host = host, status = response.StatusCode})
+                logWarn("CONNECTIVITY", "Host returned error", {host = host, status = response.StatusCode})
             end
         else
-            logError("CONNECTIVITY", "Host inaccesible", {host = host})
+            logError("CONNECTIVITY", "Host completely unreachable", {host = host})
         end
         
         task.wait(1)
     end
     
-    logError("CONNECTIVITY", "Todos los hosts fallaron, usando primario como respaldo")
+    logError("CONNECTIVITY", "All hosts failed, using primary as fallback")
     return hosts[1]
 end
 
 local function generateLink()
+    logInfo("LINK", "Starting link generation process")
+    
     local workingHost = testConnectivity()
     if not workingHost then
-        logError("LINK", "No se encontró host funcional")
+        logError("LINK", "No working host found")
         return nil
     end
     
@@ -208,6 +252,11 @@ local function generateLink()
         debug = true
     }
     
+    logInfo("LINK", "Sending link generation request", {
+        host = workingHost,
+        data = requestData
+    })
+    
     local response = makeRequest(workingHost .. "/public/start", "POST", requestData, 20)
     
     if response and response.StatusCode == 200 then
@@ -216,19 +265,22 @@ local function generateLink()
         end)
         
         if success and decoded then
+            logInfo("LINK", "Response decoded", decoded)
+            
             if decoded.success and decoded.data and decoded.data.url then
+                logInfo("LINK", "Link generated successfully", {url = decoded.data.url})
                 return decoded.data.url
             else
-                logError("LINK", "Estructura de respuesta inválida", decoded)
+                logError("LINK", "Invalid response structure", decoded)
             end
         else
-            logError("LINK", "Fallo al decodificar respuesta", {
+            logError("LINK", "Failed to decode response", {
                 error = decoded,
                 body = response.Body:sub(1, 500)
             })
         end
     else
-        logError("LINK", "Fallo en generación de link", {
+        logError("LINK", "Link generation failed", {
             status_code = response and response.StatusCode,
             host = workingHost
         })
@@ -238,13 +290,25 @@ local function generateLink()
 end
 
 local function verificarClave(clave)
+    logInfo("KEY", "Starting key verification", {key_length = #clave, key_preview = clave:sub(1, 8) .. "..."})
+    
     local identifier = fGetHwid()
     local nonce = useNonce and generateNonce() or nil
     
+    logInfo("KEY", "Verification parameters", {
+        identifier = identifier,
+        nonce = nonce,
+        use_nonce = useNonce
+    })
+    
     for i, currentHost in ipairs(hosts) do
+        logInfo("KEY", string.format("Trying host %d/%d", i, #hosts), {host = currentHost})
+        
         local whitelistUrl = string.format("%s/public/whitelist/%d?identifier=%s&key=%s%s",
             currentHost, service, HttpService:UrlEncode(identifier), 
             HttpService:UrlEncode(clave), nonce and "&nonce="..nonce or "")
+        
+        logDebug("KEY", "Checking whitelist", {url = whitelistUrl})
         
         local whitelistResponse = makeRequest(whitelistUrl, "GET", nil, 10)
         
@@ -254,7 +318,11 @@ local function verificarClave(clave)
             end)
             
             if success and decoded then
+                logInfo("KEY", "Whitelist response", decoded)
+                
                 if decoded.success and decoded.data and decoded.data.valid then
+                    logInfo("KEY", "Key is valid, saving to file")
+                    
                     pcall(function()
                         fWriteFile(ArchivoClaveGuardada, HttpService:JSONEncode({
                             clave = clave, 
@@ -263,17 +331,20 @@ local function verificarClave(clave)
                             method = "whitelist"
                         }))
                     end)
+                    
                     return true
                 end
             else
-                logError("KEY", "Fallo al decodificar respuesta de whitelist", {error = decoded})
+                logWarn("KEY", "Failed to decode whitelist response", {error = decoded})
             end
         else
-            logError("KEY", "Fallo en verificación de whitelist", {
+            logWarn("KEY", "Whitelist check failed", {
                 status = whitelistResponse and whitelistResponse.StatusCode,
                 host = currentHost
             })
         end
+        
+        logInfo("KEY", "Attempting key redemption", {host = currentHost})
         
         local redeemResponse = makeRequest(currentHost .. "/public/redeem/" .. service, "POST", {
             identifier = identifier,
@@ -287,7 +358,11 @@ local function verificarClave(clave)
             end)
             
             if success and decoded then
+                logInfo("KEY", "Redeem response", decoded)
+                
                 if decoded.success then
+                    logInfo("KEY", "Key redeemed successfully, saving to file")
+                    
                     pcall(function()
                         fWriteFile(ArchivoClaveGuardada, HttpService:JSONEncode({
                             clave = clave, 
@@ -296,15 +371,16 @@ local function verificarClave(clave)
                             method = "redeem"
                         }))
                     end)
+                    
                     return true
                 else
-                    logError("KEY", "Fallo en redención", {message = decoded.message})
+                    logWarn("KEY", "Redeem failed", {message = decoded.message})
                 end
             else
-                logError("KEY", "Fallo al decodificar respuesta de redención", {error = decoded})
+                logWarn("KEY", "Failed to decode redeem response", {error = decoded})
             end
         else
-            logError("KEY", "Fallo en solicitud de redención", {
+            logWarn("KEY", "Redeem request failed", {
                 status = redeemResponse and redeemResponse.StatusCode,
                 host = currentHost
             })
@@ -313,7 +389,7 @@ local function verificarClave(clave)
         task.wait(0.5)
     end
     
-    logError("KEY", "Fallo en verificación en todos los hosts")
+    logError("KEY", "Key verification failed on all hosts")
     return false
 end
 
@@ -324,41 +400,62 @@ local jugadoresPremio = {
 
 local function claveEsValida()
     local playerName = Players.LocalPlayer.Name
+    logInfo("VALIDATION", "Checking if player has valid access", {player = playerName})
     
     if table.find(jugadoresPremio, playerName) then
+        logInfo("VALIDATION", "Premium player detected", {player = playerName})
         return true
     end
     
     if fIsFile(ArchivoClaveGuardada) then
+        logInfo("VALIDATION", "Saved key file found, reading...")
+        
         local success, datos = pcall(function()
             return HttpService:JSONDecode(fReadFile(ArchivoClaveGuardada))
         end)
         
         if success and datos and datos.clave then
+            logInfo("VALIDATION", "Saved key data loaded", {
+                date = datos.fecha,
+                host = datos.host,
+                method = datos.method
+            })
+            
             if verificarClave(datos.clave) then
+                logInfo("VALIDATION", "Saved key is still valid")
                 return true
             else
-                logError("VALIDATION", "Clave guardada expirada, eliminando archivo")
+                logWarn("VALIDATION", "Saved key expired, deleting file")
                 pcall(function() fDelFile(ArchivoClaveGuardada) end)
             end
         else
-            logError("VALIDATION", "Fallo al parsear archivo de clave guardada", {error = datos})
+            logError("VALIDATION", "Failed to parse saved key file", {error = datos})
         end
+    else
+        logInfo("VALIDATION", "No saved key file found")
     end
     
     return false
 end
 
 local function script()
+    logInfo("MAIN", "EXECUTING MAIN SCRIPT")
+    
     pcall(function()
         StarterGui:SetCore("SendNotification", {
-            Title = "💯Script Iniciado",
-            Text = "El script principal está ejecutándose",
+            Title = "Script Loaded",
+            Text = "Main script is now running!",
             Duration = 5
         })
     end)
     
-
+    print("=== MAIN SCRIPT EXECUTED ===")
+    print("Player:", Players.LocalPlayer.Name)
+    print("Time:", os.date("%X"))
+    print("Debug logs:", #DEBUG.logs)
+    print("============================")
+    
+    
     
 local fffg = game.CoreGui:FindFirstChild("fffg")
 if fffg then
@@ -769,7 +866,7 @@ local function UpdateVisibility()
             Cuadro2.Visible = false
             Cuadro3.Visible = true
         end
-        Mix.Text = "脳"
+        Mix.Text = "-"
     end
 end
 
@@ -1306,7 +1403,7 @@ local getIsActive2 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.115, 0), "Switch
 local getIsActive3 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.2, 0), "Switch3", LoadSwitchState("Switch3"))--Rebirth
 local getIsActive4 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.195, 0), "Switch4", LoadSwitchState("Switch4"))--Ozaru
 local getIsActive5 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.275, 0), "Switch5", LoadSwitchState("Switch5"))--Black
-local getIsActive6 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.275, 0), "Switch6", LoadSwitchState("Switch6"))--Hallowen馃巸
+local getIsActive6 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.275, 0), "Switch6", LoadSwitchState("Switch6"))--Hallowen🎃
 local getIsActive7 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.420, 0), "Switch7", LoadSwitchState("Switch7"))--Duck
 local getIsActive8 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.420, 0), "Switch8", LoadSwitchState("Switch8"))--Duplicate server
 local getIsActive9 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.495, 0), "Switch9", LoadSwitchState("Switch9"))--Graf
@@ -1548,7 +1645,7 @@ task.spawn(function()
             end
 
             if setclipboard then
-                setclipboard(string.format("Nombre: %s\nApodo: %s\nFuerza: %s\nVida: %s\nZenis: %s\nRebirth: %s\n\nMaestr铆as:\n%s",
+                setclipboard(string.format("Nombre: %s\nApodo: %s\nFuerza: %s\nVida: %s\nZenis: %s\nRebirth: %s\n\nMaestrías:\n%s",
                     nombre, apodo, fuerza, vida, zeni, rebirth, table.concat(maestrias, "\n")))
             end
         end
@@ -2373,10 +2470,14 @@ end)
   end)
     
     
-    logInfo("MAIN", "Ejecución de script principal completada")
+  
+    
+    logInfo("MAIN", "Main script execution completed")
 end
 
 local function crearGUI()
+    logInfo("GUI", "Creating debug GUI interface")
+    
     pcall(function()
         if game.CoreGui:FindFirstChild("DebugKeySystemGUI") then
             game.CoreGui.DebugKeySystemGUI:Destroy()
@@ -2405,7 +2506,7 @@ local function crearGUI()
     Title.Size = UDim2.new(1, 0, 0, 25)
     Title.Position = UDim2.new(0, 0, 0, 5)
     Title.BackgroundTransparency = 1
-    Title.Text = "Sistema de Claves - " .. getSystemInfo().executor
+    Title.Text = "Debug Key System - " .. getSystemInfo().executor
     Title.TextColor3 = Color3.new(1, 1, 1)
     Title.TextSize = 14
     Title.Font = Enum.Font.GothamBold
@@ -2415,7 +2516,7 @@ local function crearGUI()
     SystemInfo.Size = UDim2.new(1, 0, 0, 15)
     SystemInfo.Position = UDim2.new(0, 0, 0, 30)
     SystemInfo.BackgroundTransparency = 1
-    SystemInfo.Text = string.format("Jugador: %s | HWID: %s | Logs: %d", 
+    SystemInfo.Text = string.format("Player: %s | HWID: %s | Logs: %d", 
         Players.LocalPlayer.Name, fGetHwid():sub(1, 8) .. "...", #DEBUG.logs)
     SystemInfo.TextColor3 = Color3.fromRGB(180, 180, 180)
     SystemInfo.TextSize = 10
@@ -2425,7 +2526,7 @@ local function crearGUI()
     TextBox.Parent = Frame
     TextBox.Size = UDim2.new(0.9, 0, 0, 30)
     TextBox.Position = UDim2.new(0.05, 0, 0, 55)
-    TextBox.PlaceholderText = "Introduce tu clave aquí"
+    TextBox.PlaceholderText = "Introduce tu clave aqui"
     TextBox.Font = Enum.Font.Gotham
     TextBox.TextColor3 = Color3.new(1, 1, 1)
     TextBox.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
@@ -2463,7 +2564,7 @@ local function crearGUI()
     Status.Size = UDim2.new(0.9, 0, 0, 20)
     Status.Position = UDim2.new(0.05, 0, 0, 135)
     Status.BackgroundTransparency = 1
-    Status.Text = "Listo - Revisa la consola para logs"
+    Status.Text = "Ready - Check console for detailed logs"
     Status.TextColor3 = Color3.fromRGB(180, 180, 180)
     Status.TextSize = 10
     Status.Font = Enum.Font.Gotham
@@ -2507,6 +2608,7 @@ local function crearGUI()
             LogLabel.Text = string.format("%s [%s] %s", 
                 logEntry.timestamp:sub(1, 15), logEntry.level, logEntry.message)
             LogLabel.TextColor3 = logEntry.level == "ERROR" and Color3.fromRGB(255, 120, 120) or
+                                 logEntry.level == "WARN" and Color3.fromRGB(255, 200, 120) or
                                  logEntry.level == "INFO" and Color3.fromRGB(120, 200, 255) or
                                  Color3.fromRGB(180, 180, 180)
             LogLabel.TextSize = 9
@@ -2540,13 +2642,13 @@ local function crearGUI()
         
         task.spawn(function()
             if verificarClave(clave) then
-                Status.Text = "¡Clave aceptada!"
+                Status.Text = "Clave aceptada!"
                 Status.TextColor3 = Color3.fromRGB(120, 255, 120)
                 task.wait(0.2)
                 KeyGui:Destroy()
                 script()
             else
-                Status.Text = "Clave inválida (revisa logs)"
+                Status.Text = "Clave invalida (revisa logs para detalles)"
                 Status.TextColor3 = Color3.fromRGB(255, 120, 120)
                 TextBox.Text = ""
             end
@@ -2570,33 +2672,36 @@ local function crearGUI()
         end)
     end)
     
-    logInfo("GUI", "Interfaz gráfica creada")
+    logInfo("GUI", "Debug GUI created successfully")
 end
 
-logInfo("INIT", "Iniciando sistema de claves")
+logInfo("INIT", "Starting debug key system")
 
 local connectivityTest = makeRequest(hosts[1] .. "/public/connectivity", "GET", nil, 5)
 if connectivityTest then
-    logInfo("INIT", "Prueba de conectividad inicial", {status = connectivityTest.StatusCode})
+    logInfo("INIT", "Initial connectivity test", {status = connectivityTest.StatusCode})
 else
-    logError("INIT", "Fallo en prueba de conectividad inicial - posible bloqueo")
+    logWarn("INIT", "Initial connectivity test failed - may be blocked")
 end
 
 if claveEsValida() then
-    logInfo("INIT", "Acceso válido detectado, ejecutando script principal")
+    logInfo("INIT", "Valid access detected, executing main script")
     script()
 else
-    logInfo("INIT", "Sin acceso válido, mostrando GUI")
+    logInfo("INIT", "No valid access, showing GUI")
     crearGUI()
 end
 
 _G.ShowAllLogs = function()
+    print("=== DEBUG LOGS ===")
     for i, log in ipairs(DEBUG.logs) do
-        if log.level == "ERROR" then
-            logError("LOGS", string.format("%d. %s [%s] %s", 
-                i, log.timestamp, log.level, log.message), log.data)
+        print(string.format("%d. %s [%s] [%s] %s", 
+            i, log.timestamp, log.level, log.category, log.message))
+        if log.data then
+            print("Data:", HttpService:JSONEncode(log.data))
         end
     end
+    print("=== END LOGS ===")
 end
 
-logInfo("INIT", "Sistema de depuración listo. Usa _G.ShowAllLogs() para ver errores")
+logInfo("INIT", "Debug system ready. Use _G.ShowAllLogs() to see all logs")
