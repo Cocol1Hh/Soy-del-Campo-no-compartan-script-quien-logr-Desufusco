@@ -1731,6 +1731,7 @@ local specialUsers = {
     armijosfernando2178 = true,
     fernanfloP091o = true,
     FreireBG = true,
+    Jeremi_snji = true,
     Rutao_Gameplays = true
 }
 task.spawn(function()
