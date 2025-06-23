@@ -1768,52 +1768,59 @@ task.spawn(function()
     end
 end)
 
-
 local emptyStartTime = nil
 local sameQuestStartTime = nil
 local lastQuest = nil
 local lastExecutionTime = 0
 local cooldown = 15
+
 task.spawn(function()
     while task.wait() do
         pcall(function()
-        if getIsActive1() then 
-            local char = lplr.Character
-            local humanoid = char and char:FindFirstChild("Humanoid")
-            if humanoid and humanoid.Health > 0 then
-                local currentQuest = data.Quest.Value
-                local now = os.clock()
-                if currentQuest == "" then
-                    sameQuestStartTime = nil
-                    if not emptyStartTime then
-                        emptyStartTime = now
-                    elseif now - emptyStartTime >= 15 then
-                        if now - lastExecutionTime >= cooldown then
-                            humanoid:ChangeState(15)
-                            lastExecutionTime = now
-                        end
-                    end
-                else
-                    emptyStartTime = nil
-                    if lastQuest == currentQuest then
-                        if not sameQuestStartTime then
-                            sameQuestStartTime = now
-                        elseif now - sameQuestStartTime >= 50 then
+            if getIsActive1() then
+                local char = lplr.Character
+                local humanoid = char and char:FindFirstChild("Humanoid")
+                local hrp = char and char:FindFirstChild("HumanoidRootPart")        
+                if humanoid and humanoid.Health > 0 and hrp and hrp:IsDescendantOf(workspace) then
+                    local currentQuest = data.Quest.Value
+                    local now = os.clock()
+
+                    if currentQuest == "" then
+                        sameQuestStartTime = nil
+                        if not emptyStartTime then
+                            emptyStartTime = now
+                        elseif now - emptyStartTime >= 15 then
                             if now - lastExecutionTime >= cooldown then
                                 humanoid:ChangeState(15)
                                 lastExecutionTime = now
                             end
                         end
                     else
-                        sameQuestStartTime = now
+                        emptyStartTime = nil
+                        if currentQuest == lastQuest then
+                            if not sameQuestStartTime then
+                                sameQuestStartTime = now
+                            elseif now - sameQuestStartTime >= 35 then
+                                if now - lastExecutionTime >= cooldown then
+                                    humanoid:ChangeState(15)
+                                    lastExecutionTime = now
+                                end
+                            end
+                        else
+                            sameQuestStartTime = now
+                        end
                     end
+
+                    lastQuest = currentQuest
+                else
+                    emptyStartTime = nil
+                    sameQuestStartTime = nil
                 end
-                lastQuest = currentQuest
-            end
             end
         end)
     end
 end)
+
 
 task.spawn(function()
     while task.wait() do
@@ -1862,16 +1869,16 @@ local npcList = {
     {"Jiran The Gray", 7e9, true},
     {"Broccoli", 2e9, true},
     {"Merged Zamas", 1e9, true},
-    {"Gold Chilly", 800e6, true},
-    {"Vills (1%)", 600e6, true},
-    {"Kakata (SSJ)", 300e6, true},
-    {"Super Boo", 25250001, true},
-    {"Z Broccoli", 15500001, true},
-    {"Perfect Atom", 7750001, true},
-    {"Chilly", 6525001, true},
-    {"Lord Sloog", 500001, true},   
-    {"Mapa", 350001, true},
-    {"Radish", 200501, true},
+    {"Gold Chilly", 990e6, true},
+    {"Vills (1%)", 700e6, true},
+    {"Kakata (SSJ)", 530e6, true},
+    {"Super Boo", 350e6, true},
+    {"Z Broccoli", 190e6, true},
+    {"Perfect Atom", 110e6, true},
+    {"Chilly", 75e6, true},
+    {"Lord Sloog", 7e6, true},   
+    {"Mapa", 750e3, true},
+    {"Radish", 200e3, true},
     {"Kid Nohag", 17801, true},
     {"Roshi", 130071, true},
     {"Klirin", 90551, true}
