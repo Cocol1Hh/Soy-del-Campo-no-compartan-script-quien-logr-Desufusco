@@ -745,7 +745,7 @@ Selct.CanvasSize = UDim2.new(0, 0, 0, 400)
 Selct.ScrollingDirection = Enum.ScrollingDirection.Y
 
 
-local forms = {"True SSJG", "Ego Instinct", "LBLSSJ4", "CSSJB", "Divine Blue", "Divine Rose Prominence", "Astral Instinct", "Ultra Ego", "SSJBUI", "Beast", "LSSJ4"}
+local forms = {"Nephalem", "Seraphim Of Destruction", "Seraphim", "Ego Instinct 2", "Ego Instinct", "SSJR3", "SSJB3", "", "God of Creation", "Beast", "LSSJ4"} 
 local frame = Instance.new("Frame", Selct)
 frame.Size = UDim2.new(0, 100, 0, #forms * 30 + 10)
 frame.Position = UDim2.new(0.8, -220, 0.270, -frame.Size.Y.Offset / 3)
@@ -1349,6 +1349,8 @@ task.spawn(function()
 end)
 
 
+
+
 --Tp Players
 local getIsActive15 = createSwitch(Barra3, UDim2.new(0.2, 0, 0.275, 0), "Switch15", LoadSwitchState("Switch15"))--Tp
 local getIsActive17 = createSwitch(Barra3, UDim2.new(0.2, 0, 0.345, 0), "Switch17", LoadSwitchState("Switch17"))--Tp
@@ -1418,6 +1420,8 @@ createBar(0, "Flight", Color3.fromRGB(255, 0, 0), 0.37, 100, function(v) speed =
 createBar(0.513, "Ambient", Color3.fromRGB(0, 255, 0), 0.37, 700, function(v) Lighting.Ambient = Color3.fromRGB(v, v, v) end, "ambient")
 
 
+
+
 --Casi fin del interrutor /\
 
 --Ciclo Para Auto = Main y Start
@@ -1470,13 +1474,17 @@ function player()
 end
 
 
-local forms = {"Ego Instinct", "SSJR3", "SSJB3", "SSJ5", "Divine Blue", "Divine Rose Prominence", "God of Destruction", "Ultra Ego", "God of Creation", "Beast", "LSSJ4"}
+
   task.spawn(function()
     while task.wait() do
         pcall(function()
       if getIsActive11() and player() then
         local Forms = {
-                                  'SSJ5',
+        	                      'Nephalem',
+        	                      'Seraphim Of Destruction',
+        	                      'Seraphim',
+                                  'Ego Instinct 2', 
+                                  'Ego Instinct',
                                   'Divine Rose Prominence',
                                   'Divine Blue',
                                   'God of Destruction',
@@ -1510,6 +1518,8 @@ local forms = {"Ego Instinct", "SSJR3", "SSJB3", "SSJ5", "Divine Blue", "Divine 
            end)
         end
      end)   
+     
+     
      
      task.spawn(function()
     while task.wait() do
@@ -1729,10 +1739,7 @@ end
 
 local specialUsers = {
     armijosfernando2178 = true,
-    fernanfloP091o = true,
-    FreireBG = true,
-    Jeremi_snji = true,
-    Rutao_Gameplays = true
+    fernanfloP091o = true
 }
 task.spawn(function()
     while true do
@@ -1741,9 +1748,9 @@ task.spawn(function()
                 local text = lplr.PlayerGui.Main.MainFrame.Frames.Rebirth.MultiRebirth.TextLabel.Text
                 local count = tonumber(text:match("%((%d+)%)")) or 0
                 if specialUsers[lplr.Name] and count >= 1 then
-                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(3)
+                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(9999)
                 elseif not specialUsers[lplr.Name] and count >= 1 then
-                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(1)
+                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(3)
                 end
             end
         end)
@@ -1859,7 +1866,12 @@ task.spawn(function()
 
 
 local npcList = {
-    {"Kakata (Ego Instinct)", 150e9, true},
+	{"Ultra Vekuta", 5e12, true},
+	{"Seraphim of Destruction Vegetable", 2.30e12, true},
+	{"Wukong Seraphim", 1.50e12, true},
+	{"Ego Instinct Kakata (Buu absorbed)", 396e9, true},
+    {"Kakata (Ego Instinct)", 150e9, true}, 
+    {"Wukong True God", 100e9, true},
     {"Wukong (SSJB3)", 75e9, true},
     {"Xicor", 46e9, true},
     {"Vis (Ultra Instinct)", 35e9, true},
@@ -2182,14 +2194,34 @@ end)
 --REQUISITOS LEER
    
 local npcList = {
-    {"Mapa", 55000}, {"Radish", 40000}, {"Kid Nohag", 20000}, {"Klirin", 10000},
-    {"Super Vegetable", 298000}, {"Chilly", 650000}, {"Winter Gohan", 860000},
-    {"Perfect Atom", 1375000}, {"SSJ2 Wukong", 2050000}, {"Kai-fist Master", 3025000},
-    {"SSJB Wukong", 4025000}, {"Broccoli", 21.5e6}, {"SSJG Kakata", 100e6},
-    {"Winter Wukong", 120e6}, {"Vegetable (GoD in-training)", 50e6},
-    {"Wukong (Omen)", 200e6}, {"Vills (50%)", 300e6},
-    {"Vis (20%)", 650e6}, {"Vegetable (LBSSJ4)", 950e6}, {"Wukong (LBSSJ4)", 1.90e9},
-    {"Vekuta (LBSSJ4)", 2.05e9}, {"Wukong Rose", 2.75e9}, {"Vekuta (SSJBUI)", 3.175e9}
+    {"Ultra Vekuta", 5e12},
+    {"Seraphim of Destruction Vegetable", 2.30e12},
+    {"Wukong Seraphim", 1.50e12},
+    {"Ego Instinct Kakata (Buu absorbed)", 396e9},
+    {"Kakata (Ego Instinct)", 150e9},
+    {"Wukong True God", 100e9},
+    {"Wukong (SSJB3)", 75e9},
+    {"Xicor", 46e9},
+    {"Vis (Ultra Instinct)", 35e9},
+    {"Vills (True God of Destruction)", 25e9},
+    {"Black Chilly", 15e9},
+    {"Vegetable (Ultra Ego)", 9e9},
+    {"Jiran The Gray", 7e9},
+    {"Broccoli", 2e9},
+    {"Merged Zamas", 1e9},
+    {"Gold Chilly", 990e6},
+    {"Vills (1%)", 700e6},
+    {"Kakata (SSJ)", 530e6},
+    {"Super Boo", 350e6},
+    {"Z Broccoli", 190e6},
+    {"Perfect Atom", 110e6},
+    {"Chilly", 75e6},
+    {"Lord Sloog", 7e6},
+    {"Mapa", 750e3},
+    {"Radish", 200e3},
+    {"Kid Nohag", 17801},
+    {"Roshi", 130071},
+    {"Klirin", 90551}
 }
 
 local expLabel = lplr.PlayerGui.Main.MainFrame.Frames.Quest.Yas.Rewards.EXP
@@ -2469,6 +2501,38 @@ end)
 TeleportService.LocalPlayerArrivedFromTeleport:Connect(function()
     if game.PlaceId == 3311165597 and rebirthIncreased then
         resetTimer()
+    end
+end)
+
+local gui = Instance.new("ScreenGui")
+gui.ResetOnSpawn = false
+gui.Name = "FormMsg"
+gui.Parent = game:GetService("CoreGui")
+
+local txt = Instance.new("TextLabel")
+txt.Size = UDim2.new(0, 600, 0, 100)
+txt.Position = UDim2.new(0.5, -300, 0.5, -50)
+txt.BackgroundTransparency = 1
+txt.TextColor3 = Color3.fromRGB(255, 0, 0)
+txt.TextStrokeTransparency = 0
+txt.TextStrokeColor3 = Color3.fromRGB(0, 0, 255)
+txt.Font = Enum.Font.Arcade
+txt.TextSize = 45
+txt.Text = "Active [Form]"
+txt.Visible = false
+txt.Parent = gui
+
+task.spawn(function()
+    while true do
+        local s11, a11 = pcall(getIsActive11)
+        local s12, a12 = pcall(getIsActive12)
+        local s1, a1 = pcall(getIsActive1)
+        if s11 and s12 and s1 then
+            txt.Visible = (a11 == false and a12 == false and a1 == true)
+        else
+            txt.Visible = false
+        end
+        task.wait(0.2)
     end
 end)
 
