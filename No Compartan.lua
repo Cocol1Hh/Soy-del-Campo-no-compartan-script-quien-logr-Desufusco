@@ -1332,7 +1332,7 @@ local function formatTime(seconds)
 end
 
 task.spawn(function()
-	local t = 5400
+	local t = 4440
 	while task.wait(1) do
 		t -= 1
 		lbl.Text = "Tiempo: " .. formatTime(t)
@@ -1343,12 +1343,10 @@ task.spawn(function()
 					game.ReplicatedStorage.Package.Events.TP:InvokeServer(m)
 				end
 			end)
-			t = 5400
+			t = 4440
 		end
 	end
 end)
-
-
 
 
 --Tp Players
