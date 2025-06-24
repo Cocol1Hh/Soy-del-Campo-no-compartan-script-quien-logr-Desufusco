@@ -1764,7 +1764,7 @@ task.spawn(function()
   if data.Quest.Value ~= "" and player() and getIsActive1() then
          wait(2)
        for _, npc in ipairs(game.Workspace.Others.NPCs:GetChildren()) do
-          if npc:FindFirstChild("HumanoidRootPart") and (npc.HumanoidRootPart.Position - lplr.Character.HumanoidRootPart.Position).Magnitude <= 500 and npc.Name ~= "X Fighter Trainer" then
+          if npc:FindFirstChild("HumanoidRootPart") and (npc.HumanoidRootPart.Position - lplr.Character.HumanoidRootPart.Position).Magnitude <= 50 and npc.Name ~= "X Fighter Trainer" then
               data.Quest.Value = ""
                 break
                end
