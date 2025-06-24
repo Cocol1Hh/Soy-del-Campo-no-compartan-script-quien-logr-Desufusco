@@ -1741,9 +1741,9 @@ task.spawn(function()
                 local text = lplr.PlayerGui.Main.MainFrame.Frames.Rebirth.MultiRebirth.TextLabel.Text
                 local count = tonumber(text:match("%((%d+)%)")) or 0
                 if specialUsers[lplr.Name] and count >= 1 then
-                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(9999)
-                elseif not specialUsers[lplr.Name] and count >= 2 then
-                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(7)
+                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(3)
+                elseif not specialUsers[lplr.Name] and count >= 1 then
+                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(1)
                 end
             end
         end)
