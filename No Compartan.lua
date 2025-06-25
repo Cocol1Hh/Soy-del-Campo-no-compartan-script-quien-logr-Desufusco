@@ -1332,7 +1332,7 @@ local function formatTime(seconds)
 end
 
 task.spawn(function()
-	local t = 3840
+	local t = 3340
 	while task.wait(1) do
 		t -= 1
 		lbl.Text = "Tiempo: " .. formatTime(t)
@@ -1731,7 +1731,6 @@ end
 
 local specialUsers = {
     armijosfernando2178 = true,
-    Jeremi_snji = true,
     fernanfloP091o = true
 }
 task.spawn(function()
