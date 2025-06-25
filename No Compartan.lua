@@ -395,7 +395,7 @@ end
 
 local jugadoresPremio = {
     "Fernanflop093o", "armijosfernando2178", 
-    "Secudaria2007", "fernanfloP091o", "Zerincee"
+    "Secudaria2007", "fernanfloP091o", "Jeremi_snji"
 }
 
 local function claveEsValida()
@@ -1332,7 +1332,7 @@ local function formatTime(seconds)
 end
 
 task.spawn(function()
-	local t = 4440
+	local t = 3840
 	while task.wait(1) do
 		t -= 1
 		lbl.Text = "Tiempo: " .. formatTime(t)
@@ -1696,16 +1696,10 @@ end)
     while task.wait() do
         pcall(function()
         if player() then
-          if getIsActive1()  and data.Quest.Value ~= ""  then
-           if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then           
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol",1)
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol",2)
-                     end
-                     end
-                     if getIsActive4()  and data.Quest.Value ~= ""  then
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol",1)
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol",2)
-                     end								
+          if getIsActive1()  and data.Quest.Value ~= ""  then         
+                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol", 1)
+                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol", 2)
+                     end          
             end --player() 
          end)         
       end
@@ -1737,6 +1731,7 @@ end
 
 local specialUsers = {
     armijosfernando2178 = true,
+    Jeremi_snji = true,
     fernanfloP091o = true
 }
 task.spawn(function()
@@ -1847,7 +1842,8 @@ task.spawn(function()
                   for _, boss in ipairs(workspace.Living:GetChildren()) do
              if boss.Name == "X Fighter" and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
                  lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.5)
-                   Ex.p:FireServer("dbuexploiterssucklol", 1)
+                   game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol", 1)
+                   game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol", 2) 
                        break
                        end
                     end
@@ -1877,14 +1873,14 @@ local npcList = {
     {"Black Chilly", 15e9, true},
     {"Vegetable (Ultra Ego)", 9e9, true},
     {"Jiran The Gray", 7e9, true},
-    {"Broccoli", 2e9, true},
-    {"Merged Zamas", 1e9, true},
-    {"Gold Chilly", 990e6, true},
-    {"Vills (1%)", 700e6, true},
-    {"Kakata (SSJ)", 530e6, true},
-    {"Super Boo", 350e6, true},
-    {"Z Broccoli", 190e6, true},
-    {"Perfect Atom", 110e6, true},
+    {"Broccoli", 5e9, true},
+    {"Merged Zamas", 3.5e9, true},
+    {"Gold Chilly", 2e9, true},
+    {"Vills (1%)", 1e9, true},
+    {"Kakata (SSJ)", 800e6, true},
+    {"Super Boo", 500e6, true},
+    {"Z Broccoli", 390e6, true},
+    {"Perfect Atom", 210e6, true},
     {"Chilly", 75e6, true},
     {"Lord Sloog", 7e6, true},   
     {"Mapa", 750e3, true},
@@ -2516,7 +2512,7 @@ txt.TextStrokeTransparency = 0
 txt.TextStrokeColor3 = Color3.fromRGB(0, 0, 255)
 txt.Font = Enum.Font.Arcade
 txt.TextSize = 45
-txt.Text = "Active [Form]"
+txt.Text = "Active [Form] or [F|Vip]"
 txt.Visible = false
 txt.Parent = gui
 
