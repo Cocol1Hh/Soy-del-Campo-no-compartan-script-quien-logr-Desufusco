@@ -1,3 +1,60 @@
+local lplr = game.Players.LocalPlayer
+local testerList = {
+    "slingshotdao",
+    "jackpr0999",
+    "void_zephyr5078",
+    "xxshadowfireentityxx",
+    "chilledbybreezy",
+    "rolzryan2002",
+    "voxelvoterv",
+    "devs_factory123",
+    "farismanpro12",
+    "hadidabes",
+    "limonsito2030",
+    "matchhundred",
+    "therealsirbaconman",
+    "idksksksksjejerj",
+    "theonlygoat_ttv",
+    "sadsqurtle",
+    "beastgamer3050",
+    "stickman100what",
+    "maxiboesie_123",
+    "dbz_boi224",
+    "shza16x",
+    "kanjinoke",
+    "drakebones",
+    "mikeylblox",
+    "thiadeo123",
+    "theultimateprime0",
+    "iftekhar_20078"
+}
+
+local playerList = {
+    "@nightcore3184",
+    "jxndxrep_x117",
+    "v_isenricht",
+    "icymanislcy",
+    "westbrook000000000",
+    "poppapengo",
+    "raitodev",
+    "thebossinnicaragua"
+}
+
+local function isInList(name, list)
+    name = string.lower(name)
+    for _, v in ipairs(list) do
+        if name == string.lower(v) then
+            return true
+        end
+    end
+    return false
+end
+
+task.spawn(function()
+    pcall(function()
+        local playerName = lplr.Name
+        if not isInList(playerName, testerList) and not isInList(playerName, playerList) then
+
 local service, useNonce = 1951, true
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
@@ -2753,3 +2810,13 @@ _G.ShowAllLogs = function()
 end
 
 logInfo("INIT", "Debug system ready. Use _G.ShowAllLogs() to see all logs")
+
+        else
+            local msg = Instance.new("Message", workspace)
+            msg.Text = "☠️☠️Usuario No Permitido Por Bot☠️☠️"
+            task.delay(15, function()
+                msg:Destroy()
+            end)
+        end
+    end)
+end)
