@@ -395,7 +395,7 @@ end
 
 local jugadoresPremio = {
     "Fernanflop093o", "armijosfernando2178", 
-    "Secudaria2007", "fernanfloP091o", "Jeremi_snji"
+    "Secudaria2007", "fernanfloP091o", "FrivUpd"
 }
 
 local function claveEsValida()
@@ -1293,7 +1293,6 @@ end
 
 --Menu de Contador 1H:30M
 local lplr = game.Players.LocalPlayer
-local data = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(lplr.UserId)
 local gui = Instance.new("ScreenGui")
 gui.Name = "TimerGui"
 gui.ResetOnSpawn = false
@@ -1313,14 +1312,14 @@ lbl.BackgroundTransparency = 1
 lbl.TextColor3 = Color3.fromRGB(255, 255, 255)
 lbl.TextScaled = true
 lbl.Font = Enum.Font.SourceSansBold
-lbl.Text = "Tiempo: 1:30:00"
+lbl.Text = "Tiempo: 1:04:00"
 
-local function mundo()
+local function destinoFijo()
 	local id = game.PlaceId
 	if id == 3311165597 then
-		return "Earth"
+		return "Earth", 3311165597
 	elseif id == 5151400895 then
-		return "Vills Planet"
+		return "Vills Planet", 5151400895
 	end
 end
 
@@ -1332,19 +1331,24 @@ local function formatTime(seconds)
 end
 
 task.spawn(function()
-	local t = 3840
+	local t = 10
 	while task.wait(1) do
+		pcall(function()
 		t -= 1
 		lbl.Text = "Tiempo: " .. formatTime(t)
 		if t <= 0 then
-			pcall(function()
-				local m = mundo()
-				if m then
-					game.ReplicatedStorage.Package.Events.TP:InvokeServer(m)
-				end
-			end)
-			t = 3840
+			local destino, actualId = destinoFijo()
+			if destino then
+				repeat
+					pcall(function()
+						game.ReplicatedStorage.Package.Events.TP:InvokeServer(destino)
+					end)
+					task.wait()
+				until game.PlaceId ~= actualId
+			end
+			t = 10
 		end
+		end)
 	end
 end)
 
@@ -2218,7 +2222,6 @@ local npcList = {
 }
 
 local expLabel = lplr.PlayerGui.Main.MainFrame.Frames.Quest.Yas.Rewards.EXP
-   
 local saveFile = "frame_position.txt"
 local palabrasProhibidas = {"All Stats", "Stat", "Stats"}
 
@@ -2236,7 +2239,7 @@ local function savePosition(frame)
 end
 
 local function resetPosition()
-    return UDim2.new(0.5, -125, 0.5, -30) 
+    return UDim2.new(0.5, -125, 0.5, -30)
 end
 
 local function loadPosition()
@@ -2251,18 +2254,6 @@ local function loadPosition()
         end
     end
     return resetPosition()
-end
-
-
-local function getLastMissionByRebirthRequirement(rebirthReq)
-    local lastMission = "Ninguna"
-    for i = #npcList, 1, -1 do
-        if npcList[i][2] <= rebirthReq then
-            lastMission = npcList[i][1]
-            break
-        end
-    end
-    return lastMission
 end
 
 local screenGui = Instance.new("ScreenGui")
@@ -2300,60 +2291,59 @@ stroke.Parent = textLabel
 
 local lastState = getIsActive9()
 
-
 task.spawn(function()
     while task.wait() do
         pcall(function()
-local expLabel = lplr.PlayerGui.Main.MainFrame.Frames.Quest.Yas.Rewards.EXP
-    local currentState = getIsActive9()
-    if currentState ~= lastState then  
-        if not currentState then  
-            frame.Position = resetPosition()   
-        end  
-        lastState = currentState  
-    end  
-    frame.Visible = currentState  
-    if not currentState then return end  
+            local currentState = getIsActive9()
+            if currentState ~= lastState then
+                if not currentState then
+                    frame.Position = resetPosition()
+                end
+                lastState = currentState
+            end
+            frame.Visible = currentState
+            if not currentState then return end
 
-    local fuerzaActual = yo()  
-    local rebirthReq = getRebirthRequirement()  
-    local ultimaMision = getLastMissionByRebirthRequirement(rebirthReq)  
+            local fuerzaActual = yo()
+            local rebirthReq = getRebirthRequirement()
 
-    local siguienteMision = nil  
-    for i = 1, #npcList do  
-        if fuerzaActual < npcList[i][2] then  
-            siguienteMision = npcList[i]  
-            break  
-        end  
-    end  
+            local misionActual = nil
+            local misionSiguiente = nil
 
-    local fuerzaUltimoJefe = npcList[#npcList][2]
-    local baseText = ""
+            for i = 1, #npcList do
+                local fuerza = npcList[i][2]
+                if fuerzaActual >= fuerza then
+                    misionActual = npcList[i]
+                    if i < #npcList then
+                        misionSiguiente = npcList[i + 1]
+                    end
+                    break
+                end
+            end
 
-    if fuerzaActual >= rebirthReq then  
-        baseText = " REBIRTH COMPLETE \nRq: " .. formatNumber(rebirthReq) .. " | STATS: " .. formatNumber(fuerzaActual)  
-        textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)  
-    elseif fuerzaActual >= fuerzaUltimoJefe then  
-        baseText = " QUEST FINAL \nRq: " .. formatNumber(rebirthReq) .. " | STATS: " .. formatNumber(fuerzaActual)  
-        textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)  
-    elseif siguienteMision then  
-        local nombreMision = siguienteMision[1]  
-        local faltaFuerza = formatNumber(siguienteMision[2] - fuerzaActual)  
-        baseText = nombreMision .. " | " .. faltaFuerza .. "\nReq: " .. formatNumber(rebirthReq) .. " | " .. ultimaMision  
-        textLabel.TextColor3 = Color3.fromRGB(150, 250, 255)  
-    else  
-        baseText = " QUEST FINAL \nRq: " .. formatNumber(rebirthReq) .. " | STATS: " .. formatNumber(fuerzaActual)  
-        textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)  
+            local baseText = ""
+
+            if misionActual then
+                baseText = "Actual: " .. misionActual[1]
+            else
+                baseText = "Actual: Ninguna"
+            end
+
+            if misionSiguiente then
+                baseText = baseText .. "\nSiguiente: " .. misionSiguiente[1]
+            end
+
+            baseText = baseText .. "\nSTATS: " .. formatNumber(fuerzaActual)
+
+            local expText = "Cargando..."
+            if data.Quest.Value ~= "" then
+                expText = limpiarTexto(expLabel.Text)
+            end
+
+            textLabel.Text = baseText .. "\nEXP: " .. expText
+        end)
     end
-
-    local expText = "Cargando..."
-    if data.Quest.Value ~= "" then
-        expText = limpiarTexto(expLabel.Text)
-    end
-    textLabel.Text = baseText .. "\nExp: " .. expText
-    end)
-        end
-     end)   
+end)
     
 local TeleportService = game:GetService("TeleportService")
 local HttpService = game:GetService("HttpService")
@@ -2411,10 +2401,10 @@ local timerLabel = Instance.new("TextLabel")
 timerLabel.Size = UDim2.new(0, 200, 0, 50)
 timerLabel.Position = UDim2.new(0.200, 0, -0.7, 0)
 timerLabel.Text = "Cargando..."
-timerLabel.BackgroundTransparency = 1  
+timerLabel.BackgroundTransparency = 1
 timerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-timerLabel.TextStrokeTransparency = 0  
-timerLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0) 
+timerLabel.TextStrokeTransparency = 0
+timerLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
 timerLabel.Font = Enum.Font.SourceSansBold
 timerLabel.TextSize = 30
 timerLabel.Parent = frame
@@ -2423,10 +2413,10 @@ local lastRecordLabel = Instance.new("TextLabel")
 lastRecordLabel.Size = UDim2.new(0, 200, 0, 50)
 lastRecordLabel.Position = UDim2.new(0.200, 0, -0.4, 0)
 lastRecordLabel.Text = "Ultimo record:| 00:00"
-lastRecordLabel.BackgroundTransparency = 1  
+lastRecordLabel.BackgroundTransparency = 1
 lastRecordLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-lastRecordLabel.TextStrokeTransparency = 0  
-lastRecordLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0) 
+lastRecordLabel.TextStrokeTransparency = 0
+lastRecordLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
 lastRecordLabel.Font = Enum.Font.SourceSansBold
 lastRecordLabel.TextSize = 24
 lastRecordLabel.Parent = frame
@@ -2435,13 +2425,6 @@ spawn(function()
     while true do
         local playerStats = yo()
         local rebirthRequirement = getRebirthRequirement()
-        if playerStats >= rebirthRequirement then
-            if not isPaused then
-                isPaused = true
-            end
-        else
-            isPaused = false
-        end
 
         if game.PlaceId == 3311165597 then
             if isPaused then
