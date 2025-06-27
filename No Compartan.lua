@@ -1615,22 +1615,24 @@ if #Players:GetPlayers() == 1 and getIsActive8() then
 end
 --Script 3 \/ Duplicar server
 local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local lplr = Players.LocalPlayer
 
+if #Players:GetPlayers() == 1 and getIsActive8() then
 task.spawn(function()
-    repeat task.wait() until lplr.Character and getIsActive8()
-    if #Players:GetPlayers() == 1 then
-        Players.PlayerAdded:Connect(function(player)
-            if player ~= lplr and getIsActive8() then
-                pcall(function()
-                    local destino = (game.PlaceId == 5151400895) and "Vills Planet" or "Earth"
-                    ReplicatedStorage.Package.Events.TP:InvokeServer(destino)
-                end)
+    local tpHecho = false
+    while not tpHecho do
+        pcall(function()
+            local char = lplr.Character or lplr.CharacterAdded:Wait()
+            if #Players:GetPlayers() > 1 and getIsActive8() then
+                local destino = (game.PlaceId == 5151400895) and "Vills Planet" or "Earth"
+                game:GetService("ReplicatedStorage").Package.Events.TP:InvokeServer(destino)
+                tpHecho = true
             end
         end)
+        task.wait()
     end
 end)
+end
 --FIN DE LA PROTECION SCRIPTS
 
   task.spawn(function()
