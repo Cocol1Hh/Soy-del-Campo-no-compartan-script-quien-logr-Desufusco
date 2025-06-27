@@ -1558,6 +1558,8 @@ if #game.Players:GetPlayers() == 1 and getIsActive8() then
 else
     if getIsActive8() and #game.Players:GetPlayers() > 1 then
         estadoCongela = true 
+        elseif not getIsActive8() then
+        estadoCongela = true 
     end
 end
 --Script 2 \/ Tp ah wiis
