@@ -1,32 +1,7 @@
 local lplr = game.Players.LocalPlayer
 local testerList = {
-    "slingshotdao",
-    "jackpr0999",
-    "void_zephyr5078",
-    "xxshadowfireentityxx",
-    "chilledbybreezy",
-    "rolzryan2002",
-    "voxelvoterv",
-    "devs_factory123",
-    "farismanpro12",
-    "hadidabes",
-    "limonsito2030",
-    "matchhundred",
-    "therealsirbaconman",
-    "idksksksksjejerj",
-    "theonlygoat_ttv",
-    "sadsqurtle",
-    "beastgamer3050",
-    "stickman100what",
-    "maxiboesie_123",
-    "dbz_boi224",
-    "shza16x",
-    "kanjinoke",
-    "drakebones",
-    "mikeylblox",
-    "thiadeo123",
-    "theultimateprime0",
-    "iftekhar_20078"
+    "vgfgc",
+    "gggff"
 }
 
 local playerList = {   
