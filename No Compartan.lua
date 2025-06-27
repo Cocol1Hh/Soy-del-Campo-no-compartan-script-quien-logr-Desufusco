@@ -29,15 +29,9 @@ local testerList = {
     "iftekhar_20078"
 }
 
-local playerList = {
-    "@nightcore3184",
-    "jxndxrep_x117",
-    "v_isenricht",
-    "icymanislcy",
-    "westbrook000000000",
-    "poppapengo",
-    "raitodev",
-    "thebossinnicaragua"
+local playerList = {   
+    "hhhhhh",
+    "gff"
 }
 
 local function isInList(name, list)
