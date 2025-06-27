@@ -859,7 +859,7 @@ local textProperties = {
     {text = "Fly", position = UDim2.new(-0.04 + 0, 0, 0.320, 0), color = Color3.fromRGB(200, 200, 200), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Brillo", position = UDim2.new(0.473 + 0, 0, 0.320, 0), color = Color3.fromRGB(180, 200, 100), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Duck", position = UDim2.new(-0.160 + 0, 0, 0.420, 0), color = Color3.fromRGB(200, 100, 200), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Dupli", position = UDim2.new(0.350 + 0, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
+    {text = "Protect", position = UDim2.new(0.350 + 0, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Req", position = UDim2.new(-0.160 + 0, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Tp|Planet", position = UDim2.new(0.350 + 0.170, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 80, 0, 36)},
     {text = "Form", position = UDim2.new(-0.140 + 0, 0, 0.570, 0), color = Color3.fromRGB(200, 200, 90), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
@@ -1466,7 +1466,7 @@ local getIsActive4 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.195, 0), "Switch
 local getIsActive5 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.275, 0), "Switch5", LoadSwitchState("Switch5"))--Black
 local getIsActive6 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.275, 0), "Switch6", LoadSwitchState("Switch6"))--Hallowen🎃
 local getIsActive7 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.420, 0), "Switch7", LoadSwitchState("Switch7"))--Duck
-local getIsActive8 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.420, 0), "Switch8", LoadSwitchState("Switch8"))--Duplicate server
+local getIsActive8 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.420, 0), "Switch8", LoadSwitchState("Switch8"))--Protecion server
 local getIsActive9 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.495, 0), "Switch9", LoadSwitchState("Switch9"))--Graf
 local getIsActive10 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.495, 0), "Switch10", LoadSwitchState("Switch10"))--Planet
 local getIsActive11 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.570, 0), "Switch11", LoadSwitchState("Switch11"))--Mapa
@@ -1532,12 +1532,109 @@ function player()
 	return false
 end
 
+--SCRIPTS PARA PROTEGER
+--Script 1 \/ Para Pausar Los Bucles 
+local lplr = game.Players.LocalPlayer
+local estadoCongela = false
 
+function Congela()
+    return estadoCongela
+end
+
+if #game.Players:GetPlayers() == 1 and getIsActive8() then
+    task.spawn(function()
+        while true do
+            pcall(function()
+                local players = game.Players:GetPlayers()
+                if #players == 1 and players[1] == lplr then
+                    estadoCongela = true
+                else
+                    estadoCongela = false
+                end
+            end)
+            task.wait()
+        end
+    end)
+else
+    if getIsActive8() and #game.Players:GetPlayers() > 1 then
+        estadoCongela = true 
+    end
+end
+--Script 2 \/ Tp ah wiis
+local Players = game:GetService("Players")
+local lplr = Players.LocalPlayer
+
+local coordenadas = {
+    Vector3.new(5054.7, 1288.8, -6006.0),
+    Vector3.new(5056.3, 1288.5, -5994.1),
+    Vector3.new(5019.3, 1288.8, -6005.7),
+    Vector3.new(5041.5, 1288.8, -6008.1),
+    Vector3.new(5041.7, 1288.8, -5996.1),
+}
+
+local function elegirCoordenada()
+    return coordenadas[math.random(#coordenadas)]
+end
+
+local function enZona(val)
+    local pos = lplr.Character and lplr.Character:FindFirstChild("HumanoidRootPart") and lplr.Character.HumanoidRootPart.Position
+    if not pos then return false end
+    for _, zona in ipairs(coordenadas) do
+        if (pos - zona).Magnitude <= val then
+            return true
+        end
+    end
+    return false
+end
+
+local function teletransportar()
+    local char = lplr.Character or lplr.CharacterAdded:Wait()
+    local hrp = char:WaitForChild("HumanoidRootPart")
+    local pos = elegirCoordenada()
+    hrp.CFrame = CFrame.new(pos)
+end
+
+if #Players:GetPlayers() == 1 and getIsActive8() then
+    Players.PlayerAdded:Connect(function(p)
+        if p ~= lplr then
+            teletransportar()
+            task.spawn(function()
+                while true do            
+                    task.wait()
+                    if not enZona(70) then
+                        teletransportar()
+                    else
+                        break
+                    end
+                end
+            end)
+        end 
+    end)
+end
+--Script 3 \/ Duplicar server
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local lplr = Players.LocalPlayer
+
+task.spawn(function()
+    repeat task.wait() until lplr.Character and getIsActive8()
+    if #Players:GetPlayers() == 1 then
+        Players.PlayerAdded:Connect(function(player)
+            if player ~= lplr and getIsActive8() then
+                pcall(function()
+                    local destino = (game.PlaceId == 5151400895) and "Vills Planet" or "Earth"
+                    ReplicatedStorage.Package.Events.TP:InvokeServer(destino)
+                end)
+            end
+        end)
+    end
+end)
+--FIN DE LA PROTECION SCRIPTS
 
   task.spawn(function()
     while task.wait() do
         pcall(function()
-      if getIsActive11() and player() then
+      if getIsActive11() and player() and Congela() then
         local Forms = {
         	                      'Nephalem',
         	                      'Seraphim Of Destruction',
@@ -1583,7 +1680,7 @@ end
      task.spawn(function()
     while task.wait() do
         pcall(function()
-      if getIsActive12() and player() then
+      if getIsActive12() and player() and Congela() then
         local Forms = {                                
                                   'True SSJG',
                                   'Blanco',
@@ -1625,6 +1722,7 @@ local tiempo = tick()
 task.spawn(function()
     while true do
         pcall(function()
+        if Congela() then
             local char = workspace.Living:FindFirstChild(lplr.Name)
             if not char then return end
             local stats = char:FindFirstChild("Stats")
@@ -1644,6 +1742,7 @@ task.spawn(function()
             else
                 game.ReplicatedStorage.Package.Events.cha:InvokeServer(false, "dbuexploiterssucklol")
                 tiempo = tick()
+            end
             end
         end)
         task.wait()
@@ -1757,7 +1856,7 @@ end)
     while task.wait() do
         pcall(function()
         if player() then
-          if getIsActive1()  and data.Quest.Value ~= ""  then         
+          if getIsActive1()  and data.Quest.Value ~= "" and Congela() then         
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol", 1)
                                         game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol", 2)
                      end          
@@ -1770,7 +1869,7 @@ end)
   task.spawn(function()
     while task.wait() do
         pcall(function()
-            if getIsActive1() and player() then
+            if getIsActive1() and player() and Congela() then
                 lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
             end
         end)
@@ -1797,7 +1896,7 @@ local specialUsers = {
 task.spawn(function()
     while true do
         pcall(function()
-            if getIsActive3() and player() then
+            if getIsActive3() and player() and Congela() then
                 local text = lplr.PlayerGui.Main.MainFrame.Frames.Rebirth.MultiRebirth.TextLabel.Text
                 local count = tonumber(text:match("%((%d+)%)")) or 0
                 if specialUsers[lplr.Name] and count >= 1 then
@@ -1814,7 +1913,7 @@ end)
 task.spawn(function()
     while true do
         pcall(function()
-  if data.Quest.Value ~= "" and player() and getIsActive1() then
+  if data.Quest.Value ~= "" and player() and getIsActive1() and Congela() then
          wait(2)
        for _, npc in ipairs(game.Workspace.Others.NPCs:GetChildren()) do
           if npc:FindFirstChild("HumanoidRootPart") and (npc.HumanoidRootPart.Position - lplr.Character.HumanoidRootPart.Position).Magnitude <= 50 and npc.Name ~= "X Fighter Trainer" then
@@ -1837,7 +1936,7 @@ local cooldown = 15
 task.spawn(function()
     while task.wait() do
         pcall(function()
-            if getIsActive1() then
+            if getIsActive1() and Congela() then
                 local char = lplr.Character
                 local humanoid = char and char:FindFirstChild("Humanoid")
                 local hrp = char and char:FindFirstChild("HumanoidRootPart")        
@@ -1885,7 +1984,7 @@ end)
 task.spawn(function()
     while task.wait() do
         pcall(function()       
-            if player() then
+            if player() and Congela() then
                 if game.Players.LocalPlayer.Status.Blocking.Value == false and getIsActive1() then
                     game.Players.LocalPlayer.Status.Blocking.Value = true               
                 end                                                    
@@ -1953,6 +2052,7 @@ local npcList = {
 task.spawn(function()
 while true do
 pcall(function()
+if Congela() then
 if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then   
 if getIsActive1() and player()  then
                if data.Quest.Value ~= "" then
@@ -1989,6 +2089,7 @@ if getIsActive1() and player()  then
                 end 
            end
            end
+           end
      end)
      task.wait()
     end
@@ -1999,7 +2100,7 @@ canvolley = true
 task.spawn(function() 
     while true do
         pcall(function()
-        if player() then  
+        if player() and Congela() then  
        if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then        
                 if (yo() >= 40000 and data.Quest.Value ~= "" and getIsActive1())  then                                                     
                     local stats = yo()
