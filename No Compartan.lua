@@ -1874,8 +1874,8 @@ task.spawn(function()
                 local count = tonumber(text:match("%((%d+)%)")) or 0
                 if specialUsers[lplr.Name] and count >= 1 then
                     game.ReplicatedStorage.Package.Events.reb:InvokeServer(9999)
-                elseif not specialUsers[lplr.Name] and count >= 1 then
-                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(3)
+                elseif not specialUsers[lplr.Name] and count >= 10 then
+                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(10)
                 end
             end
         end)
