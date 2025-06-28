@@ -1357,7 +1357,7 @@ local function formatTime(seconds)
 end
 
 task.spawn(function()
-	local t = 3875
+	local t = 3275
 	while task.wait(1) do
 		pcall(function()
 		t -= 1
@@ -1372,7 +1372,7 @@ task.spawn(function()
 					task.wait()
 				until game.PlaceId ~= actualId
 			end
-			t = 3875
+			t = 3275
 		end
 		end)
 	end
