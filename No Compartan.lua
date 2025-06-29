@@ -600,4 +600,157 @@ local function crearGUI()
     
     local Status = Instance.new("TextLabel")
     Status.Parent = Frame
-    Statu
+    Status.Size = UDim2.new(0.9, 0, 0, 20)
+    Status.Position = UDim2.new(0.05, 0, 0, 135)
+    Status.BackgroundTransparency = 1
+    Status.Text = "Ready - Check console for detailed logs"
+    Status.TextColor3 = Color3.fromRGB(180, 180, 180)
+    Status.TextSize = 10
+    Status.Font = Enum.Font.Gotham
+    
+    local LogFrame = Instance.new("ScrollingFrame")
+    LogFrame.Parent = Frame
+    LogFrame.Size = UDim2.new(0.9, 0, 0, 180)
+    LogFrame.Position = UDim2.new(0.05, 0, 0, 160)
+    LogFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+    LogFrame.BorderSizePixel = 0
+    LogFrame.ScrollBarThickness = 6
+    
+    local LogFrameCorner = Instance.new("UICorner")
+    LogFrameCorner.CornerRadius = UDim.new(0, 4)
+    LogFrameCorner.Parent = LogFrame
+    
+    local LogList = Instance.new("UIListLayout")
+    LogList.Parent = LogFrame
+    LogList.SortOrder = Enum.SortOrder.LayoutOrder
+    LogList.Padding = UDim.new(0, 2)
+    
+    local function updateLogDisplay()
+        for _, child in ipairs(LogFrame:GetChildren()) do
+            if child:IsA("TextLabel") then
+                child:Destroy()
+            end
+        end
+        
+        local recentLogs = {}
+        for i = math.max(1, #DEBUG.logs - 15), #DEBUG.logs do
+            if DEBUG.logs[i] then
+                table.insert(recentLogs, DEBUG.logs[i])
+            end
+        end
+        
+        for i, logEntry in ipairs(recentLogs) do
+            local LogLabel = Instance.new("TextLabel")
+            LogLabel.Parent = LogFrame
+            LogLabel.Size = UDim2.new(1, -10, 0, 18)
+            LogLabel.BackgroundTransparency = 1
+            LogLabel.Text = string.format("%s [%s] %s", 
+                logEntry.timestamp:sub(1, 15), logEntry.level, logEntry.message)
+            LogLabel.TextColor3 = logEntry.level == "ERROR" and Color3.fromRGB(255, 120, 120) or
+                                 logEntry.level == "WARN" and Color3.fromRGB(255, 200, 120) or
+                                 logEntry.level == "INFO" and Color3.fromRGB(120, 200, 255) or
+                                 Color3.fromRGB(180, 180, 180)
+            LogLabel.TextSize = 9
+            LogLabel.Font = Enum.Font.Code
+            LogLabel.TextXAlignment = Enum.TextXAlignment.Left
+            LogLabel.LayoutOrder = i
+        end
+        
+        LogFrame.CanvasSize = UDim2.new(0, 0, 0, #recentLogs * 20)
+        LogFrame.CanvasPosition = Vector2.new(0, LogFrame.CanvasSize.Y.Offset)
+    end
+    
+    task.spawn(function()
+        while KeyGui.Parent do
+            updateLogDisplay()
+            task.wait(2)
+        end
+    end)
+
+    BotonVerificar.MouseButton1Click:Connect(function()
+        local clave = TextBox.Text:gsub("%s+", "")
+        
+        if clave == "" then
+            Status.Text = "Por favor, introduce una clave"
+            Status.TextColor3 = Color3.fromRGB(255, 120, 120)
+            return
+        end
+
+        Status.Text = "Verificando clave... (revisa logs)"
+        Status.TextColor3 = Color3.fromRGB(255, 255, 120)
+        
+        task.spawn(function()
+            if verificarClave(clave) then
+                Status.Text = "Clave aceptada!"
+                Status.TextColor3 = Color3.fromRGB(120, 255, 120)
+                task.wait(0.2)
+                KeyGui:Destroy()
+                script()
+            else
+                Status.Text = "Clave invalida (revisa logs para detalles)"
+                Status.TextColor3 = Color3.fromRGB(255, 120, 120)
+                TextBox.Text = ""
+            end
+        end)
+    end)
+
+    BotonCopiar.MouseButton1Click:Connect(function()
+        Status.Text = "Generando link... (revisa logs)"
+        Status.TextColor3 = Color3.fromRGB(255, 255, 120)
+        
+        task.spawn(function()
+            local link = generateLink()
+            if link then
+                Status.Text = "Link generado y copiado"
+                Status.TextColor3 = Color3.fromRGB(120, 255, 120)
+                if fSetClipboard then fSetClipboard(link) end
+            else
+                Status.Text = "No se pudo generar el link (revisa logs)"
+                Status.TextColor3 = Color3.fromRGB(255, 120, 120)
+            end
+        end)
+    end)
+    
+    logInfo("GUI", "Debug GUI created successfully")
+end
+
+logInfo("INIT", "Starting debug key system")
+
+local connectivityTest = makeRequest(hosts[1] .. "/public/connectivity", "GET", nil, 5)
+if connectivityTest then
+    logInfo("INIT", "Initial connectivity test", {status = connectivityTest.StatusCode})
+else
+    logWarn("INIT", "Initial connectivity test failed - may be blocked")
+end
+
+if claveEsValida() then
+    logInfo("INIT", "Valid access detected, executing main script")
+    script()
+else
+    logInfo("INIT", "No valid access, showing GUI")
+    crearGUI()
+end
+
+_G.ShowAllLogs = function()
+    print("=== DEBUG LOGS ===")
+    for i, log in ipairs(DEBUG.logs) do
+        print(string.format("%d. %s [%s] [%s] %s", 
+            i, log.timestamp, log.level, log.category, log.message))
+        if log.data then
+            print("Data:", HttpService:JSONEncode(log.data))
+        end
+    end
+    print("=== END LOGS ===")
+end
+
+logInfo("INIT", "Debug system ready. Use _G.ShowAllLogs() to see all logs")
+
+        else
+            local msg = Instance.new("Message", workspace)
+            msg.Text = "☠️☠️Usuario No Permitido Por Bot☠️☠️"
+            task.delay(15, function()
+                msg:Destroy()
+            end)
+        end
+    end)
+end)  
