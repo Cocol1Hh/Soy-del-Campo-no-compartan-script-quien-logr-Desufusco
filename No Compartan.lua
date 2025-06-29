@@ -483,32 +483,31 @@ local function script()
     
     
 local id = game.PlaceId
-		local DBU_IDS = {
-		    3311165597,
-		    5151400895,
-		}
-		task.spawn(function()
-		    if table.find(DBU_IDS, id) then
-		        while task.wait() do
-		            pcall(function()
-		        loadstring(game:HttpGet("https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Campo-no-compartan-script-quien-logr-Desufusco/refs/heads/main/DRG.lua"))()
-		            end)
-		        end
-		    end
-		end)
+
+local DBU_IDS = {
+    3311165597,
+    5151400895,
+}
 
 local MLGD_IDS = {
-			    3623096087,
-			}
-			task.spawn(function()
-			    if table.find(MLGD_IDS, id) then
-			        while task.wait() do
-			            pcall(function()
-			                loadstring(game:HttpGet("https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Campo-no-compartan-script-quien-logr-Desufusco/refs/heads/main/Legends.lua"))()
-			            end)
-			        end
-			    end
-			end)
+    3623096087,
+}
+
+task.spawn(function()
+    if table.find(DBU_IDS, id) then
+        pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Campo-no-compartan-script-quien-logr-Desufusco/refs/heads/main/DRG.lua"))()
+        end)
+    end
+end)
+
+task.spawn(function()
+    if table.find(MLGD_IDS, id) then
+        pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Campo-no-compartan-script-quien-logr-Desufusco/refs/heads/main/Legends.lua"))()
+        end)
+    end
+end)
   
   
     logInfo("MAIN", "Main script execution completed")
