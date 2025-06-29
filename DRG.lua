@@ -1036,7 +1036,7 @@ if #game.Players:GetPlayers() == 1 and getIsActive8() then
                     estadoCongela = false
                 end
             end)
-            task.wait()
+            task.wait(.7)
         end
     end)
 else
@@ -1113,7 +1113,7 @@ task.spawn(function()
                 tpHecho = true
             end
         end)
-        task.wait()
+        task.wait(.5)
     end
 end)
 end
@@ -1341,7 +1341,7 @@ end)
 
 
   task.spawn(function()
-    while task.wait() do
+    while task.wait(.5) do
         pcall(function()
         if player() then
           if getIsActive1()  and data.Quest.Value ~= "" and Congela() then         
@@ -1394,7 +1394,7 @@ task.spawn(function()
                 end
             end
         end)
-        task.wait(0.3)
+        task.wait(.8)
     end
 end)
 
@@ -2116,7 +2116,7 @@ spawn(function()
                 isPaused = true
             end
         end
-        task.wait()
+        task.wait(.5)
     end
 end)
 
@@ -2154,7 +2154,7 @@ task.spawn(function()
         else
             txt.Visible = false
         end
-        task.wait(0.2)
+        task.wait(1)
     end
 end)
 
