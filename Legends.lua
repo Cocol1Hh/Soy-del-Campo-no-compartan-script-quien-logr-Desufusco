@@ -132,13 +132,13 @@ pingLabel.TextSize = 7
 pingLabel.Parent = Barra1
 
 
-local timeLabel = Instance.new("TextLabel")
-timeLabel.Size = UDim2.new(0, 100, 0, 10)
-timeLabel.Position = UDim2.new(0.490, 0, 0.009, 0)
-timeLabel.BackgroundTransparency = 1
-timeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-timeLabel.TextSize = 7
-timeLabel.Parent = Barra1
+local Kills = Instance.new("TextLabel")
+Kills.Size = UDim2.new(0, 100, 0, 10)
+Kills.Position = UDim2.new(0.490, 0, 0.009, 0)
+Kills.BackgroundTransparency = 1
+Kills.TextColor3 = Color3.fromRGB(255, 255, 255)
+Kills.TextSize = 7
+Kills.Parent = Barra1
 
 local Fps = Instance.new("TextLabel")
 Fps.Size = UDim2.new(0, 100, 0, 10)
@@ -225,7 +225,7 @@ local textProperties = {
     {text = "Reb|Stats", position = UDim2.new(-0.160 + 0.170, 0, 0.195, 0), color = Color3.fromRGB(0, 255, 255), parent = Barra1, size = UDim2.new(0, 75, 0, 36)},
     {text = "Gift", position = UDim2.new(0.360 + 0, 0, 0.195, 0), color = Color3.fromRGB(0, 0, 255), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Size", position = UDim2.new(-0.160 + 0, 0, 0.270, 0), color = Color3.fromRGB(255, 255, 0), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "...", position = UDim2.new(0.350 + 0, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 255), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
+    {text = "Speed", position = UDim2.new(0.350 + 0, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 255), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Speed", position = UDim2.new(-0.04 + 0, 0, 0.320, 0), color = Color3.fromRGB(200, 200, 200), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Brillo", position = UDim2.new(0.473 + 0, 0, 0.320, 0), color = Color3.fromRGB(180, 200, 100), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Duck", position = UDim2.new(-0.160 + 0, 0, 0.420, 0), color = Color3.fromRGB(200, 100, 200), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
@@ -643,6 +643,62 @@ task.spawn(function()
     end
 end)--*(2)*--
 
+
+local lplr = game.Players.LocalPlayer
+local char = lplr.Character or lplr.CharacterAdded:Wait()
+local hrp = char:WaitForChild("HumanoidRootPart")
+local cam = workspace.CurrentCamera
+
+local maquinasCorrer = {
+    {pos = Vector3.new(-136.0, 6.0, -107.3), mirar = Vector3.new(-136.2, 6.9, -123.0), reqAgility = 100},
+    {pos = Vector3.new(-201.5, 8.1, -121.8), mirar = Vector3.new(-201.6, 6.9, -101.9), reqAgility = 1000},
+    {pos = Vector3.new(-230.5, 8.1, -95.6), mirar = Vector3.new(-230.0, 9.9, -119.9), reqAgility = 2000},
+    {pos = Vector3.new(2661.2, 28.6, 960.5), mirar = Vector3.new(2659.1, 35.7, 857.1), reqAgility = 5000},
+    {pos = Vector3.new(-2915.1, 38.5, -590.4), mirar = Vector3.new(-3043.0, 48.8, -582.7), reqAgility = 6000},
+    {pos = Vector3.new(-7043.2, 33.2, -1458.8), mirar = Vector3.new(-7189.7, 43.6, -1453.7), reqAgility = 7000}
+}
+
+task.spawn(function()
+    while task.wait() do       
+        pcall(function()
+ 		if getIsActive6() then       
+            local agility = lplr:FindFirstChild("Agility")
+            if not agility then return end
+            local mejor = nil
+            local mejorReq = -math.huge
+            for _, z in ipairs(maquinasCorrer) do
+                if agility.Value >= z.reqAgility and z.reqAgility > mejorReq then
+                    mejor = z
+                    mejorReq = z.reqAgility
+                end
+            end
+            if mejor then
+                local cf = CFrame.lookAt(mejor.pos, mejor.mirar)
+                local distancia = (hrp.Position - mejor.pos).Magnitude
+
+                if distancia > 5 then
+                    lplr.Character.HumanoidRootPart.CFrame = cf
+                end
+
+                cam.CFrame = cf
+
+                if distancia <= 5 then
+                    if getIsActive6() then
+                        keypress(0x57)
+                    else
+                        keyrelease(0x57)
+                    end
+                else
+                    keyrelease(0x57)
+                end
+            else
+                keyrelease(0x57)
+            end
+            end
+        end)
+    end
+end)
+
 task.spawn(function()
 	while true do
 		pcall(function()
@@ -702,6 +758,7 @@ task.spawn(function()
 		pcall(function()
 		if getIsActive5() then
 				game:GetService("ReplicatedStorage").rEvents.changeSpeedSizeRemote:InvokeServer("changeSize", 2)
+            game:GetService("ReplicatedStorage").rEvents.savePlayerSizeEvent:FireServer("savePlayerSizeOption")
 			end
 		end)
 		task.wait(.5)
@@ -724,10 +781,14 @@ task.spawn(function()
     pcall(function()
     if player() then
         local ping = math.floor(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue())
-        pingLabel.Text = "Ping: " .. (ping < 1000 and ping or math.floor(ping / 10) * 10) .. " ms"---PING
+             pingLabel.Text = "Ping: " .. (ping < 1000 and ping or math.floor(ping / 10) * 10) .. " ms"---PING
 
         local fpsValue = math.floor(game:GetService("Stats").Workspace["Heartbeat"]:GetValue())
-        Fps.Text = "FPS: " .. tostring(fpsValue)
+             Fps.Text = "FPS: " .. tostring(fpsValue)
+             		 	
+              Kills.Text = "Kills: " .. formatNumber(lplr.leaderstats.Kills.Value)
+			
+			
              end
          end)        
     end
