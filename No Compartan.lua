@@ -164,8 +164,6 @@ end
 local hosts = {
     "https://api.platoboost.com",
     "https://api.platoboost.net",
-    "https://platoboost-api.herokuapp.com",
-    "https://boost-api.vercel.app"
 }
 
 local function makeRequest(url, method, body, timeout)
