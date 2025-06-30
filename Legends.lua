@@ -618,6 +618,7 @@ task.spawn(function()
 end)
 
 
+
 --*(2)*--
 task.spawn(function()
     while true do
@@ -671,7 +672,7 @@ task.spawn(function()
                 local folder = q and q:FindFirstChild(folderName)
                 if folder then
                     for _, quest in pairs(folder:GetChildren()) do
-                        questsEvent:FireServer("collectQuest", quest)
+                        game:GetService("ReplicatedStorage").rEvents.questsEvent:FireServer("collectQuest", quest)
                         task.wait()
                     end
                 end
