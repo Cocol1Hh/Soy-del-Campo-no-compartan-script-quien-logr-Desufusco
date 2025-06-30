@@ -24,12 +24,15 @@ task.spawn(function()
         local playerName = lplr.Name
         if not isInList(playerName, testerList) and not isInList(playerName, playerList) then
 local service, useNonce = 1951, true
+
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local StarterGui = game:GetService("StarterGui")
 local RunService = game:GetService("RunService")
 
-local ArchivoClaveGuardada = "jses_syn_debug"
+local function getPlayerKeyFile()
+    return "jses_syn_debug_" .. Players.LocalPlayer.Name
+end
 
 local DEBUG = {
     enabled = true,
@@ -124,7 +127,7 @@ local function getSystemInfo()
     return info
 end
 
-logInfo("SYSTEM", "Sistema de verificación rápida inicializado")
+logInfo("SYSTEM", "Sistema basado en jugador inicializado")
 
 local fSetClipboard = setclipboard or toclipboard or function(text)
     logWarn("CLIPBOARD", "Usando clipboard de respaldo", {text = text:sub(1, 50) .. "..."})
@@ -151,11 +154,10 @@ local fRequest = request or http_request or (syn and syn.request) or function(op
     end
 end
 
-local fGetHwid = gethwid or function() 
-    local hwid = tostring(Players.LocalPlayer.UserId)
-    logDebug("HWID", "Usando HWID de respaldo", {hwid = hwid})
-    return hwid
+local fGetPlayerIdentifier = function() 
+    return Players.LocalPlayer.Name
 end
+
 
 local fIsFile = isfile or function() logDebug("FILE", "isfile no disponible"); return false end
 local fReadFile = readfile or function() logDebug("FILE", "readfile no disponible"); return "" end
@@ -171,7 +173,7 @@ end
 
 local hosts = {
     "https://api.platoboost.com",
-    "https://api.platoboost.net",
+    "https://api.platoboost.net"
 }
 
 local userAgents = {
@@ -180,9 +182,7 @@ local userAgents = {
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
     "Roblox/WinInet",
     "RobloxStudio/WinInet",
-    "Roblox/Debug-KeySystem",
-    "curl/7.68.0",
-    "PostmanRuntime/7.28.0"
+    "Roblox/Debug-KeySystem"
 }
 
 local function getRandomUserAgent()
@@ -192,7 +192,7 @@ end
 local function makeRequest(url, method, body, timeout, retries)
     timeout = timeout or 10
     method = method or "GET"
-    retries = retries or 1
+    retries = retries or 2
     
     for attempt = 1, retries do
         local requestData = {
@@ -239,21 +239,18 @@ local function makeRequest(url, method, body, timeout, retries)
     return nil
 end
 
-
 local function verificarClaveRapida(clave, hostGuardado, metodoGuardado)
-    logInfo("FAST_KEY", string.format("⚡ Verificación rápida con host guardado: %s", hostGuardado:gsub("https://", ""):gsub("http://", "")))
+    logInfo("FAST_KEY", string.format("⚡ Verificación rápida con: %s", hostGuardado:gsub("https://", "")))
     
-    local identifier = fGetHwid()
+    local identifier = fGetPlayerIdentifier()
     local nonce = useNonce and generateNonce() or nil
-    
     
     if metodoGuardado == "whitelist" then
         local whitelistEndpoints = {
             string.format("/public/whitelist/%d?identifier=%s&key=%s%s",
                 service, HttpService:UrlEncode(identifier), 
                 HttpService:UrlEncode(clave), nonce and "&nonce="..nonce or ""),
-            string.format("/api/check/%d/%s/%s", service, identifier, clave),
-            string.format("/verify?service=%d&id=%s&key=%s", service, identifier, clave)
+            string.format("/api/check/%d/%s/%s", service, identifier, clave)
         }
         
         for _, endpoint in ipairs(whitelistEndpoints) do
@@ -275,7 +272,7 @@ local function verificarClaveRapida(clave, hostGuardado, metodoGuardado)
             end
         end
     else
-        local redeemEndpoints = {"/public/redeem/" .. service, "/api/redeem", "/redeem"}
+        local redeemEndpoints = {"/public/redeem/" .. service, "/api/redeem"}
         
         for _, endpoint in ipairs(redeemEndpoints) do
             local response = makeRequest(hostGuardado .. endpoint, "POST", {
@@ -300,24 +297,20 @@ local function verificarClaveRapida(clave, hostGuardado, metodoGuardado)
         end
     end
     
-    logWarn("FAST_KEY", "⚠️ Host guardado falló, iniciando verificación completa")
+    logWarn("FAST_KEY", "⚠️ Host guardado falló, probando ambos hosts")
     return false
 end
 
--- FUNCIÓN PARALELA PARA PROBAR CONECTIVIDAD (OPTIMIZADA)
 local function testConnectivity()
-    logInfo("CONNECTIVITY", "🔍 Probando conectividad...")
+    logInfo("CONNECTIVITY", "🔍 Probando conectividad en ambos hosts...")
     
     local workingHosts = {}
     local completedTests = 0
-    local totalTests = math.min(#hosts, 8) 
     
     DEBUG.workingHosts = {}
     DEBUG.failedHosts = {}
     
-    for i = 1, totalTests do
-        local host = hosts[i]
-        
+    for i, host in ipairs(hosts) do
         task.spawn(function()
             local endpoints = {"/public/connectivity", "/api/status", "/health", ""}
             local hostWorking = false
@@ -332,9 +325,14 @@ local function testConnectivity()
                     if response.StatusCode == 200 or response.StatusCode == 404 or response.StatusCode == 405 then
                         table.insert(workingHosts, host)
                         hostWorking = true
+                        logSuccess("CONNECTIVITY", string.format("✅ %s funcionando", host:gsub("https://", "")))
                         break
                     end
                 end
+            end
+            
+            if not hostWorking then
+                logWarn("CONNECTIVITY", string.format("⚠️ %s no responde", host:gsub("https://", "")))
             end
             
             completedTests = completedTests + 1
@@ -344,19 +342,14 @@ local function testConnectivity()
     local startTime = tick()
     local maxWaitTime = 8
     
-    while completedTests < totalTests and (tick() - startTime) < maxWaitTime do
+    while completedTests < 2 and (tick() - startTime) < maxWaitTime do
         task.wait(0.1)
-        
-        if #workingHosts >= 3 then
-            logInfo("CONNECTIVITY", "✅ Suficientes hosts encontrados")
-            break
-        end
     end
     
     local workingCount = #workingHosts
     
     if workingCount > 0 then
-        logSuccess("CONNECTIVITY", string.format("✅ %d hosts funcionando", workingCount))
+        logSuccess("CONNECTIVITY", string.format("✅ %d de 2 hosts funcionando", workingCount))
         return workingHosts
     else
         logError("CONNECTIVITY", "❌ Ningún host funciona")
@@ -364,9 +357,8 @@ local function testConnectivity()
     end
 end
 
--- FUNCIÓN PARALELA PARA GENERAR LINKS (OPTIMIZADA)
 local function generateLink()
-    logInfo("LINK", "🔗 Generando link...")
+    logInfo("LINK", "🔗 Generando link seguro...")
     
     local workingHosts = testConnectivity()
     if not workingHosts or #workingHosts == 0 then
@@ -376,7 +368,7 @@ local function generateLink()
     
     local requestData = {
         service = service,
-        identifier = fGetHwid(),
+        identifier = fGetPlayerIdentifier(),
         timestamp = os.time(),
         random = math.random(1000, 9999),
         debug = true,
@@ -385,16 +377,13 @@ local function generateLink()
     
     local generatedLink = nil
     local completedRequests = 0
-    local totalRequests = math.min(#workingHosts, 5)
     local successfulHost = nil
     
-    logInfo("LINK", string.format("🚀 Probando %d hosts...", totalRequests))
+    logInfo("LINK", string.format("🚀 Probando %d hosts para generar link...", #workingHosts))
     
-    for i = 1, totalRequests do
-        local host = workingHosts[i]
-        
+    for i, host in ipairs(workingHosts) do
         task.spawn(function()
-            local endpoints = {"/public/start", "/api/generate", "/generate"}
+            local endpoints = {"/public/start", "/api/generate", "/generate", "/start"}
             
             for _, endpoint in ipairs(endpoints) do
                 if generatedLink then break end
@@ -407,18 +396,29 @@ local function generateLink()
                     end)
                     
                     if success and decoded then
+                        local linkFound = nil
+                        
                         if decoded.success and decoded.data and decoded.data.url then
-                            generatedLink = decoded.data.url
-                            successfulHost = host
-                            break
+                            linkFound = decoded.data.url
                         elseif decoded.url then
-                            generatedLink = decoded.url
-                            successfulHost = host
-                            break
+                            linkFound = decoded.url
                         elseif decoded.link then
-                            generatedLink = decoded.link
-                            successfulHost = host
-                            break
+                            linkFound = decoded.link
+                        elseif decoded.data and decoded.data.link then
+                            linkFound = decoded.data.link
+                        elseif decoded.result and decoded.result.url then
+                            linkFound = decoded.result.url
+                        end
+                        
+                        if linkFound and type(linkFound) == "string" and linkFound:find("http") then
+                            if not linkFound:find("id=") and not linkFound:find("identifier=") then
+                                generatedLink = linkFound
+                                successfulHost = host
+                                logSuccess("LINK", string.format("✅ Link seguro desde: %s", host:gsub("https://", "")))
+                                break
+                            else
+                                logWarn("LINK", "⚠️ Link contiene info personal, descartando")
+                            end
                         end
                     end
                 end
@@ -429,43 +429,36 @@ local function generateLink()
     end
     
     local startTime = tick()
-    local maxWaitTime = 15 
+    local maxWaitTime = 20
     
-    while not generatedLink and completedRequests < totalRequests and (tick() - startTime) < maxWaitTime do
+    while not generatedLink and completedRequests < #workingHosts and (tick() - startTime) < maxWaitTime do
         task.wait(0.1)
     end
     
     if generatedLink then
-        logSuccess("LINK", string.format("✅ Link generado desde: %s", successfulHost:gsub("https://", ""):gsub("http://", "")))
+        logSuccess("LINK", "✅ Link seguro generado exitosamente")
         return generatedLink
     else
-        logWarn("LINK", "⚠️ Generando link de respaldo...")
-        local fallbackLink = string.format("https://platoboost.com/a/%d?id=%s&t=%d", 
-            service, fGetHwid(), os.time())
-        logInfo("LINK", "🔗 Link de respaldo generado")
-        return fallbackLink
+        logError("LINK", "❌ No se pudo generar link seguro desde ningún host")
+        return nil
     end
 end
 
--- FUNCIÓN PARALELA PARA VERIFICAR CLAVES (OPTIMIZADA)
 local function verificarClave(clave)
     logInfo("KEY", "🔑 Verificando clave...")
     
-    local identifier = fGetHwid()
+    local identifier = fGetPlayerIdentifier()
     local nonce = useNonce and generateNonce() or nil
     
     local workingHosts = testConnectivity()
     local keyValid = false
     local completedVerifications = 0
-    local totalVerifications = math.min(#workingHosts, 6) 
     local successfulHost = nil
     local verificationMethod = nil
     
-    logInfo("KEY", string.format("🚀 Verificando en %d hosts...", totalVerifications))
+    logInfo("KEY", string.format("🚀 Verificando en %d hosts...", #workingHosts))
     
-    for i = 1, totalVerifications do
-        local currentHost = workingHosts[i]
-        
+    for i, currentHost in ipairs(workingHosts) do
         task.spawn(function()
             local whitelistEndpoints = {
                 string.format("/public/whitelist/%d?identifier=%s&key=%s%s",
@@ -493,13 +486,14 @@ local function verificarClave(clave)
                             verificationMethod = "whitelist"
                             
                             pcall(function()
-                                fWriteFile(ArchivoClaveGuardada, HttpService:JSONEncode({
+                                fWriteFile(getPlayerKeyFile(), HttpService:JSONEncode({
                                     clave = clave, 
                                     fecha = os.time(),
                                     host = currentHost,
                                     method = "whitelist",
                                     endpoint = endpoint,
-                                    identifier = identifier
+                                    identifier = identifier,
+                                    player = Players.LocalPlayer.Name
                                 }))
                             end)
                             break
@@ -533,13 +527,14 @@ local function verificarClave(clave)
                                 verificationMethod = "redeem"
                                 
                                 pcall(function()
-                                    fWriteFile(ArchivoClaveGuardada, HttpService:JSONEncode({
+                                    fWriteFile(getPlayerKeyFile(), HttpService:JSONEncode({
                                         clave = clave, 
                                         fecha = os.time(),
                                         host = currentHost,
                                         method = "redeem",
                                         endpoint = endpoint,
-                                        identifier = identifier
+                                        identifier = identifier,
+                                        player = Players.LocalPlayer.Name
                                     }))
                                 end)
                                 break
@@ -554,23 +549,22 @@ local function verificarClave(clave)
     end
     
     local startTime = tick()
-    local maxWaitTime = 12 
+    local maxWaitTime = 12
     
-    while not keyValid and completedVerifications < totalVerifications and (tick() - startTime) < maxWaitTime do
+    while not keyValid and completedVerifications < #workingHosts and (tick() - startTime) < maxWaitTime do
         task.wait(0.1)
     end
     
     if keyValid then
         logSuccess("KEY", string.format("✅ Clave válida (%s) desde: %s", 
-            verificationMethod, successfulHost:gsub("https://", ""):gsub("http://", "")))
+            verificationMethod, successfulHost:gsub("https://", "")))
         return true
     else
-        logError("KEY", "❌ Clave inválida")
+        logError("KEY", "❌ Clave inválida en ambos hosts")
         return false
     end
 end
 
--- JUGADORES PREMIUM (ACCESO DIRECTO)
 local jugadoresPremio = {
     "Fernanflop093o", "armijosfernando2178", 
     "Secudaria2007", "fernanfloP091o", "FrivUpd"
@@ -585,36 +579,37 @@ local function claveEsValida()
         return true
     end
     
-    if fIsFile(ArchivoClaveGuardada) then
-        logInfo("VALIDATION", "📁 Archivo de clave encontrado")
+    local playerKeyFile = getPlayerKeyFile()
+    if fIsFile(playerKeyFile) then
+        logInfo("VALIDATION", "📁 Archivo de clave encontrado para " .. playerName)
         
         local success, datos = pcall(function()
-            return HttpService:JSONDecode(fReadFile(ArchivoClaveGuardada))
+            return HttpService:JSONDecode(fReadFile(playerKeyFile))
         end)
         
-        if success and datos and datos.clave and datos.host and datos.method then
-            logInfo("VALIDATION", string.format("⚡ Usando verificación rápida con: %s", datos.host:gsub("https://", ""):gsub("http://", "")))
+        if success and datos and datos.clave and datos.host and datos.method and datos.player == playerName then
+            logInfo("VALIDATION", string.format("⚡ Verificación rápida con: %s", datos.host:gsub("https://", "")))
             
             if verificarClaveRapida(datos.clave, datos.host, datos.method) then
                 logSuccess("VALIDATION", "⚡ Clave guardada válida (verificación rápida)")
                 return true
             else
-                logWarn("VALIDATION", "⚠️ Host guardado falló, probando verificación completa...")
+                logWarn("VALIDATION", "⚠️ Host guardado falló, verificación completa...")
                 
                 if verificarClave(datos.clave) then
                     logSuccess("VALIDATION", "✅ Clave guardada válida (verificación completa)")
                     return true
                 else
-                    logWarn("VALIDATION", "⚠️ Clave guardada expiró, eliminando archivo")
-                    pcall(function() fDelFile(ArchivoClaveGuardada) end)
+                    logWarn("VALIDATION", "⚠️ Clave guardada expiró")
+                    pcall(function() fDelFile(playerKeyFile) end)
                 end
             end
         else
-            logError("VALIDATION", "❌ Error al leer archivo de clave")
-            pcall(function() fDelFile(ArchivoClaveGuardada) end)
+            logError("VALIDATION", "❌ Error al leer archivo de clave o jugador incorrecto")
+            pcall(function() fDelFile(playerKeyFile) end)
         end
     else
-        logInfo("VALIDATION", "📁 No se encontró archivo de clave guardada")
+        logInfo("VALIDATION", "📁 No se encontró archivo de clave para " .. playerName)
     end
     
     return false
@@ -667,7 +662,7 @@ local function script()
 end
 
 local function crearGUI()
-    logInfo("GUI", "🎨 Creando interfaz rápida")
+    logInfo("GUI", "🎨 Creando interfaz para " .. Players.LocalPlayer.Name)
     
     pcall(function()
         if game.CoreGui:FindFirstChild("DebugKeySystemGUI") then
@@ -697,7 +692,7 @@ local function crearGUI()
     Title.Size = UDim2.new(1, 0, 0, 25)
     Title.Position = UDim2.new(0, 0, 0, 5)
     Title.BackgroundTransparency = 1
-    Title.Text = "⚡ Sistema Rápido - " .. getSystemInfo().executor
+    Title.Text = "👤 Sistema por Jugador - " .. getSystemInfo().executor
     Title.TextColor3 = Color3.new(1, 1, 1)
     Title.TextSize = 14
     Title.Font = Enum.Font.GothamBold
@@ -707,8 +702,8 @@ local function crearGUI()
     SystemInfo.Size = UDim2.new(1, 0, 0, 15)
     SystemInfo.Position = UDim2.new(0, 0, 0, 30)
     SystemInfo.BackgroundTransparency = 1
-    SystemInfo.Text = string.format("👤 %s | 🆔 %s | ⚡ Verificación Rápida", 
-        Players.LocalPlayer.Name, fGetHwid():sub(1, 8) .. "...")
+    SystemInfo.Text = string.format("👤 %s | 🔑 Clave personal", 
+        Players.LocalPlayer.Name)
     SystemInfo.TextColor3 = Color3.fromRGB(180, 180, 180)
     SystemInfo.TextSize = 10
     SystemInfo.Font = Enum.Font.Gotham
@@ -718,7 +713,7 @@ local function crearGUI()
     HostStatus.Size = UDim2.new(1, 0, 0, 12)
     HostStatus.Position = UDim2.new(0, 0, 0, 45)
     HostStatus.BackgroundTransparency = 1
-    HostStatus.Text = "⚡ Modo: Verificación ultra rápida activada"
+    HostStatus.Text = "🎯 Hosts: api.platoboost.com & api.platoboost.net"
     HostStatus.TextColor3 = Color3.fromRGB(120, 255, 120)
     HostStatus.TextSize = 9
     HostStatus.Font = Enum.Font.Gotham
@@ -757,7 +752,7 @@ local function crearGUI()
         return boton
     end
 
-    local BotonVerificar = crearBoton("⚡ Verificar", 0.05, Color3.fromRGB(0, 180, 120))
+    local BotonVerificar = crearBoton("🔑 Verificar", 0.05, Color3.fromRGB(0, 180, 120))
     local BotonCopiar = crearBoton("🔗 Generar Link", 0.55, Color3.fromRGB(0, 120, 200))
     
     local Status = Instance.new("TextLabel")
@@ -765,7 +760,7 @@ local function crearGUI()
     Status.Size = UDim2.new(0.9, 0, 0, 20)
     Status.Position = UDim2.new(0.05, 0, 0, 145)
     Status.BackgroundTransparency = 1
-    Status.Text = "⚡ Sistema ultra rápido listo"
+    Status.Text = "👤 Sistema personal listo para " .. Players.LocalPlayer.Name
     Status.TextColor3 = Color3.fromRGB(120, 255, 120)
     Status.TextSize = 10
     Status.Font = Enum.Font.Gotham
@@ -826,7 +821,7 @@ local function crearGUI()
     task.spawn(function()
         while KeyGui.Parent do
             updateLogDisplay()
-            task.wait(5)
+            task.wait(2)
         end
     end)
 
@@ -839,9 +834,9 @@ local function crearGUI()
             return
         end
         
-        Status.Text = "⚡ Verificando súper rápido..."
+        Status.Text = "🔑 Verificando clave para " .. Players.LocalPlayer.Name .. "..."
         Status.TextColor3 = Color3.fromRGB(255, 255, 120)
-        BotonVerificar.Text = "⚡ Verificando..."
+        BotonVerificar.Text = "🔍 Verificando..."
         BotonVerificar.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
         
         task.spawn(function()
@@ -855,14 +850,14 @@ local function crearGUI()
                 Status.Text = "❌ Clave inválida"
                 Status.TextColor3 = Color3.fromRGB(255, 120, 120)
                 TextBox.Text = ""
-                BotonVerificar.Text = "⚡ Verificar"
+                BotonVerificar.Text = "🔑 Verificar"
                 BotonVerificar.BackgroundColor3 = Color3.fromRGB(0, 180, 120)
             end
         end)
     end)
 
     BotonCopiar.MouseButton1Click:Connect(function()
-        Status.Text = "🔗 Generando link rápido..."
+        Status.Text = "🔗 Generando link para " .. Players.LocalPlayer.Name .. "..."
         Status.TextColor3 = Color3.fromRGB(255, 255, 120)
         BotonCopiar.Text = "🔗 Generando..."
         BotonCopiar.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
@@ -879,7 +874,7 @@ local function crearGUI()
                 BotonCopiar.Text = "🔗 Generar Link"
                 BotonCopiar.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
             else
-                Status.Text = "❌ Error generando link"
+                Status.Text = "❌ No se pudo generar link seguro"
                 Status.TextColor3 = Color3.fromRGB(255, 120, 120)
                 BotonCopiar.Text = "🔗 Generar Link"
                 BotonCopiar.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
@@ -887,10 +882,10 @@ local function crearGUI()
         end)
     end)
     
-    logSuccess("GUI", "✅ Interfaz rápida creada")
+    logSuccess("GUI", "✅ Interfaz creada para " .. Players.LocalPlayer.Name)
 end
 
-logInfo("INIT", "⚡ Iniciando sistema ultra rápido")
+logInfo("INIT", "👤 Iniciando sistema basado en jugador")
 
 if claveEsValida() then
     logSuccess("INIT", "✅ Acceso válido - Ejecutando script")
@@ -909,7 +904,7 @@ _G.ShowAllLogs = function()
     print("=== FIN ===")
 end
 
-logSuccess("INIT", "⚡ Sistema ultra rápido listo")
+logSuccess("INIT", "👤 Sistema basado en jugador listo")
 
 else
             local msg = Instance.new("Message", workspace)
