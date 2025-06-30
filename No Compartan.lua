@@ -172,20 +172,6 @@ end
 local hosts = {
     "https://api.platoboost.com",
     "https://api.platoboost.net",
-    "https://platoboost-api.herokuapp.com",
-    "https://boost-api.vercel.app",
-    "https://api.keyauth.win",
-    "https://keyauth.win",
-    "https://api.luarmor.net",
-    "https://gateway.platoboost.com",
-    "https://cdn.platoboost.com",
-    "https://backup.platoboost.net",
-    "http://api.platoboost.com",
-    "http://platoboost.com",
-    "https://www.platoboost.com",
-    "https://raw.githubusercontent.com/platoboost/api/main",
-    "https://pastebin.com/raw/platoboost",
-    "https://api.github.com/repos/platoboost"
 }
 
 local userAgents = {
