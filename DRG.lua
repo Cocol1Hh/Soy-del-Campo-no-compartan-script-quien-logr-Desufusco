@@ -275,10 +275,12 @@ Contenedor.CanvasSize = UDim2.new(0, 0, 0, 400)
 Contenedor.ScrollingDirection = Enum.ScrollingDirection.Y
 
 
+--Multi Rebirths
+
 local inputBox = Instance.new("TextBox", Barra1)
 inputBox.Size = UDim2.new(0, 84, 0, 30)
 inputBox.Position = UDim2.new(0.735, 0, 0.195, 0)
-inputBox.PlaceholderText = "Cantidad"
+inputBox.PlaceholderText = "Cantidad (Max 20)"
 inputBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 inputBox.TextColor3 = Color3.new(1, 1, 1)
 inputBox.ClearTextOnFocus = false
@@ -290,25 +292,31 @@ UICorner.CornerRadius = UDim.new(0, 5)
 UICorner.Parent = inputBox
 
 local UIStroke = Instance.new("UIStroke")
-UIStroke.Color = Color3.fromRGB(0, 120, 255)
+UIStroke.Color = Color3.fromRGB(128, 0, 0)
 UIStroke.Thickness = 2
 UIStroke.Parent = inputBox
 
+local MAX_VALOR = 23
 local valorGuardado = 4
 
 if isfile("rebirthAmount.txt") then
     local contenido = tonumber(readfile("rebirthAmount.txt"))
     if contenido then
-        valorGuardado = contenido
+        valorGuardado = math.clamp(contenido, 1, MAX_VALOR)
     end
 end
 
 inputBox.Text = tostring(valorGuardado)
 
 local function guardar(valor)
-    if valor and tonumber(valor) then
-        valorGuardado = tonumber(valor)
-        writefile("rebirthAmount.txt", tostring(valorGuardado))
+    local num = tonumber(valor)
+    if num then
+        num = math.clamp(num, 1, MAX_VALOR)
+        valorGuardado = num
+        inputBox.Text = tostring(num)
+        writefile("rebirthAmount.txt", tostring(num))
+    else
+        inputBox.Text = tostring(valorGuardado)
     end
 end
 
@@ -317,9 +325,12 @@ inputBox.FocusLost:Connect(function()
 end)
 
 inputBox:GetPropertyChangedSignal("Text"):Connect(function()
-    guardar(inputBox.Text)
+    local onlyNumbers = inputBox.Text:gsub("%D", "")
+    inputBox.Text = onlyNumbers
+    if onlyNumbers ~= "" then
+        guardar(onlyNumbers)
+    end
 end)
-
 
 
 local Selct = Instance.new("ScrollingFrame", Barra2)
@@ -1427,6 +1438,8 @@ local function getRebirthRequirement()
 end 
 
 
+
+
 task.spawn(function()
     while true do
         pcall(function()
@@ -1434,8 +1447,8 @@ task.spawn(function()
                 local rebirthLabel = lplr.PlayerGui.Main.MainFrame.Frames.Rebirth.MultiRebirth.TextLabel
                 local text = rebirthLabel.Text
                 local count = tonumber(text:match("%((%d+)%)")) or 0
-                local valor = tonumber(inputBox.Text) or 4                
-                rebirthLabel.Text = "Rebirth x" .. valor
+                local valor = tonumber(inputBox.Text) or 4
+                valor = math.clamp(valor, 1, MAX_VALOR)
                 if count >= valor then
                     game.ReplicatedStorage.Package.Events.reb:InvokeServer(valor)
                 end
