@@ -275,6 +275,53 @@ Contenedor.CanvasSize = UDim2.new(0, 0, 0, 400)
 Contenedor.ScrollingDirection = Enum.ScrollingDirection.Y
 
 
+local inputBox = Instance.new("TextBox", Barra1)
+inputBox.Size = UDim2.new(0, 84, 0, 30)
+inputBox.Position = UDim2.new(0.735, 0, 0.195, 0)
+inputBox.PlaceholderText = "Cantidad"
+inputBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+inputBox.TextColor3 = Color3.new(1, 1, 1)
+inputBox.ClearTextOnFocus = false
+inputBox.Name = "RebirthInput"
+inputBox.TextScaled = true
+
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 5)
+UICorner.Parent = inputBox
+
+local UIStroke = Instance.new("UIStroke")
+UIStroke.Color = Color3.fromRGB(0, 120, 255)
+UIStroke.Thickness = 2
+UIStroke.Parent = inputBox
+
+local valorGuardado = 4
+
+if isfile("rebirthAmount.txt") then
+    local contenido = tonumber(readfile("rebirthAmount.txt"))
+    if contenido then
+        valorGuardado = contenido
+    end
+end
+
+inputBox.Text = tostring(valorGuardado)
+
+local function guardar(valor)
+    if valor and tonumber(valor) then
+        valorGuardado = tonumber(valor)
+        writefile("rebirthAmount.txt", tostring(valorGuardado))
+    end
+end
+
+inputBox.FocusLost:Connect(function()
+    guardar(inputBox.Text)
+end)
+
+inputBox:GetPropertyChangedSignal("Text"):Connect(function()
+    guardar(inputBox.Text)
+end)
+
+
+
 local Selct = Instance.new("ScrollingFrame", Barra2)
 Selct.Size = UDim2.new(0, 320, 0, 170)
 Selct.Position = UDim2.new(0.990, 0, 0.165, 0)
@@ -337,7 +384,7 @@ local textProperties = {
     {text = "Farm", position = UDim2.new(-0.155 + 0, 0, 0.115, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "...", position = UDim2.new(0.350 + 0, 0, 0.115, 0), color = Color3.fromRGB(0, 255, 0), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Reb|Stats", position = UDim2.new(-0.160 + 0.170, 0, 0.195, 0), color = Color3.fromRGB(0, 255, 255), parent = Barra1, size = UDim2.new(0, 75, 0, 36)},
-    {text = "Ozaru", position = UDim2.new(0.360 + 0, 0, 0.195, 0), color = Color3.fromRGB(0, 0, 255), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
+    {text = "MltReb", position = UDim2.new(0.360 + 0, 0, 0.195, 0), color = Color3.fromRGB(0, 0, 255), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Black", position = UDim2.new(-0.160 + 0, 0, 0.270, 0), color = Color3.fromRGB(255, 255, 0), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "...", position = UDim2.new(0.350 + 0, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 255), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Fly", position = UDim2.new(-0.04 + 0, 0, 0.320, 0), color = Color3.fromRGB(200, 200, 200), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
@@ -947,7 +994,7 @@ Players.PlayerAdded:Connect(onPlayerAdded)
 local getIsActive1 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.120, 0), "Switch1", LoadSwitchState("Switch1"))--Farm
 local getIsActive2 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.115, 0), "Switch2", LoadSwitchState("Switch2"))--Form
 local getIsActive3 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.2, 0), "Switch3", LoadSwitchState("Switch3"))--Rebirth
-local getIsActive4 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.195, 0), "Switch4", LoadSwitchState("Switch4"))--Ozaru
+--Ozaru
 local getIsActive5 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.275, 0), "Switch5", LoadSwitchState("Switch5"))--Black
 local getIsActive6 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.275, 0), "Switch6", LoadSwitchState("Switch6"))--Hallowen🎃
 local getIsActive7 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.420, 0), "Switch7", LoadSwitchState("Switch7"))--Duck
@@ -1379,24 +1426,22 @@ local function getRebirthRequirement()
     return 0
 end 
 
-local specialUsers = {
-    armijosfernando2178 = true,
-    fernanfloP091o = true
-}
+
 task.spawn(function()
     while true do
         pcall(function()
             if getIsActive3() and player() and Congela() then
-                local text = lplr.PlayerGui.Main.MainFrame.Frames.Rebirth.MultiRebirth.TextLabel.Text
+                local rebirthLabel = lplr.PlayerGui.Main.MainFrame.Frames.Rebirth.MultiRebirth.TextLabel
+                local text = rebirthLabel.Text
                 local count = tonumber(text:match("%((%d+)%)")) or 0
-                if specialUsers[lplr.Name] and count >= 1 then
-                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(9999)
-                elseif not specialUsers[lplr.Name] and count >= 4 then
-                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(4)
+                local valor = tonumber(inputBox.Text) or 4                
+                rebirthLabel.Text = "Rebirth x" .. valor
+                if count >= valor then
+                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(valor)
                 end
             end
         end)
-        task.wait(.8)
+        task.wait(0.8)
     end
 end)
 
