@@ -229,7 +229,7 @@ local textProperties = {
     {text = "Speed", position = UDim2.new(-0.04 + 0, 0, 0.320, 0), color = Color3.fromRGB(200, 200, 200), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Brillo", position = UDim2.new(0.473 + 0, 0, 0.320, 0), color = Color3.fromRGB(180, 200, 100), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Duck", position = UDim2.new(-0.160 + 0, 0, 0.420, 0), color = Color3.fromRGB(200, 100, 200), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Protect", position = UDim2.new(0.350 + 0, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
+    {text = "Jump", position = UDim2.new(0.350 + 0, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Req", position = UDim2.new(-0.160 + 0, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Tp|Planet", position = UDim2.new(0.350 + 0.170, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 80, 0, 36)},
     {text = "Form", position = UDim2.new(-0.140 + 0, 0, 0.570, 0), color = Color3.fromRGB(200, 200, 90), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
@@ -465,29 +465,43 @@ end, "speed")
 createBar(0.513, "Ambient", Color3.fromRGB(0, 255, 0), 0.37, 700, function(v) Lighting.Ambient = Color3.fromRGB(v, v, v) end, "ambient")
 
 
+
 --*(1)*--
 local estabaSentado = false
+local zona4 = {CFrame.new(4439.8, 1017.6, -4058.5), 0}
+
 local zonas1 = {
-    {CFrame.new(111.6, 6.0, 351.9), 10},
-    {CFrame.new(74.8, 6.9, 350.8), 150},
-    {CFrame.new(-194.6, 8.2, 272.9), 400},
-    {CFrame.new(-235.7, 13.1, 104.0), 1000},
-    {CFrame.new(-231.3, 14.8, 66.8), 1500},
-    {CFrame.new(-185.0, 10.0, 67.5), 2500}
+	rebirthReq = 0,
+	zonas = {
+		{CFrame.new(111.6, 6.0, 351.9), 10},
+		{CFrame.new(74.8, 6.9, 350.8), 150},
+		{CFrame.new(-194.6, 8.2, 272.9), 400},
+		{CFrame.new(-235.7, 13.1, 104.0), 1000},
+		{CFrame.new(-231.3, 14.8, 66.8), 1500},
+		{CFrame.new(-185.0, 10.0, 67.5), 2500}
+	}
 }
 
 local zonas2 = {
-    {CFrame.new(-2695.1, 13.4, -181.8), 3000},
-    {CFrame.new(-2628.6, 22.0, -609.6), 4000},
-    {CFrame.new(-2917.5, 40.1, -209.6), 5000},
-    {CFrame.new(-3022.5, 28.9, -197.5), 7500},
-    {CFrame.new(-2720.1, 29.3, -591.3), 10000},
-    {CFrame.new(-3008.7, 38.5, -337.7), 15000}
+	rebirthReq = 1,
+	zonas = {
+		{CFrame.new(-2695.1, 13.4, -181.8), 3000},
+		{CFrame.new(-2628.6, 22.0, -609.6), 4000},
+		{CFrame.new(-2917.5, 40.1, -209.6), 5000},
+		{CFrame.new(-3022.5, 28.9, -197.5), 7500},
+		{CFrame.new(-2720.1, 29.3, -591.3), 10000},
+		{CFrame.new(-3008.7, 38.5, -337.7), 15000}
+	}
 }
 
 local zonas3 = {
-    {CFrame.new(-7173.3, 44.7, -1105.0), 16000}
-}--*(1)*---
+	rebirthReq = 15,
+	zonas = {
+		{CFrame.new(-7173.3, 44.7, -1105.0), 16000}
+	}
+}--*(1)*--
+
+
 
 --*(2)*--
 local blacklist = {
@@ -548,53 +562,77 @@ task.spawn(function()
     end
 end)
 
+
 --*(1)*--
 task.spawn(function()
 	while true do
 		pcall(function()
-		if getIsActive1() then
-			local char = lplr.Character or lplr.CharacterAdded:Wait()
-			local humanoid = char:FindFirstChildWhichIsA("Humanoid")
-			local seatPart = humanoid and humanoid.SeatPart
-			local enMaquina = seatPart and seatPart:IsDescendantOf(workspace.machinesFolder)
-			local hrp = char and char:FindFirstChild("HumanoidRootPart")
-			local fuerza = lplr.leaderstats.Strength.Value
-			local rebirths = lplr.leaderstats.Rebirths.Value
+			if getIsActive1() then
+				local char = lplr.Character or lplr.CharacterAdded:Wait()
+				local humanoid = char:FindFirstChildWhichIsA("Humanoid")
+				local seatPart = humanoid and humanoid.SeatPart
+				local enMaquina = seatPart and seatPart:IsDescendantOf(workspace.machinesFolder)
+				local hrp = char and char:FindFirstChild("HumanoidRootPart")
 
-			local listaZonas = {}
-			for _, zona in ipairs(zonas1) do table.insert(listaZonas, zona) end
-			if rebirths >= 1 then
-				for _, zona in ipairs(zonas2) do table.insert(listaZonas, zona) end
-			end
-			if rebirths >= 15 then
-				for _, zona in ipairs(zonas3) do table.insert(listaZonas, zona) end
-			end
+				if getIsActive8() and hrp then
+					local distancia = (hrp.Position - zona4[1].Position).Magnitude
+					local posActualMaquina = seatPart and seatPart.Position or Vector3.zero
+					local usandoMaquinaCorrecta = enMaquina and (posActualMaquina - zona4[1].Position).Magnitude <= 20
 
-			local mejorZona = nil
-			local mejorReq = -math.huge
-			for _, zona in ipairs(listaZonas) do
-				if fuerza >= zona[2] and zona[2] > mejorReq then
-					mejorZona = zona[1]
-					mejorReq = zona[2]
-				end
-			end
-
-			if mejorZona and hrp then
-				local distancia = (hrp.Position - mejorZona.Position).Magnitude
-				local posActualMaquina = seatPart and seatPart.Position or Vector3.zero
-				local usandoMaquinaCorrecta = enMaquina and (posActualMaquina - mejorZona.Position).Magnitude <= 20
-
-				if usandoMaquinaCorrecta then return end
-
-				if humanoid and humanoid.Sit then
-					humanoid.Sit = false
-					humanoid.SeatPart = nil
+					if not usandoMaquinaCorrecta then
+						if humanoid and humanoid.Sit then
+							humanoid.Sit = false
+							humanoid.SeatPart = nil
+						end
+						if distancia > 20 then
+							hrp.CFrame = zona4[1]
+						end
+					end
+					return
 				end
 
-				if distancia > 20 then
-					hrp.CFrame = mejorZona
+				local fuerza = lplr.leaderstats.Strength.Value
+				local rebirths = lplr.leaderstats.Rebirths.Value
+
+				local listaZonas = {}
+
+				local function agregarZonas(grupo)
+					if rebirths >= grupo.rebirthReq then
+						for _, zona in ipairs(grupo.zonas) do
+							table.insert(listaZonas, zona)
+						end
+					end
 				end
-			end
+
+				agregarZonas(zonas1)
+				agregarZonas(zonas2)
+				agregarZonas(zonas3)
+
+				local mejorZona = nil
+				local mejorReq = -math.huge
+				for _, zona in ipairs(listaZonas) do
+					if fuerza >= zona[2] and zona[2] > mejorReq then
+						mejorZona = zona[1]
+						mejorReq = zona[2]
+					end
+				end
+
+				if mejorZona and hrp then
+					local distancia = (hrp.Position - mejorZona.Position).Magnitude
+					local posActualMaquina = seatPart and seatPart.Position or Vector3.zero
+					local usandoMaquinaCorrecta = enMaquina and (posActualMaquina - mejorZona.Position).Magnitude <= 20
+
+					if usandoMaquinaCorrecta then return end
+
+					if humanoid and humanoid.Sit then
+						humanoid.Sit = false
+						humanoid.SeatPart = nil
+					end
+
+					if distancia > 20 then
+						hrp.CFrame = mejorZona
+					end
+				end
 			end
 		end)
 		task.wait()
@@ -676,7 +714,7 @@ task.spawn(function()
                 local cf = CFrame.lookAt(mejor.pos, mejor.mirar)
                 local distancia = (hrp.Position - mejor.pos).Magnitude
 
-                if distancia > 5 then
+                if distancia > 5 and getIsActive6() then
                     lplr.Character.HumanoidRootPart.CFrame = cf
                 end
 
