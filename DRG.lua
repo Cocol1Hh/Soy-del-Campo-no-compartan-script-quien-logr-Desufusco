@@ -396,7 +396,7 @@ local textProperties = {
     {text = "...", position = UDim2.new(0.350 + 0, 0, 0.115, 0), color = Color3.fromRGB(0, 255, 0), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Reb|Stats", position = UDim2.new(-0.160 + 0.170, 0, 0.195, 0), color = Color3.fromRGB(0, 255, 255), parent = Barra1, size = UDim2.new(0, 75, 0, 36)},
     {text = "MltReb", position = UDim2.new(0.360 + 0, 0, 0.195, 0), color = Color3.fromRGB(0, 0, 255), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Black", position = UDim2.new(-0.160 + 0, 0, 0.270, 0), color = Color3.fromRGB(255, 255, 0), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
+    {text = "...", position = UDim2.new(-0.160 + 0, 0, 0.270, 0), color = Color3.fromRGB(255, 255, 0), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "...", position = UDim2.new(0.350 + 0, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 255), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Fly", position = UDim2.new(-0.04 + 0, 0, 0.320, 0), color = Color3.fromRGB(200, 200, 200), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Brillo", position = UDim2.new(0.473 + 0, 0, 0.320, 0), color = Color3.fromRGB(180, 200, 100), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
@@ -405,11 +405,7 @@ local textProperties = {
     {text = "Req", position = UDim2.new(-0.160 + 0, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Tp|Planet", position = UDim2.new(0.350 + 0.170, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 80, 0, 36)},
     {text = "Form", position = UDim2.new(-0.140 + 0, 0, 0.570, 0), color = Color3.fromRGB(200, 200, 90), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "F|Vip", position = UDim2.new(0.360 + 0.1, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 120, 0, 36)},
-    {text = "Tp", position = UDim2.new(-0.160 + 0, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Actk", position = UDim2.new(0.350 + 0, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Copy", position = UDim2.new(-0.160 + 0, 0, 0.345, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Camr", position = UDim2.new(0.350 + 0, 0, 0.345, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3, size = UDim2.new(0, 200, 0, 36)},
+    {text = "Form|Vip", position = UDim2.new(0.360 + 0.1, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 100, 0, 36)},
 }
 
 for _, props in pairs(textProperties) do
@@ -648,248 +644,6 @@ if selectedForm then
     end
 end
 
---Main Radar
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local Kill = Instance.new("ScrollingFrame", Barra3)
-Kill.Size = UDim2.new(0, 400, 0, 200)
-Kill.Position = UDim2.new(0.490, 0, 0.131, 0)
-Kill.AnchorPoint = Vector2.new(0.5, 0.5)
-Kill.BackgroundColor3 = Color3.fromRGB(0, 0, 70)
-Kill.BorderSizePixel = 0
-Kill.ScrollBarThickness = 9
-Kill.CanvasSize = UDim2.new(0, 0, 0, 400)
-Kill.ScrollingDirection = Enum.ScrollingDirection.Y
-
-
-local selectedPlayerValue = Instance.new("ObjectValue", ReplicatedStorage)
-selectedPlayerValue.Name = "SelectedPlayer"
-local selectedRow = nil
-
-local function createTextLabel(parent, pos, text)
-    local label = Instance.new("TextLabel", parent)
-    label.Size = UDim2.new(0.32, 0, 1, 0)
-    label.Position = pos
-    label.BackgroundColor3 = Color3.fromRGB(30, 30, 120)
-    label.Text = text
-    label.TextColor3 = Color3.new(1, 1, 1)
-    label.Font = Enum.Font.SourceSansBold
-    label.TextScaled = true
-    label.BorderSizePixel = 0
-    local corner = Instance.new("UICorner", label)
-    corner.CornerRadius = UDim.new(0, 10)
-    return label
-end
-
-local function getStat(player, statName)
-    local character = game.Workspace.Living:FindFirstChild(player.Name)
-    return character and character.Stats and character.Stats[statName] and character.Stats[statName].Value or 0
-end
-
-local function getDisplayName(player)
-    return player.DisplayName ~= player.Name and player.Name .. "\n[" .. player.DisplayName .. "]" or player.Name
-end
-
-local function updateList()
-    local currentSelectedPlayer = selectedPlayerValue.Value
-    Kill:ClearAllChildren()
-    local playerList = {}
-    for _, player in ipairs(Players:GetPlayers()) do
-        local strength = getStat(player, "Strength")
-        local rebirth = getStat(player, "Rebirth")
-        if strength and rebirth then
-            table.insert(playerList, {player = player, strengthLabel = nil, rebirthLabel = nil})
-        end
-    end
-    table.sort(playerList, function(a, b) return getStat(a.player, "Rebirth") > getStat(b.player, "Rebirth") end)
-    for i, info in ipairs(playerList) do
-        local player = info.player
-        local rowButton = Instance.new("TextButton", Kill)
-        rowButton.Size = UDim2.new(1, 0, 0, 40)
-        rowButton.Position = UDim2.new(0, 0, 0, (i - 1) * 45)
-        rowButton.BackgroundColor3 = (player == currentSelectedPlayer) and Color3.fromRGB(50, 50, 150) or Color3.fromRGB(20, 20, 100)
-        rowButton.Text = ""
-        rowButton.BorderSizePixel = 0
-        rowButton.AutoButtonColor = false
-        local corner = Instance.new("UICorner", rowButton)
-        corner.CornerRadius = UDim.new(0, 10)
-        createTextLabel(rowButton, UDim2.new(0.02, 0, 0, 0), getDisplayName(player))
-        info.rebirthLabel = createTextLabel(rowButton, UDim2.new(0.35, 0, 0, 0), formatNumber(getStat(player, "Rebirth")))
-        info.strengthLabel = createTextLabel(rowButton, UDim2.new(0.68, 0, 0, 0), formatNumber(getStat(player, "Strength")))
-        rowButton.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                if selectedRow == rowButton then
-                    rowButton.BackgroundColor3 = Color3.fromRGB(20, 20, 100)
-                    selectedRow = nil
-                    selectedPlayerValue.Value = nil
-                else
-                    if selectedRow then selectedRow.BackgroundColor3 = Color3.fromRGB(20, 20, 100) end
-                    rowButton.BackgroundColor3 = Color3.fromRGB(50, 50, 150)
-                    selectedRow = rowButton
-                    selectedPlayerValue.Value = player
-                end
-            end
-        end)
-        if player == currentSelectedPlayer then selectedRow = rowButton end
-    end
-    Kill.CanvasSize = UDim2.new(0, 0, 0, #playerList * 45)
-    task.spawn(function()
-        pcall(function()
-            while wait(0.5) do
-                for _, info in ipairs(playerList) do
-                    if info.rebirthLabel and info.strengthLabel then
-                        info.rebirthLabel.Text = formatNumber(getStat(info.player, "Rebirth"))
-                        info.strengthLabel.Text = formatNumber(getStat(info.player, "Strength"))
-                    end
-                end
-            end
-        end)
-    end)
-end
-
-Players.PlayerAdded:Connect(updateList)
-Players.PlayerRemoving:Connect(updateList)
-Kill:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateList)
-task.spawn(function() pcall(updateList) end)--Radar Main Fin
-
-
---Radar Ticker
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
-
-
-local function createTag(head)
-    local tag = Instance.new("BillboardGui")
-    tag.Name = "StatsTag"
-    tag.Adornee = head
-    tag.Size = UDim2.new(0, 140, 0, 60)
-    tag.StudsOffset = Vector3.new(0, 3, 0)
-    tag.AlwaysOnTop = true
-    tag.Parent = head
-
-    local nameLabel = Instance.new("TextLabel")
-    nameLabel.Name = "NameLabel"
-    nameLabel.Size = UDim2.new(1, 0, 0.3, 0)
-    nameLabel.Position = UDim2.new(0, 0, 0, 0)
-    nameLabel.BackgroundTransparency = 1
-    nameLabel.TextColor3 = Color3.new(1, 1, 1)
-    nameLabel.TextScaled = true
-    nameLabel.Font = Enum.Font.SourceSansBold
-    nameLabel.TextStrokeTransparency = 0
-    nameLabel.Parent = tag
-
-    local textLabel = Instance.new("TextLabel")
-    textLabel.Name = "StatsLabel"
-    textLabel.Size = UDim2.new(1, 0, 0.3, 0)
-    textLabel.Position = UDim2.new(0, 0, 0.3, 0)
-    textLabel.BackgroundTransparency = 1
-    textLabel.TextColor3 = Color3.new(1, 1, 1)
-    textLabel.TextScaled = true
-    textLabel.Font = Enum.Font.SourceSansBold
-    textLabel.TextStrokeTransparency = 0
-    textLabel.Parent = tag
-
-    local healthBarFrame = Instance.new("Frame")
-    healthBarFrame.Name = "HealthBarFrame"
-    healthBarFrame.Size = UDim2.new(1, 0, 0.15, 0)
-    healthBarFrame.Position = UDim2.new(0, 0, 0.65, 0)
-    healthBarFrame.BackgroundColor3 = Color3.new(0, 0, 0)
-    healthBarFrame.BorderSizePixel = 0
-    healthBarFrame.Parent = tag
-
-    local healthBar = Instance.new("Frame")
-    healthBar.Name = "HealthBar"
-    healthBar.Size = UDim2.new(1, 0, 1, 0)
-    healthBar.BackgroundColor3 = Color3.new(0, 1, 0)
-    healthBar.BorderSizePixel = 0
-    healthBar.Parent = healthBarFrame
-
-    local kiBarFrame = Instance.new("Frame")
-    kiBarFrame.Name = "KiBarFrame"
-    kiBarFrame.Size = UDim2.new(1, 0, 0.15, 0)
-    kiBarFrame.Position = UDim2.new(0, 0, 0.85, 0)
-    kiBarFrame.BackgroundColor3 = Color3.new(0, 0, 0)
-    kiBarFrame.BorderSizePixel = 0
-    kiBarFrame.Parent = tag
-
-    local kiBar = Instance.new("Frame")
-    kiBar.Name = "KiBar"
-    kiBar.Size = UDim2.new(1, 0, 1, 0)
-    kiBar.BackgroundColor3 = Color3.new(0, 0.7, 1)
-    kiBar.BorderSizePixel = 0
-    kiBar.Parent = kiBarFrame
-    
-    local UICorner_Health = Instance.new("UICorner")
-    UICorner_Health.CornerRadius = UDim.new(0, 10)
-    UICorner_Health.Parent = healthBar
-    local UICorner_Ki = Instance.new("UICorner")
-    UICorner_Ki.CornerRadius = UDim.new(0, 10)
-    UICorner_Ki.Parent = kiBar
-
-    return tag, nameLabel, textLabel, healthBar, kiBar
-end
-
-local function updateTag(player)
-    if player == game:GetService("Players").LocalPlayer then return end  
-
-    local character = game.Workspace.Living:FindFirstChild(player.Name)
-    if not character then return end
-
-    local head = character:FindFirstChild("Head")
-    local stats = character:FindFirstChild("Stats")
-    if not head or not stats then return end
-
-    local data = game:GetService("ReplicatedStorage"):FindFirstChild("Datas") and game:GetService("ReplicatedStorage").Datas:FindFirstChild(player.UserId)
-    local kiStat = stats:FindFirstChild("Ki")
-    local maxKiStat = stats:FindFirstChild("MaxKi")  -- Ahora obtiene MaxKi de Living
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
-    if not data or not kiStat or not maxKiStat or not humanoid then return end
-
-    local strength = data:FindFirstChild("Strength") and data.Strength.Value or 0
-    local rebirth = data:FindFirstChild("Rebirth") and data.Rebirth.Value or 0
-    local health = humanoid.Health
-    local maxHealth = humanoid.MaxHealth
-    local kiValue = kiStat.Value
-    local maxKi = maxKiStat.Value  -- Se asegura de obtener el valor desde Living
-
-    local playerName = player.Name
-    local playerDisplayName = player.DisplayName
-    local fullName = playerDisplayName ~= playerName and string.format("%s [%s]", playerName, playerDisplayName) or playerName
-
-    local tag = head:FindFirstChild("StatsTag")
-    local nameLabel, textLabel, healthBar, kiBar
-    if not tag then
-        tag, nameLabel, textLabel, healthBar, kiBar = createTag(head)
-    else
-        nameLabel = tag:FindFirstChild("NameLabel")
-        textLabel = tag:FindFirstChild("StatsLabel")
-        healthBar = tag:FindFirstChild("HealthBarFrame") and tag.HealthBarFrame:FindFirstChild("HealthBar")
-        kiBar = tag:FindFirstChild("KiBarFrame") and tag.KiBarFrame:FindFirstChild("KiBar")
-    end
-
-    if nameLabel and textLabel and healthBar and kiBar then
-        nameLabel.Text = fullName  
-        textLabel.Text = string.format("F: %s | R: %s", formatNumber(strength), formatNumber(rebirth))  
-        healthBar.Size = UDim2.new(math.clamp(health / maxHealth, 0, 1), 0, 1, 0)
-        kiBar.Size = UDim2.new(math.clamp(kiValue / maxKi, 0, 1), 0, 1, 0) 
-    end
-end
-
-local function onPlayerAdded(player)
-    player.CharacterAdded:Connect(function()
-        updateTag(player)
-    end)
-    RunService.Heartbeat:Connect(function()
-        updateTag(player)
-    end)
-end
-
-Players.PlayerAdded:Connect(onPlayerAdded)
-for _, player in ipairs(Players:GetPlayers()) do
-    onPlayerAdded(player)
-end
 
 --Menu de Contador 1H:30M
 local lplr = game.Players.LocalPlayer
@@ -953,59 +707,10 @@ task.spawn(function()
 end)
 
 
---Tp Players
-local getIsActive15 = createSwitch(Barra3, UDim2.new(0.2, 0, 0.275, 0), "Switch15", LoadSwitchState("Switch15"))--Tp
-local getIsActive17 = createSwitch(Barra3, UDim2.new(0.2, 0, 0.345, 0), "Switch17", LoadSwitchState("Switch17"))--Tp
-local getIsActive18 = createSwitch(Barra3, UDim2.new(0.740, 0, 0.345, 0), "Switch18", LoadSwitchState("Switch178"))--Tp
---[Xd]
-
-
---Radar
-
-local function updateAllTags()
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player ~= Players.LocalPlayer then
-            updateTag(player)
-        end
-    end
-end
-
-RunService.Heartbeat:Connect(function()
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player ~= Players.LocalPlayer then
-            local character = player.Character
-            if character then
-                local head = character:FindFirstChild("Head")
-                if head then
-                    local tag = head:FindFirstChild("StatsTag")
-                    if tag then
-                        local distance = (workspace.CurrentCamera.CFrame.Position - head.Position).Magnitude
-                        local scale = math.clamp(distance / 30, 1.5, 2)
-                        tag.Size = UDim2.new(0, 100 * scale, 0, 25 * scale)
-                    end
-                end
-            end
-        end
-    end
-end)
-
-local function onPlayerAdded(player)
-    player.CharacterAdded:Connect(function()
-        updateTag(player)
-    end)
-end
-
-for _, player in ipairs(Players:GetPlayers()) do
-    onPlayerAdded(player)
-end
-
-Players.PlayerAdded:Connect(onPlayerAdded)
-
 
 local getIsActive1 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.120, 0), "Switch1", LoadSwitchState("Switch1"))--Farm
 local getIsActive2 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.115, 0), "Switch2", LoadSwitchState("Switch2"))--Form
 local getIsActive3 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.2, 0), "Switch3", LoadSwitchState("Switch3"))--Rebirth
---Ozaru
 local getIsActive5 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.275, 0), "Switch5", LoadSwitchState("Switch5"))--Black
 local getIsActive6 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.275, 0), "Switch6", LoadSwitchState("Switch6"))--Hallowen🎃
 local getIsActive7 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.420, 0), "Switch7", LoadSwitchState("Switch7"))--Duck
@@ -1015,17 +720,12 @@ local getIsActive10 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.495, 0), "Switc
 local getIsActive11 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.570, 0), "Switch11", LoadSwitchState("Switch11"))--Mapa
 local getIsActive12 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.570, 0), "Switch12", LoadSwitchState("Switch12"))--Klirin
 
-local getIsActive16 = createSwitch(Barra3, UDim2.new(0.740, 0, 0.275, 0), "Switch16", LoadSwitchState("Switch16"))--Atakes
-
 --Barras
 createBar(0, "Flight", Color3.fromRGB(255, 0, 0), 0.37, 100, function(v) speed = v end, "flight")
 createBar(0.513, "Ambient", Color3.fromRGB(0, 255, 0), 0.37, 700, function(v) Lighting.Ambient = Color3.fromRGB(v, v, v) end, "ambient")
 
 
-
-
 --Casi fin del interrutor /\
-
 --Ciclo Para Auto = Main y Start
 spawn(function()
     Ex.Start:InvokeServer()
@@ -1083,7 +783,6 @@ local estadoCongela = false
 function Congela()
     return estadoCongela
 end
-
 if #game.Players:GetPlayers() == 1 and getIsActive8() then
     task.spawn(function()
         while true do
@@ -1104,7 +803,8 @@ else
         elseif not getIsActive8() then
         estadoCongela = true 
     end
-end
+end--Script 1 \/ Para Pausar Los Bucles 
+
 --Script 2 \/ Tp ah wiis
 local Players = game:GetService("Players")
 local lplr = Players.LocalPlayer
@@ -1155,7 +855,9 @@ if #Players:GetPlayers() == 1 and getIsActive8() then
             end)
         end 
     end)
-end
+end--Script 2 \/ Tp ah wiis
+
+
 --Script 3 \/ Duplicar server
 local Players = game:GetService("Players")
 local lplr = Players.LocalPlayer
@@ -1170,20 +872,19 @@ task.spawn(function()
                 local destino = (game.PlaceId == 5151400895) and "Vills Planet" or "Earth"
                 game:GetService("ReplicatedStorage").Package.Events.TP:InvokeServer(destino)
                 tpHecho = true
-            end
-        end)
-        task.wait(.5)
-    end
-end)
-end
---FIN DE LA PROTECION SCRIPTS
+             end
+          end)
+           task.wait(.5)
+      end
+   end)
+end--FIN DE LA PROTECION SCRIPTS
 
 
 local forms = {"Nephalem", "Seraphim Of Destruction", "Seraphim", "Ego Instinct 2", "Ego Instinct", "SSJR3", "SSJB3", "God of Creation", "Beast", "LSSJ4"} 
-  task.spawn(function()
+task.spawn(function()
     while task.wait() do
         pcall(function()
-      if getIsActive11() and player() and Congela() then
+        if getIsActive11() and player() and Congela() then
         local Forms = {
         	                      'Nephalem',
         	                      'Seraphim Of Destruction',
@@ -1218,18 +919,18 @@ local forms = {"Nephalem", "Seraphim Of Destruction", "Seraphim", "Ego Instinct 
              end
         if status and status.SelectedTransformation.Value ~= status.Transformation.Value then
             Ex.ta:InvokeServer()
-                       end                
-                    end      
-           end)
-        end
-     end)   
+            end                
+         end      
+      end)
+   end
+end)   
      
      
      
-     task.spawn(function()
+task.spawn(function()
     while task.wait() do
         pcall(function()
-      if getIsActive12() and player() and Congela() then
+        if getIsActive12() and player() and Congela() then
         local Forms = {                                
                                   'True SSJG',
                                   'Blanco',
@@ -1259,113 +960,12 @@ local forms = {"Nephalem", "Seraphim Of Destruction", "Seraphim", "Ego Instinct 
              end
         if status and status.SelectedTransformation.Value ~= status.Transformation.Value then
             Ex.ta:InvokeServer()
-                       end                
-                    end      
-           end)
-        end
-     end)   
+            end                
+         end      
+      end)
+   end
+end)   
      
---Incio de Logica de Radar Main
-task.spawn(function()
-while task.wait() do
-pcall(function()
-        local lplr = Players.LocalPlayer
-        if getIsActive15() then
-        if  lplr.Character and lplr.Character:FindFirstChild("HumanoidRootPart") and selectedPlayerValue.Value and selectedPlayerValue.Value.Character and selectedPlayerValue.Value.Character:FindFirstChild("HumanoidRootPart") then
-            local Jefe = selectedPlayerValue.Value.Character
-            lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Jefe.HumanoidRootPart.CFrame * CFrame.new(0,0,4.2).p, Jefe.HumanoidRootPart.Position)
-        end
-        end
-        end)
-    end
-end)
-
-local Mel = { 
-    "Super Dragon Fist", "God Slicer", "Spirit Barrage", "Mach Kick", "Wolf Fang Fist", 
-    "High Power Rush", "Meteor Strike", "Meteor Charge", "Spirit Breaking Cannon", 
-    "Vital Strike", "Flash Kick", "Vanish Strike", "Uppercut", "Sledgehammer", "Rock Impact"
-}
-task.spawn(function()
-    while wait() do
-        pcall(function()
-            local dat = (game.PlaceId == 5151400895) and game.Workspace.Living:FindFirstChild(lplr.Name) or lplr
-            if getIsActive16() and selectedPlayer and selectedPlayer.Character and selectedPlayer.Character:FindFirstChild("Humanoid") and selectedPlayer.Character.Humanoid.Health > 0 then
-                if dat:FindFirstChild("Status") then
-                    for _, Mel in ipairs(Mel) do
-                        if not dat.Status:FindFirstChild(Mel) then
-                            task.spawn(function()
-                                Ex.mel:InvokeServer(Mel, "dbuexploiterssucklol")
-                            end)
-                        end
-                    end
-                end
-            end
-        end)
-    end
-end)
-
-
-local function getStat(player, statName)
-    local char = game.Workspace.Living:FindFirstChild(player.Name)
-    return char and char:FindFirstChild("Stats") and char.Stats:FindFirstChild(statName) and char.Stats[statName].Value or 0
-end
-
-local wasActive17 = false
-
-task.spawn(function()
-    while task.wait(1) do
-        local isActive17 = getIsActive17()
-        if isActive17 and not wasActive17 and selectedPlayerValue.Value then
-            local p = selectedPlayerValue.Value
-            local data = game.ReplicatedStorage:FindFirstChild("Datas"):FindFirstChild(p.UserId)
-            local nombre, apodo = p.Name, p.DisplayName
-            local fuerza, rebirth = formatNumber(getStat(p, "Strength")), getStat(p, "Rebirth")
-            local zeni = data and data:FindFirstChild("Zeni") and formatNumber(data.Zeni.Value) or "0"
-            local vida = p.Character and p.Character:FindFirstChild("Humanoid") and formatNumber(p.Character.Humanoid.Health) or "No disponible"
-
-            local maestrias = {}
-            for _, t in ipairs({"Divine Blue", "Divine Rose Prominence", "Astral Instinct", "Ultra Ego", "SSJBUI", "Beast", "LSSJ4"}) do
-                local m = data and data:FindFirstChild(t) and data[t].Value or 0
-                table.insert(maestrias, string.format("%s: %d", t, m))
-            end
-
-            if setclipboard then
-                setclipboard(string.format("Nombre: %s\nApodo: %s\nFuerza: %s\nVida: %s\nZenis: %s\nRebirth: %s\n\nMaestrías:\n%s",
-                    nombre, apodo, fuerza, vida, zeni, rebirth, table.concat(maestrias, "\n")))
-            end
-        end
-        wasActive17 = isActive17
-    end
-end)
-
-task.spawn(function()
-    while task.wait() do
-        pcall(function()
-            local lplr = Players.LocalPlayer
-            if getIsActive18() then
-                if selectedPlayerValue.Value and selectedPlayerValue.Value.Character then
-                    local Jefe = selectedPlayerValue.Value.Character:FindFirstChild("Humanoid")
-                    if Jefe then
-                        workspace.CurrentCamera.CameraSubject = Jefe
-                    end
-                else
-                    if lplr.Character then
-                        local humanoid = lplr.Character:FindFirstChild("Humanoid")
-                        if humanoid then
-                            workspace.CurrentCamera.CameraSubject = humanoid
-                        end
-                    end
-                end
-            end
-        if getIsActive15() then
-        if  lplr.Character and lplr.Character:FindFirstChild("HumanoidRootPart") and selectedPlayerValue.Value and selectedPlayerValue.Value.Character and selectedPlayerValue.Value.Character:FindFirstChild("HumanoidRootPart") then
-            local Jefe = selectedPlayerValue.Value.Character
-            lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Jefe.HumanoidRootPart.CFrame * CFrame.new(0,0,4.2).p, Jefe.HumanoidRootPart.Position)
-        end
-        end
-        end)
-    end
-end)--Fin de la logica para Radar Main
 
 local tiempo = tick()
 task.spawn(function()
@@ -1391,30 +991,30 @@ task.spawn(function()
             else
                 game.ReplicatedStorage.Package.Events.cha:InvokeServer(false, "dbuexploiterssucklol")
                 tiempo = tick()
+               end
             end
-            end
-        end)
+         end)
         task.wait()
     end
 end)
 
 
 
-  task.spawn(function()
+task.spawn(function()
     while task.wait(.5) do
         pcall(function()
         if player() then
-          if getIsActive1()  and data.Quest.Value ~= "" and Congela() then         
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol", 1)
-                                        game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol", 2)
-                     end          
+        if getIsActive1()  and data.Quest.Value ~= "" and Congela() then         
+           game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol", 1)
+           game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol", 2)
+               end          
             end --player() 
          end)         
       end
   end)
   
   
-  task.spawn(function()
+task.spawn(function()
     while task.wait() do
         pcall(function()
             if getIsActive1() and player() and Congela() then
@@ -1461,15 +1061,15 @@ end)
 task.spawn(function()
     while true do
         pcall(function()
-  if data.Quest.Value ~= "" and player() and getIsActive1() and Congela() then
+        if data.Quest.Value ~= "" and player() and getIsActive1() and Congela() then
          wait(2)
        for _, npc in ipairs(game.Workspace.Others.NPCs:GetChildren()) do
           if npc:FindFirstChild("HumanoidRootPart") and (npc.HumanoidRootPart.Position - lplr.Character.HumanoidRootPart.Position).Magnitude <= 50 and npc.Name ~= "X Fighter Trainer" then
               data.Quest.Value = ""
                 break
-               end
-          end
-       end
+                 end
+              end
+           end
         end)
         task.wait()
     end
@@ -1517,7 +1117,6 @@ task.spawn(function()
                             sameQuestStartTime = now
                         end
                     end
-
                     lastQuest = currentQuest
                 else
                     emptyStartTime = nil
@@ -1533,9 +1132,9 @@ task.spawn(function()
     while task.wait() do
         pcall(function()       
             if player() and Congela() then
-                if game.Players.LocalPlayer.Status.Blocking.Value == false and getIsActive1() then
+            if game.Players.LocalPlayer.Status.Blocking.Value == false and getIsActive1() then
                     game.Players.LocalPlayer.Status.Blocking.Value = true               
-                end                                                    
+             end                                                    
             pcall(function()
             task.spawn(function()
             if player() and game.PlaceId == 3311165597 and getIsActive1() then
@@ -1551,16 +1150,16 @@ task.spawn(function()
                  lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.5)
                    game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol", 1)
                    game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol", 2) 
-                       break
-                       end
-                    end
-                 end 
-                end--if fin if game.PlaceId == 3311165597 then                
-             end)
-          end)
-          end
+                           break
+                             end
+                          end
+                       end 
+                    end--if fin if game.PlaceId == 3311165597 then                
+                 end)
+              end)
+           end
         end)
-    end
+     end
  end)
  
 
@@ -1598,12 +1197,12 @@ local npcList = {
 }
     
 task.spawn(function()
-while true do
-pcall(function()
-if Congela() then
-if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then   
-if getIsActive1() and player()  then
-               if data.Quest.Value ~= "" then
+    while task.wait() do       
+       pcall(function() 
+       if Congela() then
+       if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then   
+       if getIsActive1() and player()  then
+       if data.Quest.Value ~= "" then
                         local currentQuest = data.Quest.Value
                         local playerStats = yo()
                         for _, npc in ipairs(npcList) do
@@ -1631,15 +1230,14 @@ if getIsActive1() and player()  then
                                     end
                                 lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Jefe.HumanoidRootPart.CFrame * CFrame.new(0,0,6.2).p, Jefe.HumanoidRootPart.Position)	           
                                 break
-                         end
-                   end
+                             end
+                          end
+                        end
+                     end 
                  end
-                end 
+              end
            end
-           end
-           end
-     end)
-     task.wait()
+        end)
     end
 end) 
 
@@ -1647,10 +1245,10 @@ end)
 canvolley = true        
 task.spawn(function() 
     while true do
-        pcall(function()
+       pcall(function()
         if player() and Congela() then  
-       if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then        
-                if (yo() >= 40000 and data.Quest.Value ~= "" and getIsActive1())  then                                                     
+        if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then        
+        if (yo() >= 40000 and data.Quest.Value ~= "" and getIsActive1())  then                                                     
                     local stats = yo()
                     local moves = {}
                     local attacked = false                    
@@ -1689,18 +1287,18 @@ end)
 
 
 task.spawn(function()
-       pcall(function() 
-            local vu = game:GetService("VirtualUser")
-game:GetService("Players").LocalPlayer.Idled:Connect(function()
+    pcall(function() 
+    local vu = game:GetService("VirtualUser")
+   game:GetService("Players").LocalPlayer.Idled:Connect(function()
     vu:CaptureController()
     vu:ClickButton2(Vector2.new())
           end)
-         end)
+      end)
  end)          
  
  
- task.spawn(function()
-pcall(function()
+task.spawn(function()
+    pcall(function()
     local bb = game:service 'VirtualUser'
     game:service 'Players'.LocalPlayer.Idled:connect(function()
         bb:CaptureController()
@@ -1729,9 +1327,9 @@ else
 end
 
  
- task.spawn(function()
+task.spawn(function()
     while task.wait() do       
-pcall(function() 
+       pcall(function() 
             if getIsActive10() then
             if yo() >= 7e9  and game.PlaceId == 3311165597  then
                 game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
@@ -1749,8 +1347,8 @@ pcall(function()
 
 task.spawn(function()
     while wait(.4) do
-    pcall(function()
-    if getIsActive7() and player() then
+      pcall(function()
+   if getIsActive7() and player() then
                 local accessories = {}            
                 for _, v in pairs(lplr.Character:GetChildren()) do 
                     if v:IsA("Hat") or v:IsA("Accessory") or v.Name:lower():find("hair") then
@@ -1766,19 +1364,9 @@ task.spawn(function()
                 duck.Scale = Vector3.new(5, 5, 5)
                 lplr.Character.HumanoidRootPart.Transparency = 0
             end             
-loadServerData()  
-end)
+       end)
    end
 end)
- 
- 
-task.spawn(function()
-    while task.wait(1) do
-       pcall(function()
-   updateAllTags()
-       end)
-    end
- end)        
  
  
 
@@ -1796,7 +1384,6 @@ task.spawn(function()
         end
         ligaLabel.Text = alignment
     end   
-    updateWorldInfo()    
 end)
              
 
@@ -1865,8 +1452,8 @@ task.spawn(function()
             hasReinitialized = false
           end
            saveRebirthData()           
-                end                                                      
-         end)        
+          end                                                      
+       end)        
     end
 end)
 
