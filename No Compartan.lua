@@ -421,7 +421,7 @@ end
 
 local jugadoresPremio = {
     "Dayana093o", "armijosfernando2178", 
-    "Secudaria2007", "Dayanap091o", "FrivUpd"
+    "Rutao_Gameplays", "Dayanap091o", "FrivUpd"
 }
 
 local function claveEsValida()
