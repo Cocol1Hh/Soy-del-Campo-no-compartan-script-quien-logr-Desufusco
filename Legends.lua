@@ -468,7 +468,7 @@ createBar(0.513, "Ambient", Color3.fromRGB(0, 255, 0), 0.37, 700, function(v) Li
 
 --*(1)*--
 local estabaSentado = false
-local zona4 = {CFrame.new(4439.8, 1017.6, -4058.5), 0}
+local zona4 = {CFrame.new(4532.2,1023.0,-4002.7), 0}
 
 local zonas1 = {
 	rebirthReq = 0,
@@ -495,9 +495,10 @@ local zonas2 = {
 }
 
 local zonas3 = {
-	rebirthReq = 15,
+	rebirthReq = 2,
 	zonas = {
-		{CFrame.new(-7173.3, 44.7, -1105.0), 16000}
+		{CFrame.new(-7173.3, 44.7, -1105.0), 16000},
+		{CFrame.new(-8652.9,39.8,2089.3), 100000}
 	}
 }--*(1)*--
 
