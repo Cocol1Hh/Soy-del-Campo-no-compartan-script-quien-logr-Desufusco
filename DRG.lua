@@ -278,25 +278,27 @@ Contenedor.ScrollingDirection = Enum.ScrollingDirection.Y
 
 
 
-local Selct = Instance.new("ScrollingFrame", Barra2)
-Selct.Size = UDim2.new(0, 320, 0, 170)
-Selct.Position = UDim2.new(0.990, 0, 0.165, 0)
-Selct.AnchorPoint = Vector2.new(0.5, 0.5)
-Selct.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-Selct.BorderSizePixel = 0
-Selct.ScrollBarThickness = 6
-Selct.CanvasSize = UDim2.new(0, 0, 0, 400)
-Selct.ScrollingDirection = Enum.ScrollingDirection.Y
+local Selct = Instance.new("ScrollingFrame", Barra2)  
+Selct.Size = UDim2.new(0, 110, 0, 190)  
+Selct.Position = UDim2.new(0.820, 0, 0.165, 0)  
+Selct.AnchorPoint = Vector2.new(0.5, 0.5)  
+Selct.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  
+Selct.BorderSizePixel = 0  
+Selct.ScrollBarThickness = 5
+Selct.ScrollingDirection = Enum.ScrollingDirection.Y  
+Selct.CanvasSize = UDim2.new(0, 0, 0, 0)  
 
+local forms = { 'Ultra Super Villain', 'Nephalem', 'Seraphim Of Destruction', 'Seraphim', 'Ego Instinct 2', 'Ego Instinct', 'Divine Rose Prominence', 'Divine Blue', 'God of Destruction', 'God of Creation', 'Beast', 'Mastered Ultra Instinct', 'SSJR2', 'SSJB2', 'Ultra Instinct Omen', 'Dark Rose', 'Blue Evolution', 'SSJ Rose', 'SSJ Blue', 'SSJ4', 'SSJG', 'Mystic', 'SSJ3', 'LSSJ', 'SSJ2', 'SSJ', 'FSSJ', 'Kaioken' }
 
-local forms = {"Nephalem", "Seraphim Of Destruction", "Seraphim", "Ego Instinct 2", "Ego Instinct", "SSJR3", "SSJB3", "God of Creation", "Beast", "LSSJ4"} 
-local frame = Instance.new("Frame", Selct)
-frame.Size = UDim2.new(0, 100, 0, #forms * 30 + 10)
-frame.Position = UDim2.new(0.8, -220, 0.270, -frame.Size.Y.Offset / 3)
-frame.BackgroundTransparency = 1
+local frame = Instance.new("Frame", Selct)  
+frame.Size = UDim2.new(1, 0, 0, 0)  
+frame.Position = UDim2.new(0, 0, 0, 0)  
+frame.BackgroundTransparency = 1  
 
-local list = Instance.new("UIListLayout", frame)
-list.Padding = UDim.new(0, 5)
+local list = Instance.new("UIListLayout", frame)  
+list.Padding = UDim.new(0, 5)  -- separacion entre botones  
+list.SortOrder = Enum.SortOrder.LayoutOrder
+
 
 --incio Borde color\/
 Borde1.Parent = Cuadro1
@@ -556,38 +558,46 @@ local function createBar(xPos, text, color, yPos, max, updateFunc, name)
 end
 
 
+
 --Formas
-for i, form in ipairs(forms) do
-    local btn = Instance.new("TextButton", frame)
-    btn.Size = UDim2.new(1, 0, 0, 25)
-    btn.Text = form
-    btn.TextColor3 = Color3.new(1, 1, 1)
-    btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-    btn.TextScaled = true 
-    btn.TextWrapped = true 
-    local corner = Instance.new("UICorner", btn)
-    corner.CornerRadius = UDim.new(0, 12)
-    
-    btn.MouseButton1Click:Connect(function()
-        selectedForm = (selectedForm ~= form) and form or nil
-        saveForm(selectedForm)
-        for _, b in ipairs(frame:GetChildren()) do
-            if b:IsA("TextButton") then
-                b.BackgroundColor3 = (b == btn and selectedForm) and Color3.fromRGB(0, 120, 0) or Color3.fromRGB(60, 60, 60)
-            end
-        end
-    end)
+local buttonHeight = 25
+for _, form in ipairs(forms) do  
+    local btn = Instance.new("TextButton", frame)  
+    btn.Size = UDim2.new(0.9, 0, 0, buttonHeight)  
+    btn.Text = form  
+    btn.TextColor3 = Color3.new(1, 1, 1)  
+    btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)  
+    btn.TextScaled = true   
+    btn.TextWrapped = true   
+    local corner = Instance.new("UICorner", btn)  
+    corner.CornerRadius = UDim.new(0, 12)  
+      
+    btn.MouseButton1Click:Connect(function()  
+        selectedForm = (selectedForm ~= form) and form or nil  
+        saveForm(selectedForm)  
+        for _, b in ipairs(frame:GetChildren()) do  
+            if b:IsA("TextButton") then  
+                b.BackgroundColor3 = (b == btn and selectedForm) and Color3.fromRGB(0, 120, 0) or Color3.fromRGB(60, 60, 60)  
+            end  
+        end  
+    end)  
+end  
+
+local totalHeight = (#forms * (buttonHeight + list.Padding.Offset)) + list.Padding.Offset
+frame.Size = UDim2.new(1, 0, 0, totalHeight)
+Selct.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
+
+
+selectedForm = loadForm()  
+if selectedForm then  
+    for _, btn in ipairs(frame:GetChildren()) do  
+        if btn:IsA("TextButton") and btn.Text == selectedForm then  
+            btn.BackgroundColor3 = Color3.fromRGB(0, 120, 0)  
+            break  
+        end  
+    end  
 end
 
-selectedForm = loadForm()
-if selectedForm then
-    for _, btn in ipairs(frame:GetChildren()) do
-        if btn:IsA("TextButton") and btn.Text == selectedForm then
-            btn.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
-            break
-        end
-    end
-end
 
 
 --Menu de Contador 1H:30M
@@ -825,58 +835,67 @@ task.spawn(function()
 end--FIN DE LA PROTECION SCRIPTS
 
 
-local forms = {"Nephalem", "Seraphim Of Destruction", "Seraphim", "Ego Instinct 2", "Ego Instinct", "SSJR3", "SSJB3", "God of Creation", "Beast", "LSSJ4"} 
 task.spawn(function()
     while task.wait() do
         pcall(function()
-        if getIsActive11() and player() and Congela() then
-        local Forms = {
-                                  'Ultra Super Villain',
-        	                      'Nephalem',
-        	                      'Seraphim Of Destruction',
-        	                      'Seraphim',
-                                  'Ego Instinct 2', 
-                                  'Ego Instinct',
-                                  'Divine Rose Prominence',
-                                  'Divine Blue',
-                                  'God of Destruction',
-                                  'God of Creation',
-                                  'Beast',
-                                  'Mastered Ultra Instinct',
-                                  'SSJR2',
-                                  'SSJB2',
-                                  'Ultra Instinct Omen',
-                                  'Dark Rose',
-                                  'Blue Evolution',
-                                  'SSJ Rose',
-                                  'SSJ Blue',
-                                  'SSJ4',
-                                  'SSJG',
-                                  'Mystic',
-                                  'SSJ3',
-                                  'LSSJ',
-                                  'SSJ2',
-                                  'SSJ',
-                                  'FSSJ',
-                                  'Kaioken'}
-                             local status = lplr.Status    
-                           for _, form in ipairs(Forms) do 
+            if getIsActive11() and player() and Congela() then
+                local Forms = {
+                    'Ultra Super Villain',
+                    'Nephalem',
+                    'Seraphim Of Destruction',
+                    'Seraphim',
+                    'Ego Instinct 2', 
+                    'Ego Instinct',
+                    'Divine Rose Prominence',
+                    'Divine Blue',
+                    'God of Destruction',
+                    'God of Creation',
+                    'Beast',
+                    'Mastered Ultra Instinct',
+                    'SSJR2',
+                    'SSJB2',
+                    'Ultra Instinct Omen',
+                    'Dark Rose',
+                    'Blue Evolution',
+                    'SSJ Rose',
+                    'SSJ Blue',
+                    'SSJ4',
+                    'SSJG',
+                    'Mystic',
+                    'SSJ3',
+                    'LSSJ',
+                    'SSJ2',
+                    'SSJ',
+                    'FSSJ',
+                    'Kaioken'
+                }
+              local status = lplr.Status    
+                  for _, form in ipairs(Forms) do 
                    if Ex.equipskill:InvokeServer(form) then break end  
              end
         if status and status.SelectedTransformation.Value ~= status.Transformation.Value then
             Ex.ta:InvokeServer()
             end                
          end      
-      end)
-   end
-end)   
+         if not getIsActive11() and not getIsActive12()  and selectedForm and not transforming and lplr.Status.Transformation.Value ~= selectedForm  then
+                  transforming = true
+                    pcall(function()
+                if Ex.equipskill:InvokeServer(selectedForm) then
+                    Ex.ta:InvokeServer()
+                    end
+                  end)
+                transforming = false
+              end
+        end)
+    end
+end)
      
      
      
 task.spawn(function()
     while task.wait() do
         pcall(function()
-        if getIsActive12() and player() and Congela() then
+        if getIsActive12() and not getIsActive11()  and player() and Congela() then
         local Forms = {                                
                                   'True SSJG',
                                   'Blanco',
