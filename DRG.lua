@@ -1002,20 +1002,15 @@ local function getRebirthRequirement()
     return 0
 end 
 
- local specialUsers = {
-    armijosfernando2178 = true,
-    fernanfloP091o = true
-}
+ 
 task.spawn(function()
     while true do
         pcall(function()
             if getIsActive3() and player() then
                 local text = lplr.PlayerGui.Main.MainFrame.Frames.Rebirth.MultiRebirth.TextLabel.Text
                 local count = tonumber(text:match("%((%d+)%)")) or 0
-                if specialUsers[lplr.Name] and count >= 1 then
-                    game.ReplicatedStorage.Package.Events.reb:InvokeServer()
-                elseif not specialUsers[lplr.Name] and count >= 1 then
-                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(20)
+                if count >= 1 then
+                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(20)            
                 end
             end
         end)
