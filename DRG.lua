@@ -995,7 +995,7 @@ task.spawn(function()
                 if specialUsers[lplr.Name] and count >= 1 then
                     game.ReplicatedStorage.Package.Events.reb:InvokeServer()
                 elseif not specialUsers[lplr.Name] and count >= 1 then
-                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(100)
+                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(20)
                 end
             end
         end)
