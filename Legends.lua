@@ -140,6 +140,25 @@ Kills.TextColor3 = Color3.fromRGB(255, 255, 255)
 Kills.TextSize = 7
 Kills.Parent = Barra1
 
+local Rebiths = Instance.new("TextLabel")
+Rebiths.Size = UDim2.new(0, 100, 0, 10)
+Rebiths.Position = UDim2.new(0.120, 0, 0.009, 0)
+Rebiths.BackgroundTransparency = 1
+Rebiths.TextColor3 = Color3.fromRGB(255, 255, 255)
+Rebiths.TextScaled = true
+Rebiths.Text = "Rebirth"
+Rebiths.Parent = Barra1
+
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(0, 100, 0, 23)
+statusLabel.Position = UDim2.new(0.134, 0, 0.03, 0)
+statusLabel.BackgroundTransparency = 1
+statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+statusLabel.TextScaled = true
+statusLabel.Font = Enum.Font.SourceSansBold
+statusLabel.Text = "Stats..."
+statusLabel.Parent = Barra1
+
 local Fps = Instance.new("TextLabel")
 Fps.Size = UDim2.new(0, 100, 0, 10)
 Fps.Position = UDim2.new(0.663, 0, 0.009, 0)
@@ -231,13 +250,9 @@ local textProperties = {
     {text = "Duck", position = UDim2.new(-0.160 + 0, 0, 0.420, 0), color = Color3.fromRGB(200, 100, 200), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Jump", position = UDim2.new(0.350 + 0, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Pets", position = UDim2.new(-0.160 + 0, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Tp|Planet", position = UDim2.new(0.350 + 0.170, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 80, 0, 36)},
+    {text = "X2MRey", position = UDim2.new(0.350 + 0.170, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 80, 0, 36)},
     {text = "Form", position = UDim2.new(-0.140 + 0, 0, 0.570, 0), color = Color3.fromRGB(200, 200, 90), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "F|Vip", position = UDim2.new(0.360 + 0.1, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 120, 0, 36)},
-    {text = "Tp", position = UDim2.new(-0.160 + 0, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Actk", position = UDim2.new(0.350 + 0, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Copy", position = UDim2.new(-0.160 + 0, 0, 0.345, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Camr", position = UDim2.new(0.350 + 0, 0, 0.345, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra3, size = UDim2.new(0, 200, 0, 36)},
 }
 
 for _, props in pairs(textProperties) do
@@ -328,12 +343,20 @@ Mix.MouseButton1Click:Connect(function()
 end)
 
 --Aki ya es del interrutor <: \/
+local saveFileName = "Legends_Switches.json"
 local function SaveSwitchState(isActive, switchName)
-    writefile(switchName.."_SwitchState.json", game:GetService("HttpService"):JSONEncode({SwitchOn = isActive, LastModified = os.time()}))
+    local states = {}
+    if isfile(saveFileName) then
+        states = HttpService:JSONDecode(readfile(saveFileName))
+    end
+    states[switchName] = {SwitchOn = isActive, LastModified = os.time()}
+    writefile(saveFileName, HttpService:JSONEncode(states))
 end
 
 local function LoadSwitchState(switchName)
-    return isfile(switchName.."_SwitchState.json") and game:GetService("HttpService"):JSONDecode(readfile(switchName.."_SwitchState.json")).SwitchOn or false
+    if not isfile(saveFileName) then return false end
+    local states = HttpService:JSONDecode(readfile(saveFileName))
+    return states[switchName] and states[switchName].SwitchOn or false
 end
 
 local activeBar, speed = nil, 0
@@ -433,27 +456,19 @@ local function createBar(xPos, text, color, yPos, max, updateFunc, name)
 end
 
 
---Tp Players
-local getIsActive15 = createSwitch(Barra3, UDim2.new(0.2, 0, 0.275, 0), "Switch15", LoadSwitchState("Switch15"))--Tp
-local getIsActive17 = createSwitch(Barra3, UDim2.new(0.2, 0, 0.345, 0), "Switch17", LoadSwitchState("Switch17"))--Tp
-local getIsActive18 = createSwitch(Barra3, UDim2.new(0.740, 0, 0.345, 0), "Switch18", LoadSwitchState("Switch178"))--Tp
---[Xd]
-
-
-local getIsActive1 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.120, 0), "Switch1", LoadSwitchState("Switch1"))--Farm
-local getIsActive2 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.115, 0), "Switch2", LoadSwitchState("Switch2"))--Form
-local getIsActive3 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.2, 0), "Switch3", LoadSwitchState("Switch3"))--Rebirth
-local getIsActive4 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.195, 0), "Switch4", LoadSwitchState("Switch4"))--Ozaru
-local getIsActive5 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.275, 0), "Switch5", LoadSwitchState("Switch5"))--Black
-local getIsActive6 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.275, 0), "Switch6", LoadSwitchState("Switch6"))--Hallowen🎃
-local getIsActive7 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.420, 0), "Switch7", LoadSwitchState("Switch7"))--Duck
-local getIsActive8 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.420, 0), "Switch8", LoadSwitchState("Switch8"))--Protecion server
-local getIsActive9 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.495, 0), "Switch9", LoadSwitchState("Switch9"))--Graf
-local getIsActive10 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.495, 0), "Switch10", LoadSwitchState("Switch10"))--Planet
-local getIsActive11 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.570, 0), "Switch11", LoadSwitchState("Switch11"))--Mapa
-local getIsActive12 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.570, 0), "Switch12", LoadSwitchState("Switch12"))--Klirin
-
-local getIsActive16 = createSwitch(Barra3, UDim2.new(0.740, 0, 0.275, 0), "Switch16", LoadSwitchState("Switch16"))--Atakes
+-- Tp Players
+local getIsActive1  = createSwitch(Barra1, UDim2.new(0.2,   0, 0.120, 0), "Legends1",  LoadSwitchState("Legends1"))  -- Farm
+local getIsActive2  = createSwitch(Barra1, UDim2.new(0.735, 0, 0.115, 0), "Legends2",  LoadSwitchState("Legends2"))  -- Form
+local getIsActive3  = createSwitch(Barra1, UDim2.new(0.2,   0, 0.2,   0), "Legends3",  LoadSwitchState("Legends3"))  -- Rebirth
+local getIsActive4  = createSwitch(Barra1, UDim2.new(0.735, 0, 0.195, 0), "Legends4",  LoadSwitchState("Legends4"))  -- Ozaru
+local getIsActive5  = createSwitch(Barra1, UDim2.new(0.2,   0, 0.275, 0), "Legends5",  LoadSwitchState("Legends5"))  -- Black
+local getIsActive6  = createSwitch(Barra1, UDim2.new(0.740, 0, 0.275, 0), "Legends6",  LoadSwitchState("Legends6"))  -- Hallowen 🎃
+local getIsActive7  = createSwitch(Barra1, UDim2.new(0.2,   0, 0.420, 0), "Legends7",  LoadSwitchState("Legends7"))  -- Duck
+local getIsActive8  = createSwitch(Barra1, UDim2.new(0.740, 0, 0.420, 0), "Legends8",  LoadSwitchState("Legends8"))  -- Protección server
+local getIsActive9  = createSwitch(Barra1, UDim2.new(0.2,   0, 0.495, 0), "Legends9",  LoadSwitchState("Legends9"))  -- Graf
+local getIsActive10 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.495, 0), "Legends10", LoadSwitchState("Legends10")) -- Planet
+local getIsActive11 = createSwitch(Barra1, UDim2.new(0.2,   0, 0.570, 0), "Legends11", LoadSwitchState("Legends11")) -- Mapa
+local getIsActive12 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.570, 0), "Legends12", LoadSwitchState("Legends12")) -- Klirin
 
 
 createBar(0, "Speed", Color3.fromRGB(255, 0, 0), 0.37, 100, function(v) 
@@ -469,6 +484,7 @@ createBar(0.513, "Ambient", Color3.fromRGB(0, 255, 0), 0.37, 700, function(v) Li
 --*(1)*--
 local estabaSentado = false
 local zona4 = {CFrame.new(4532.2,1023.0,-4002.7), 0}
+local zona5 = {CFrame.new(-8773.0, 49.7, -5663.6), 0}
 
 local zonas1 = {
 	rebirthReq = 0,
@@ -498,7 +514,7 @@ local zonas3 = {
 	rebirthReq = 2,
 	zonas = {
 		{CFrame.new(-7173.3, 44.7, -1105.0), 16000},
-		{CFrame.new(-8652.9,39.8,2089.3), 100000}
+		{CFrame.new(-8652.9, 39.8, 2089.3), 100000}
 	}
 }--*(1)*--
 
@@ -575,6 +591,28 @@ task.spawn(function()
 				local enMaquina = seatPart and seatPart:IsDescendantOf(workspace.machinesFolder)
 				local hrp = char and char:FindFirstChild("HumanoidRootPart")
 
+				local fuerza = lplr.leaderstats.Strength.Value
+				local rebirths = lplr.leaderstats.Rebirths.Value
+
+				local mejorZona = nil
+
+				if getIsActive10() and hrp then
+					local distancia = (hrp.Position - zona5[1].Position).Magnitude
+					local posActualMaquina = seatPart and seatPart.Position or Vector3.zero
+					local usandoMaquinaCorrecta = enMaquina and (posActualMaquina - zona5[1].Position).Magnitude <= 20
+
+					if not usandoMaquinaCorrecta then
+						if humanoid and humanoid.Sit then
+							humanoid.Sit = false
+							humanoid.SeatPart = nil
+						end
+						if distancia > 20 then
+							hrp.CFrame = zona5[1]
+						end
+					end
+					return
+				end
+
 				if getIsActive8() and hrp then
 					local distancia = (hrp.Position - zona4[1].Position).Magnitude
 					local posActualMaquina = seatPart and seatPart.Position or Vector3.zero
@@ -592,9 +630,6 @@ task.spawn(function()
 					return
 				end
 
-				local fuerza = lplr.leaderstats.Strength.Value
-				local rebirths = lplr.leaderstats.Rebirths.Value
-
 				local listaZonas = {}
 
 				local function agregarZonas(grupo)
@@ -609,7 +644,6 @@ task.spawn(function()
 				agregarZonas(zonas2)
 				agregarZonas(zonas3)
 
-				local mejorZona = nil
 				local mejorReq = -math.huge
 				for _, zona in ipairs(listaZonas) do
 					if fuerza >= zona[2] and zona[2] > mejorReq then
@@ -889,7 +923,6 @@ rebirths:GetPropertyChangedSignal("Value"):Connect(function()
         pcall(function()
             for _, pet in pairs(petFolder:GetChildren()) do
                 equipRemote:FireServer("unequipPet", pet)
-                print('❌ unequipPet: petsFolder.Unique["' .. pet.Name .. '"]')
             end
         end)
     end
@@ -940,7 +973,52 @@ task.spawn(function()
              		 	
               Kills.Text = "Kills: " .. formatNumber(lplr.leaderstats.Kills.Value)
 			
+             Rebiths.Text = "Rebirths: " .. tostring(lplr.leaderstats.Rebirths.Value)
+            
+
+			function getNextStatRequirement()
+			    local rebirths = lplr.leaderstats.Rebirths.Value
+			    local base = 10000 + rebirths * 5000
 			
+			    local golden = lplr.ultimatesFolder:FindFirstChild("Golden Rebirth")
+			    if golden then
+			        local level = golden.Value
+			        local reduction = math.clamp(level * 0.1, 0, 0.5)
+			        base = math.floor(base * (1 - reduction))
+			    end
+			
+			    return base
+			end
+		
+		local rebirthValue = lplr.leaderstats.Rebirths.Value
+		local strengthValue = lplr.leaderstats.Strength.Value
+		local nextRequirement = getNextStatRequirement()
+		
+		statusLabel.Text = string.format(
+		    "%s/%s\n%s",
+		    formatNumber(nextRequirement),
+		    formatNumber(strengthValue),
+		    formatNumber(rebirthValue)
+		)
+		
+		local currentRebirthValue = lplr.leaderstats.Rebirths.Value
+		if currentRebirthValue > previousRebirthValue then
+		    game.ReplicatedStorage.RebirthTimeValue.Value = tick()
+		    previousRebirthValue = currentRebirthValue
+		end
+		
+		if isInTargetPlace() then
+		    if not hasReinitialized then
+		        game.ReplicatedStorage.RebirthTimeValue.Value = tick()
+		        previousRebirthValue = currentRebirthValue
+		        hasReinitialized = true
+		    end
+		else
+		    hasReinitialized = false
+		end
+		
+		saveRebirthData()
+            
              end
          end)        
     end
