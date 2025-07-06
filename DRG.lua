@@ -831,6 +831,7 @@ task.spawn(function()
         pcall(function()
         if getIsActive11() and player() and Congela() then
         local Forms = {
+                                  'Ultra Super Villain',
         	                      'Nephalem',
         	                      'Seraphim Of Destruction',
         	                      'Seraphim',
@@ -1111,6 +1112,9 @@ task.spawn(function()
 
 
 local npcList = {
+	{"Ultra Super Villain Jiran", 200e12, true},
+	{"Mira (final form)", 50e12, true},
+	{"Android 21 (janemba absorbed)", 20e12, true},
 	{"Ultra Vekuta", 5e12, true},
 	{"Seraphim of Destruction Vegetable", 2.30e12, true},
 	{"Wukong Seraphim", 1.50e12, true},
