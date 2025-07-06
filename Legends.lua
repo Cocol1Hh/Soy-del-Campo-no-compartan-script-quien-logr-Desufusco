@@ -230,7 +230,7 @@ local textProperties = {
     {text = "Brillo", position = UDim2.new(0.473 + 0, 0, 0.320, 0), color = Color3.fromRGB(180, 200, 100), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Duck", position = UDim2.new(-0.160 + 0, 0, 0.420, 0), color = Color3.fromRGB(200, 100, 200), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Jump", position = UDim2.new(0.350 + 0, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Req", position = UDim2.new(-0.160 + 0, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
+    {text = "Pets", position = UDim2.new(-0.160 + 0, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Tp|Planet", position = UDim2.new(0.350 + 0.170, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 80, 0, 36)},
     {text = "Form", position = UDim2.new(-0.140 + 0, 0, 0.570, 0), color = Color3.fromRGB(200, 200, 90), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "F|Vip", position = UDim2.new(0.360 + 0.1, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 120, 0, 36)},
@@ -483,7 +483,7 @@ local zonas1 = {
 }
 
 local zonas2 = {
-	rebirthReq = 1,
+	rebirthReq = 0,
 	zonas = {
 		{CFrame.new(-2695.1, 13.4, -181.8), 3000},
 		{CFrame.new(-2628.6, 22.0, -609.6), 4000},
@@ -687,6 +687,7 @@ local lplr = game.Players.LocalPlayer
 local char = lplr.Character or lplr.CharacterAdded:Wait()
 local hrp = char:WaitForChild("HumanoidRootPart")
 local cam = workspace.CurrentCamera
+local hum = char:WaitForChild("Humanoid")
 
 local maquinasCorrer = {
     {pos = Vector3.new(-136.0, 6.0, -107.3), mirar = Vector3.new(-136.2, 6.9, -123.0), reqAgility = 100},
@@ -694,13 +695,13 @@ local maquinasCorrer = {
     {pos = Vector3.new(-230.5, 8.1, -95.6), mirar = Vector3.new(-230.0, 9.9, -119.9), reqAgility = 2000},
     {pos = Vector3.new(2661.2, 28.6, 960.5), mirar = Vector3.new(2659.1, 35.7, 857.1), reqAgility = 5000},
     {pos = Vector3.new(-2915.1, 38.5, -590.4), mirar = Vector3.new(-3043.0, 48.8, -582.7), reqAgility = 6000},
-    {pos = Vector3.new(-7043.2, 33.2, -1458.8), mirar = Vector3.new(-7189.7, 43.6, -1453.7), reqAgility = 7000}
+    {pos = Vector3.new(-7043.2, 33.2, -1458.8), mirar = Vector3.new(-7189.7, 43.6, -1453.7), reqAgility = 8000}
 }
 
 task.spawn(function()
     while task.wait() do       
         pcall(function()
- 		if getIsActive6() then       
+       if getIsActive6() then
             local agility = lplr:FindFirstChild("Agility")
             if not agility then return end
             local mejor = nil
@@ -714,29 +715,24 @@ task.spawn(function()
             if mejor then
                 local cf = CFrame.lookAt(mejor.pos, mejor.mirar)
                 local distancia = (hrp.Position - mejor.pos).Magnitude
-
-                if distancia > 5 and getIsActive6() then
+                if distancia > 5 then
                     lplr.Character.HumanoidRootPart.CFrame = cf
+                  cam.CFrame = cf     
+              else          
+                if distancia <= 5  then
+                task.spawn(function()
+            if hum.MoveDirection.Magnitude == 0 then
+                hum:Move(Vector3.new(0, 0, -1), true)
+                          end
+                       end)
+                   end
                 end
-
-                cam.CFrame = cf
-
-                if distancia <= 5 then
-                    if getIsActive6() then
-                        keypress(0x57)
-                    else
-                        keyrelease(0x57)
-                    end
-                else
-                    keyrelease(0x57)
-                end
-            else
-                keyrelease(0x57)
-            end
+               end
             end
         end)
     end
 end)
+
 
 task.spawn(function()
 	while true do
@@ -785,8 +781,8 @@ task.spawn(function()
 	while true do
 		pcall(function()
 		if getIsActive3() then
-				game.ReplicatedStorage.rEvents.rebirthRemote:InvokeServer("rebirthRequest")
-			end
+				game.ReplicatedStorage.rEvents.rebirthRemote:InvokeServer("rebirthRequest")				
+			end			
 		end)
 		task.wait(.5)
 	end
@@ -795,12 +791,129 @@ end)
 task.spawn(function()
 	while true do
 		pcall(function()
-		if getIsActive5() then
-				game:GetService("ReplicatedStorage").rEvents.changeSpeedSizeRemote:InvokeServer("changeSize", 2)
-            game:GetService("ReplicatedStorage").rEvents.savePlayerSizeEvent:FireServer("savePlayerSizeOption")
+			local rep = lplr:WaitForChild("ultimatesFolder"):WaitForChild("+5% Rep Speed")
+			if not lplr:GetAttribute("OriginalRepSpeed_Stored") and rep.Value ~= 99999 then
+				lplr:SetAttribute("OriginalRepSpeed_Stored", rep.Value)
+			end			
+			if getIsActive1() then
+				rep.Value = 99999
+			else
+				local original = lplr:GetAttribute("OriginalRepSpeed_Stored")
+				if original and rep.Value ~= original then
+					rep.Value = original
+				end
 			end
 		end)
-		task.wait(.5)
+		task.wait(.1)
+	end
+end)
+
+ 
+local lplr = game.Players.LocalPlayer
+local equipRemote = game:GetService("ReplicatedStorage").rEvents.equipPetEvent
+
+local function GetPets()
+	local basePets = 2
+	local u = lplr.ultimatesFolder:FindFirstChild("+1 Pet Slot")
+	local eU = (u and tonumber(u.Value)) or 0
+	local g = lplr.ownedGamepasses:FindFirstChild("+2 Pet Slots")
+	local eG = (g and g.Value and true) or false
+	local total = basePets + eU
+	if eG then total += 2 end
+	print("Mascotas máximas permitidas:", total)
+	return total
+end
+
+local function EquipStrongestPets()
+	pcall(function()
+		local rebirths = lplr.leaderstats and lplr.leaderstats:FindFirstChild("Rebirths")
+		if not rebirths then return end
+		local rebirthCount = rebirths.Value
+
+		local allPets = {}
+		for _, pet in pairs(lplr.petsFolder.Unique:GetChildren()) do
+			local p = pet:FindFirstChild("perksFolder")
+			local r = pet:FindFirstChild("requiredRebirths")
+			local required = (r and tonumber(r.Value)) or 0
+			if p and p:FindFirstChild("strength") and rebirthCount >= required then
+				table.insert(allPets, {pet = pet, strength = p.strength.Value})
+			end
+		end
+
+		table.sort(allPets, function(a, b)
+			return a.strength > b.strength
+		end)
+
+		local limit = GetPets()
+		local toEquip = {}
+		for i = 1, math.min(limit, #allPets) do
+			table.insert(toEquip, allPets[i].pet)
+		end
+
+		for _, d in pairs(allPets) do
+			local pet = d.pet
+			local ok = table.find(toEquip, pet)
+			local eq = pet:FindFirstChild("equipped") and pet.equipped.Value
+			if ok and not eq then
+				equipRemote:FireServer("equipPet", pet)
+			elseif not ok and eq then
+				equipRemote:FireServer("unequipPet", pet)
+			end
+		end
+	end)
+end
+
+
+
+task.spawn(function()
+	while task.wait(.8) do
+	pcall(function()
+	if getIsActive9() then
+		EquipStrongestPets()
+		game:GetService("ReplicatedStorage").rEvents.showPetsEvent:FireServer("hidePets")
+		end
+  	end)
+    end
+end)
+
+local lplr = game.Players.LocalPlayer
+local equipRemote = game:GetService("ReplicatedStorage").rEvents.equipPetEvent
+local petFolder = lplr.petsFolder.Unique
+local rebirths = lplr:WaitForChild("leaderstats"):WaitForChild("Rebirths")
+
+local lastValue = nil
+rebirths:GetPropertyChangedSignal("Value"):Connect(function()
+    local currentValue = rebirths.Value
+    if currentValue ~= lastValue then
+        lastValue = currentValue
+        pcall(function()
+            for _, pet in pairs(petFolder:GetChildren()) do
+                equipRemote:FireServer("unequipPet", pet)
+                print('❌ unequipPet: petsFolder.Unique["' .. pet.Name .. '"]')
+            end
+        end)
+    end
+end)
+
+
+
+task.spawn(function()
+	while true do
+		pcall(function()
+			if getIsActive5() then
+				local customSize = lplr.customSize
+				local save = lplr.saveSizePlayerValue
+				if save.Value and customSize.Value ~= 2 then
+					save.Value = false
+				end
+				game:GetService("ReplicatedStorage").rEvents.changeSpeedSizeRemote:InvokeServer("changeSize", 2)
+				if not save.Value and customSize.Value == 2 then
+					game:GetService("ReplicatedStorage").rEvents.savePlayerSizeEvent:FireServer("savePlayerSizeOption")
+					save.Value = true
+				end
+			end
+		end)
+		task.wait()
 	end
 end)
 
