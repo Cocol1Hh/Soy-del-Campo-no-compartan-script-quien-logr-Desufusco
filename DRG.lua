@@ -1232,11 +1232,11 @@ local npcList = {
     {"Perfect Atom", 210e6, true},
     {"Chilly", 75e6, true},
     {"Lord Sloog", 7e6, true},   
-    {"Mapa", 750e3, true},
-    {"Radish", 400e3, true},
-    {"Kid Nohag", 200e3, true},
-    {"Roshi", 150e3, true},
-    {"Klirin", 100e3, true}
+    {"Mapa", 950e3, true},
+    {"Radish", 700e3, true},
+    {"Kid Nohag", 500e3, true},
+    {"Roshi", 250e3, true},
+    {"Klirin", 200e3, true}
 }
     
 
