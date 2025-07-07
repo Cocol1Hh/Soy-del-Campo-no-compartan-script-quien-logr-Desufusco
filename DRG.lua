@@ -275,7 +275,62 @@ Contenedor.CanvasSize = UDim2.new(0, 0, 0, 400)
 Contenedor.ScrollingDirection = Enum.ScrollingDirection.Y
 
 
+--Multi Rebirths
 
+local inputBox = Instance.new("TextBox", Barra1)
+inputBox.Size = UDim2.new(0, 84, 0, 30)
+inputBox.Position = UDim2.new(0.735, 0, 0.195, 0)
+inputBox.PlaceholderText = "Cantidad (Max 20)"
+inputBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+inputBox.TextColor3 = Color3.new(1, 1, 1)
+inputBox.ClearTextOnFocus = false
+inputBox.Name = "RebirthInput"
+inputBox.TextScaled = true
+
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 5)
+UICorner.Parent = inputBox
+
+local UIStroke = Instance.new("UIStroke")
+UIStroke.Color = Color3.fromRGB(128, 0, 0)
+UIStroke.Thickness = 2
+UIStroke.Parent = inputBox
+
+local MAX_VALOR = 23
+local valorGuardado = 4
+
+if isfile("rebirthAmount.txt") then
+    local contenido = tonumber(readfile("rebirthAmount.txt"))
+    if contenido then
+        valorGuardado = math.clamp(contenido, 1, MAX_VALOR)
+    end
+end
+
+inputBox.Text = tostring(valorGuardado)
+
+local function guardar(valor)
+    local num = tonumber(valor)
+    if num then
+        num = math.clamp(num, 1, MAX_VALOR)
+        valorGuardado = num
+        inputBox.Text = tostring(num)
+        writefile("rebirthAmount.txt", tostring(num))
+    else
+        inputBox.Text = tostring(valorGuardado)
+    end
+end
+
+inputBox.FocusLost:Connect(function()
+    guardar(inputBox.Text)
+end)
+
+inputBox:GetPropertyChangedSignal("Text"):Connect(function()
+    local onlyNumbers = inputBox.Text:gsub("%D", "")
+    inputBox.Text = onlyNumbers
+    if onlyNumbers ~= "" then
+        guardar(onlyNumbers)
+    end
+end)
 
 
 local Selct = Instance.new("ScrollingFrame", Barra2)  
@@ -286,18 +341,21 @@ Selct.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 Selct.BorderSizePixel = 0  
 Selct.ScrollBarThickness = 5
 Selct.ScrollingDirection = Enum.ScrollingDirection.Y  
-Selct.CanvasSize = UDim2.new(0, 0, 0, 0)  
+Selct.CanvasSize = UDim2.new(0, 0, 0, 0)  -- lo actualizaremos después
 
 local forms = { 'Ultra Super Villain', 'Nephalem', 'Seraphim Of Destruction', 'Seraphim', 'Ego Instinct 2', 'Ego Instinct', 'Divine Rose Prominence', 'Divine Blue', 'God of Destruction', 'God of Creation', 'Beast', 'Mastered Ultra Instinct', 'SSJR2', 'SSJB2', 'Ultra Instinct Omen', 'Dark Rose', 'Blue Evolution', 'SSJ Rose', 'SSJ Blue', 'SSJ4', 'SSJG', 'Mystic', 'SSJ3', 'LSSJ', 'SSJ2', 'SSJ', 'FSSJ', 'Kaioken' }
 
 local frame = Instance.new("Frame", Selct)  
-frame.Size = UDim2.new(1, 0, 0, 0)  
+frame.Size = UDim2.new(1, 0, 0, 0)  -- ancho igual al ScrollingFrame, altura dinámica  
 frame.Position = UDim2.new(0, 0, 0, 0)  
 frame.BackgroundTransparency = 1  
 
 local list = Instance.new("UIListLayout", frame)  
 list.Padding = UDim.new(0, 5)  -- separacion entre botones  
 list.SortOrder = Enum.SortOrder.LayoutOrder
+
+
+
 
 
 --incio Borde color\/
@@ -443,12 +501,20 @@ Mix.MouseButton1Click:Connect(function()
 end)
 
 --Aki ya es del interrutor <: \/
+local saveFileName = "DBU_Switches.json"
 local function SaveSwitchState(isActive, switchName)
-    writefile(switchName.."_SwitchState.json", game:GetService("HttpService"):JSONEncode({SwitchOn = isActive, LastModified = os.time()}))
+    local states = {}
+    if isfile(saveFileName) then
+        states = HttpService:JSONDecode(readfile(saveFileName))
+    end
+    states[switchName] = {SwitchOn = isActive, LastModified = os.time()}
+    writefile(saveFileName, HttpService:JSONEncode(states))
 end
 
 local function LoadSwitchState(switchName)
-    return isfile(switchName.."_SwitchState.json") and game:GetService("HttpService"):JSONDecode(readfile(switchName.."_SwitchState.json")).SwitchOn or false
+    if not isfile(saveFileName) then return false end
+    local states = HttpService:JSONDecode(readfile(saveFileName))
+    return states[switchName] and states[switchName].SwitchOn or false
 end
 
 --Fly
@@ -558,7 +624,6 @@ local function createBar(xPos, text, color, yPos, max, updateFunc, name)
 end
 
 
-
 --Formas
 local buttonHeight = 25
 for _, form in ipairs(forms) do  
@@ -597,7 +662,6 @@ if selectedForm then
         end  
     end  
 end
-
 
 
 --Menu de Contador 1H:30M
@@ -663,17 +727,17 @@ end)
 
 
 
-local getIsActive1 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.120, 0), "Switch1", LoadSwitchState("Switch1"))--Farm
-local getIsActive2 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.115, 0), "Switch2", LoadSwitchState("Switch2"))--Form
-local getIsActive3 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.2, 0), "Switch3", LoadSwitchState("Switch3"))--Rebirth
-local getIsActive5 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.275, 0), "Switch5", LoadSwitchState("Switch5"))--Black
-local getIsActive6 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.275, 0), "Switch6", LoadSwitchState("Switch6"))--Hallowen🎃
-local getIsActive7 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.420, 0), "Switch7", LoadSwitchState("Switch7"))--Duck
-local getIsActive8 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.420, 0), "Switch8", LoadSwitchState("Switch8"))--Protecion server
-local getIsActive9 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.495, 0), "Switch9", LoadSwitchState("Switch9"))--Graf
-local getIsActive10 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.495, 0), "Switch10", LoadSwitchState("Switch10"))--Planet
-local getIsActive11 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.570, 0), "Switch11", LoadSwitchState("Switch11"))--Mapa
-local getIsActive12 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.570, 0), "Switch12", LoadSwitchState("Switch12"))--Klirin
+local getIsActive1 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.120, 0), "DBU1", LoadSwitchState("DBU1")) -- Farm  
+local getIsActive2 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.115, 0), "DBU2", LoadSwitchState("DBU2")) -- Form  
+local getIsActive3 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.2, 0), "DBU3", LoadSwitchState("DBU3")) -- Rebirth  
+local getIsActive5 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.275, 0), "DBU5", LoadSwitchState("DBU5")) -- Black  
+local getIsActive6 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.275, 0), "DBU6", LoadSwitchState("DBU6")) -- Hallowen🎃  
+local getIsActive7 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.420, 0), "DBU7", LoadSwitchState("DBU7")) -- Duck  
+local getIsActive8 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.420, 0), "DBU8", LoadSwitchState("DBU8")) -- Protecion server  
+local getIsActive9 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.495, 0), "DBU9", LoadSwitchState("DBU9")) -- Graf  
+local getIsActive10 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.495, 0), "DBU10", LoadSwitchState("DBU10")) -- Planet  
+local getIsActive11 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.570, 0), "DBU11", LoadSwitchState("DBU11")) -- Mapa  
+local getIsActive12 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.570, 0), "DBU12", LoadSwitchState("DBU12")) -- Klirin
 
 --Barras
 createBar(0, "Flight", Color3.fromRGB(255, 0, 0), 0.37, 100, function(v) speed = v end, "flight")
@@ -989,23 +1053,39 @@ task.spawn(function()
     end
 end)
 
-local function getRebirthRequirement()
-    local player = game.Players.LocalPlayer
-    local rebirthFrame = player.PlayerGui:FindFirstChild("Main") and player.PlayerGui.Main.MainFrame.Frames:FindFirstChild("Rebirth")
-    if not rebirthFrame then return 0 end
-    for _, child in ipairs(rebirthFrame:GetChildren()) do
-        if child:IsA("TextLabel") or child:IsA("TextButton") then
-            local num = tonumber(child.Text:gsub(",", ""):match("%d+"))
-            if num then return num end
-        end
-    end
-    return 0
-end 
 
- 
+local multipliers = {
+    K = 1e3,
+    M = 1e6,
+    B = 1e9,
+    T = 1e12,
+    Q = 1e15
+}
+function getRebirthRequirement()
+    local text = lplr.PlayerGui.Main.MainFrame.Frames.Rebirth.req.Text
+    local number, suffix = text:match("([%d%.]+)(%a?)")
+    number = tonumber(number)
+    if number and suffix ~= "" and multipliers[suffix] then
+        return number * multipliers[suffix]
+    end
+    return number or 0
+end
+
+
+
 task.spawn(function()
     while true do
         pcall(function()
+            if getIsActive3() and player() and Congela() then
+                local rebirthLabel = lplr.PlayerGui.Main.MainFrame.Frames.Rebirth.MultiRebirth.TextLabel
+                local text = rebirthLabel.Text
+                local count = tonumber(text:match("%((%d+)%)")) or 0
+                local valor = tonumber(inputBox.Text) or 4
+                valor = math.clamp(valor, 1, MAX_VALOR)
+                if count >= valor then
+                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(valor)
+                end
+            end
             if getIsActive3() and player() then
                 local text = lplr.PlayerGui.Main.MainFrame.Frames.Rebirth.MultiRebirth.TextLabel.Text
                 local count = tonumber(text:match("%((%d+)%)")) or 0
@@ -1014,7 +1094,7 @@ task.spawn(function()
                 end
             end
         end)
-        task.wait(0.3)
+        task.wait(0.8)
     end
 end)
 
@@ -1067,7 +1147,7 @@ task.spawn(function()
                         if currentQuest == lastQuest then
                             if not sameQuestStartTime then
                                 sameQuestStartTime = now
-                            elseif now - sameQuestStartTime >= 35 then
+                            elseif now - sameQuestStartTime >= 150 then
                                 if now - lastExecutionTime >= cooldown then
                                     humanoid:ChangeState(15)
                                     lastExecutionTime = now
@@ -1098,7 +1178,7 @@ task.spawn(function()
             pcall(function()
             task.spawn(function()
             if player() and game.PlaceId == 3311165597 and getIsActive1() then
-                 if data.Quest.Value ~= "X Fighter Trainer" and yo() <= 90551 then
+                 if data.Quest.Value ~= "X Fighter Trainer" and yo() <= 100e3 then
                  local npc = workspace.Others.NPCs["X Fighter Trainer"]
                     lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)
                        local args = {
@@ -1153,12 +1233,13 @@ local npcList = {
     {"Chilly", 75e6, true},
     {"Lord Sloog", 7e6, true},   
     {"Mapa", 750e3, true},
-    {"Radish", 200e3, true},
-    {"Kid Nohag", 17801, true},
-    {"Roshi", 130071, true},
-    {"Klirin", 90551, true}
+    {"Radish", 400e3, true},
+    {"Kid Nohag", 200e3, true},
+    {"Roshi", 150e3, true},
+    {"Klirin", 100e3, true}
 }
     
+
 task.spawn(function()
     while task.wait() do       
        pcall(function() 
@@ -1445,39 +1526,40 @@ end)
 
 
 --REQUISITOS LEER
-   
 local npcList = {
-    {"Ultra Vekuta", 5e12},
-    {"Seraphim of Destruction Vegetable", 2.30e12},
-    {"Wukong Seraphim", 1.50e12},
-    {"Ego Instinct Kakata (Buu absorbed)", 396e9},
-    {"Kakata (Ego Instinct)", 150e9},
-    {"Wukong True God", 100e9},
-    {"Wukong (SSJB3)", 75e9},
-    {"Xicor", 46e9},
-    {"Vis (Ultra Instinct)", 35e9},
-    {"Vills (True God of Destruction)", 25e9},
-    {"Black Chilly", 15e9},
-    {"Vegetable (Ultra Ego)", 9e9},
-    {"Jiran The Gray", 7e9},
-    {"Broccoli", 2e9},
-    {"Merged Zamas", 1e9},
-    {"Gold Chilly", 990e6},
-    {"Vills (1%)", 700e6},
-    {"Kakata (SSJ)", 530e6},
-    {"Super Boo", 350e6},
-    {"Z Broccoli", 190e6},
-    {"Perfect Atom", 110e6},
-    {"Chilly", 75e6},
-    {"Lord Sloog", 7e6},
-    {"Mapa", 750e3},
-    {"Radish", 200e3},
     {"Kid Nohag", 17801},
+    {"Klirin", 90551},
     {"Roshi", 130071},
-    {"Klirin", 90551}
+    {"Radish", 200000},
+    {"Mapa", 750000},
+    {"Lord Sloog", 7000000},
+    {"Chilly", 75000000},
+    {"Perfect Atom", 110000000},
+    {"Z Broccoli", 190000000},
+    {"Super Boo", 350000000},
+    {"Kakata (SSJ)", 530000000},
+    {"Vills (1%)", 700000000},
+    {"Gold Chilly", 990000000},
+    {"Merged Zamas", 1e9},
+    {"Broccoli", 2e9},
+    {"Jiran The Gray", 7e9},
+    {"Vegetable (Ultra Ego)", 9e9},
+    {"Black Chilly", 15e9},
+    {"Vills (True God of Destruction)", 25e9},
+    {"Vis (Ultra Instinct)", 35e9},
+    {"Xicor", 46e9},
+    {"Wukong (SSJB3)", 75e9},
+    {"Wukong True God", 100e9},
+    {"Kakata (Ego Instinct)", 150e9},
+    {"Ego Instinct Kakata (Buu absorbed)", 396e9},
+    {"Wukong Seraphim", 1.5e12},
+    {"Seraphim of Destruction Vegetable", 2.3e12},
+    {"Ultra Vekuta", 5e12}
 }
 
+
 local expLabel = lplr.PlayerGui.Main.MainFrame.Frames.Quest.Yas.Rewards.EXP
+   
 local saveFile = "frame_position.txt"
 local palabrasProhibidas = {"All Stats", "Stat", "Stats"}
 
@@ -1495,7 +1577,7 @@ local function savePosition(frame)
 end
 
 local function resetPosition()
-    return UDim2.new(0.5, -125, 0.5, -30)
+    return UDim2.new(0.5, -125, 0.5, -30) 
 end
 
 local function loadPosition()
@@ -1510,6 +1592,18 @@ local function loadPosition()
         end
     end
     return resetPosition()
+end
+
+
+local function getLastMissionByRebirthRequirement(rebirthReq)
+    local lastMission = "Ninguna"
+    for i = #npcList, 1, -1 do
+        if npcList[i][2] <= rebirthReq then
+            lastMission = npcList[i][1]
+            break
+        end
+    end
+    return lastMission
 end
 
 local screenGui = Instance.new("ScreenGui")
@@ -1547,59 +1641,60 @@ stroke.Parent = textLabel
 
 local lastState = getIsActive9()
 
+
 task.spawn(function()
     while task.wait() do
         pcall(function()
-            local currentState = getIsActive9()
-            if currentState ~= lastState then
-                if not currentState then
-                    frame.Position = resetPosition()
-                end
-                lastState = currentState
-            end
-            frame.Visible = currentState
-            if not currentState then return end
+local expLabel = lplr.PlayerGui.Main.MainFrame.Frames.Quest.Yas.Rewards.EXP
+    local currentState = getIsActive9()
+    if currentState ~= lastState then  
+        if not currentState then  
+            frame.Position = resetPosition()   
+        end  
+        lastState = currentState  
+    end  
+    frame.Visible = currentState  
+    if not currentState then return end  
 
-            local fuerzaActual = yo()
-            local rebirthReq = getRebirthRequirement()
+    local fuerzaActual = yo()  
+    local rebirthReq = getRebirthRequirement()  
+    local ultimaMision = getLastMissionByRebirthRequirement(rebirthReq)  
 
-            local misionActual = nil
-            local misionSiguiente = nil
+    local siguienteMision = nil  
+    for i = 1, #npcList do  
+        if fuerzaActual < npcList[i][2] then  
+            siguienteMision = npcList[i]  
+            break  
+        end  
+    end  
 
-            for i = 1, #npcList do
-                local fuerza = npcList[i][2]
-                if fuerzaActual >= fuerza then
-                    misionActual = npcList[i]
-                    if i < #npcList then
-                        misionSiguiente = npcList[i + 1]
-                    end
-                    break
-                end
-            end
+    local fuerzaUltimoJefe = npcList[#npcList][2]
+    local baseText = ""
 
-            local baseText = ""
-
-            if misionActual then
-                baseText = "Actual: " .. misionActual[1]
-            else
-                baseText = "Actual: Ninguna"
-            end
-
-            if misionSiguiente then
-                baseText = baseText .. "\nSiguiente: " .. misionSiguiente[1]
-            end
-
-            baseText = baseText .. "\nSTATS: " .. formatNumber(fuerzaActual)
-
-            local expText = "Cargando..."
-            if data.Quest.Value ~= "" then
-                expText = limpiarTexto(expLabel.Text)
-            end
-
-            textLabel.Text = baseText .. "\nEXP: " .. expText
-        end)
+    if fuerzaActual >= rebirthReq then  
+        baseText = " REBIRTH COMPLETE \nRq: " .. formatNumber(rebirthReq) .. " | STATS: " .. formatNumber(fuerzaActual)  
+        textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)  
+    elseif fuerzaActual >= fuerzaUltimoJefe then  
+        baseText = " QUEST FINAL \nRq: " .. formatNumber(rebirthReq) .. " | STATS: " .. formatNumber(fuerzaActual)  
+        textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)  
+    elseif siguienteMision then  
+        local nombreMision = siguienteMision[1]  
+        local faltaFuerza = formatNumber(siguienteMision[2] - fuerzaActual)  
+        baseText = nombreMision .. " | " .. faltaFuerza .. "\nReq: " .. formatNumber(rebirthReq) .. " | " .. ultimaMision  
+        textLabel.TextColor3 = Color3.fromRGB(150, 250, 255)  
+    else  
+        baseText = " QUEST FINAL \nRq: " .. formatNumber(rebirthReq) .. " | STATS: " .. formatNumber(fuerzaActual)  
+        textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)  
     end
-end)
+
+    local expText = "Cargando..."
+    if data.Quest.Value ~= "" then
+        expText = limpiarTexto(expLabel.Text)
+    end
+    textLabel.Text = baseText .. "\nExp: " .. expText
+    end)
+        end
+     end)   
     
 local TeleportService = game:GetService("TeleportService")
 local HttpService = game:GetService("HttpService")
@@ -1657,10 +1752,10 @@ local timerLabel = Instance.new("TextLabel")
 timerLabel.Size = UDim2.new(0, 200, 0, 50)
 timerLabel.Position = UDim2.new(0.200, 0, -0.7, 0)
 timerLabel.Text = "Cargando..."
-timerLabel.BackgroundTransparency = 1
+timerLabel.BackgroundTransparency = 1  
 timerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-timerLabel.TextStrokeTransparency = 0
-timerLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+timerLabel.TextStrokeTransparency = 0  
+timerLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0) 
 timerLabel.Font = Enum.Font.SourceSansBold
 timerLabel.TextSize = 30
 timerLabel.Parent = frame
@@ -1669,10 +1764,10 @@ local lastRecordLabel = Instance.new("TextLabel")
 lastRecordLabel.Size = UDim2.new(0, 200, 0, 50)
 lastRecordLabel.Position = UDim2.new(0.200, 0, -0.4, 0)
 lastRecordLabel.Text = "Ultimo record:| 00:00"
-lastRecordLabel.BackgroundTransparency = 1
+lastRecordLabel.BackgroundTransparency = 1  
 lastRecordLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-lastRecordLabel.TextStrokeTransparency = 0
-lastRecordLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+lastRecordLabel.TextStrokeTransparency = 0  
+lastRecordLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0) 
 lastRecordLabel.Font = Enum.Font.SourceSansBold
 lastRecordLabel.TextSize = 24
 lastRecordLabel.Parent = frame
@@ -1681,6 +1776,13 @@ spawn(function()
     while true do
         local playerStats = yo()
         local rebirthRequirement = getRebirthRequirement()
+        if playerStats >= rebirthRequirement then
+            if not isPaused then
+                isPaused = true
+            end
+        else
+            isPaused = false
+        end
 
         if game.PlaceId == 3311165597 then
             if isPaused then
@@ -1726,7 +1828,7 @@ spawn(function()
                 isPaused = true
             end
         end
-        task.wait(.5)
+        task.wait()
     end
 end)
 
