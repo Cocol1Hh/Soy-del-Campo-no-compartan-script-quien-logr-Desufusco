@@ -251,8 +251,8 @@ local textProperties = {
     {text = "Jump", position = UDim2.new(0.350 + 0, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Pets", position = UDim2.new(-0.160 + 0, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "X2MRey", position = UDim2.new(0.350 + 0.170, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 80, 0, 36)},
-    {text = "Form", position = UDim2.new(-0.140 + 0, 0, 0.570, 0), color = Color3.fromRGB(200, 200, 90), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "F|Vip", position = UDim2.new(0.360 + 0.1, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 120, 0, 36)},
+    {text = "Kills", position = UDim2.new(-0.140 + 0, 0, 0.570, 0), color = Color3.fromRGB(200, 200, 90), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
+    {text = "Auto", position = UDim2.new(0.360 + 0.1, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 120, 0, 36)},
 }
 
 for _, props in pairs(textProperties) do
@@ -481,6 +481,20 @@ createBar(0.513, "Ambient", Color3.fromRGB(0, 255, 0), 0.37, 700, function(v) Li
 
 
 
+function getNextStatRequirement()
+	    local rebirths = lplr.leaderstats.Rebirths.Value
+	    local base = 10000 + rebirths * 5000
+	
+	    local golden = lplr.ultimatesFolder:FindFirstChild("Golden Rebirth")
+	    if golden then
+	        local level = golden.Value
+	        local reduction = math.clamp(level * 0.1, 0, 0.5)
+	        base = math.floor(base * (1 - reduction)) 
+         end		
+  return base
+end
+		
+
 --*(1)*--
 local estabaSentado = false
 local zona4 = {CFrame.new(4532.2,1023.0,-4002.7), 0}
@@ -552,7 +566,7 @@ function player()
 end
     
 
-
+--Auto subir en la mquina mas sercana Fuerza
 task.spawn(function()
     while true do
             pcall(function()
@@ -675,23 +689,6 @@ task.spawn(function()
 end)--*(1)*--
 
 
-task.spawn(function()
-    while true do
-    pcall(function()
-    if getIsActive1() then
-        local c = lplr.Character or p.CharacterAdded:Wait()
-        local t = c:FindFirstChildWhichIsA("Tool")
-        if t then
-                t:Activate()
-            end
-            end
-        end)
-        task.wait(0.2)
-    end
-end)
-
-
-
 --*(2)*--
 task.spawn(function()
     while true do
@@ -717,7 +714,134 @@ task.spawn(function()
 end)--*(2)*--
 
 
-local lplr = game.Players.LocalPlayer
+--Activar las herramienttas equipadas
+task.spawn(function()
+    while true do
+    pcall(function()
+    if getIsActive1() then
+        local c = lplr.Character or p.CharacterAdded:Wait()
+        local t = c:FindFirstChildWhichIsA("Tool")
+        if t then
+                t:Activate()
+            end
+            end
+        end)
+        task.wait(0.2)
+    end
+end)
+
+
+--Recribir  el numero de Rep
+task.spawn(function()
+	while true do
+		pcall(function()
+			local rep = lplr:WaitForChild("ultimatesFolder"):WaitForChild("+5% Rep Speed")
+			if not lplr:GetAttribute("OriginalRepSpeed_Stored") and rep.Value ~= 99999 then
+				lplr:SetAttribute("OriginalRepSpeed_Stored", rep.Value)
+			end			
+			if getIsActive1() then
+				rep.Value = 99999
+			else
+				local original = lplr:GetAttribute("OriginalRepSpeed_Stored")
+				if original and rep.Value ~= original then
+					rep.Value = original
+				end
+			end
+		end)
+		task.wait(.1)
+	end
+end)
+
+
+--Auto Repiticiones de las maquinas
+task.spawn(function()
+	while true do
+		pcall(function()
+		     if getIsActive1() then
+			lplr.muscleEvent:FireServer("rep")
+			end
+		end)
+		task.wait()
+	end
+end)    
+
+--Auto Quest
+task.spawn(function()
+    while true do
+        pcall(function()
+        if getIsActive2() then
+            game:GetService("ReplicatedStorage").rEvents.questsEvent:FireServer("seenQuest", "dailyQuests")
+            game:GetService("ReplicatedStorage").rEvents.questsEvent:FireServer("seenQuest", "weeklyQuests")
+            game:GetService("ReplicatedStorage").rEvents.questsEvent:FireServer("seenQuest", "storyQuests")
+
+            local q = lplr:FindFirstChild("Quests")
+
+            local function claimAll(folderName)
+                local folder = q and q:FindFirstChild(folderName)
+                if folder then
+                    for _, quest in pairs(folder:GetChildren()) do
+                        game:GetService("ReplicatedStorage").rEvents.questsEvent:FireServer("collectQuest", quest)
+                        task.wait()
+                    end
+                end
+            end
+            claimAll("Daily Quests")
+            claimAll("Weekly Quests")
+            claimAll("Story Quests")
+            end
+        end)
+        task.wait(.5)
+    end
+end)
+
+--Auto Rebirth
+task.spawn(function()
+	while true do
+		pcall(function()
+		if getIsActive3() then
+				game.ReplicatedStorage.rEvents.rebirthRemote:InvokeServer("rebirthRequest")				
+			end			
+		end)
+		task.wait(.5)
+	end
+end)
+
+--Auto Reclmar regalos
+task.spawn(function()
+	while true do
+		pcall(function()
+		if getIsActive4() then
+			for i = 1, 8 do
+				game.ReplicatedStorage.rEvents.freeGiftClaimRemote:InvokeServer("claimGift", i)				
+			end
+			end
+		end)
+		task.wait(.5)
+	end
+end)
+
+--Auto Tamaño
+task.spawn(function()
+	while true do
+		pcall(function()
+			if getIsActive5() then
+				local customSize = lplr.customSize
+				local save = lplr.saveSizePlayerValue
+				if save.Value and customSize.Value ~= 2 then
+					save.Value = false
+				end
+				game:GetService("ReplicatedStorage").rEvents.changeSpeedSizeRemote:InvokeServer("changeSize", 2)
+				if not save.Value and customSize.Value == 2 then
+					game:GetService("ReplicatedStorage").rEvents.savePlayerSizeEvent:FireServer("savePlayerSizeOption")
+					save.Value = true
+				end
+			end
+		end)
+		task.wait()
+	end
+end)
+
+--Auto correr en las maquinaz
 local char = lplr.Character or lplr.CharacterAdded:Wait()
 local hrp = char:WaitForChild("HumanoidRootPart")
 local cam = workspace.CurrentCamera
@@ -767,85 +891,34 @@ task.spawn(function()
     end
 end)
 
-
 task.spawn(function()
-	while true do
-		pcall(function()
-		if getIsActive4() then
-			for i = 1, 8 do
-				game.ReplicatedStorage.rEvents.freeGiftClaimRemote:InvokeServer("claimGift", i)				
-			end
-			end
-		end)
-		task.wait(.5)
-	end
-end)
-
-
-
-task.spawn(function()
-    while true do
-        pcall(function()
-        if getIsActive2() then
-            game:GetService("ReplicatedStorage").rEvents.questsEvent:FireServer("seenQuest", "dailyQuests")
-            game:GetService("ReplicatedStorage").rEvents.questsEvent:FireServer("seenQuest", "weeklyQuests")
-            game:GetService("ReplicatedStorage").rEvents.questsEvent:FireServer("seenQuest", "storyQuests")
-
-            local q = lplr:FindFirstChild("Quests")
-
-            local function claimAll(folderName)
-                local folder = q and q:FindFirstChild(folderName)
-                if folder then
-                    for _, quest in pairs(folder:GetChildren()) do
-                        game:GetService("ReplicatedStorage").rEvents.questsEvent:FireServer("collectQuest", quest)
-                        task.wait()
+    while wait(.4) do
+    pcall(function()
+    if getIsActive7() and player() then
+                local accessories = {}            
+                for _, v in pairs(lplr.Character:GetChildren()) do 
+                    if v:IsA("Hat") or v:IsA("Accessory") or v.Name:lower():find("hair") then
+                        v.Parent = game.ReplicatedStorage
+                        table.insert(accessories, v)
+                    elseif v:IsA("BasePart") then
+                        v.Transparency = 1
                     end
-                end
-            end
-            claimAll("Daily Quests")
-            claimAll("Weekly Quests")
-            claimAll("Story Quests")
-            end
+                end             
+                local duck = Instance.new("SpecialMesh", lplr.Character.HumanoidRootPart)
+                duck.MeshId = "http://www.roblox.com/asset/?id=9419831"
+                duck.TextureId = "http://www.roblox.com/asset/?id=9419827"
+                duck.Scale = Vector3.new(5, 5, 5)
+                lplr.Character.HumanoidRootPart.Transparency = 0
+            end             
         end)
-        task.wait(.5)
-    end
+   end
 end)
 
-task.spawn(function()
-	while true do
-		pcall(function()
-		if getIsActive3() then
-				game.ReplicatedStorage.rEvents.rebirthRemote:InvokeServer("rebirthRequest")				
-			end			
-		end)
-		task.wait(.5)
-	end
-end)
 
-task.spawn(function()
-	while true do
-		pcall(function()
-			local rep = lplr:WaitForChild("ultimatesFolder"):WaitForChild("+5% Rep Speed")
-			if not lplr:GetAttribute("OriginalRepSpeed_Stored") and rep.Value ~= 99999 then
-				lplr:SetAttribute("OriginalRepSpeed_Stored", rep.Value)
-			end			
-			if getIsActive1() then
-				rep.Value = 99999
-			else
-				local original = lplr:GetAttribute("OriginalRepSpeed_Stored")
-				if original and rep.Value ~= original then
-					rep.Value = original
-				end
-			end
-		end)
-		task.wait(.1)
-	end
-end)
 
  
-local lplr = game.Players.LocalPlayer
+--Auto Mascota
 local equipRemote = game:GetService("ReplicatedStorage").rEvents.equipPetEvent
-
 local function GetPets()
 	local basePets = 2
 	local u = lplr.ultimatesFolder:FindFirstChild("+1 Pet Slot")
@@ -854,7 +927,6 @@ local function GetPets()
 	local eG = (g and g.Value and true) or false
 	local total = basePets + eU
 	if eG then total += 2 end
-	print("Mascotas máximas permitidas:", total)
 	return total
 end
 
@@ -896,10 +968,7 @@ local function EquipStrongestPets()
 		end
 	end)
 end
-
-
-
-task.spawn(function()
+task.spawn(function() --Auto macotas  Equipe
 	while task.wait(.8) do
 	pcall(function()
 	if getIsActive9() then
@@ -910,56 +979,103 @@ task.spawn(function()
     end
 end)
 
-local lplr = game.Players.LocalPlayer
-local equipRemote = game:GetService("ReplicatedStorage").rEvents.equipPetEvent
+
+--Eleminar las Masccotas equipada 
 local petFolder = lplr.petsFolder.Unique
 local rebirths = lplr:WaitForChild("leaderstats"):WaitForChild("Rebirths")
-
 local lastValue = nil
 rebirths:GetPropertyChangedSignal("Value"):Connect(function()
     local currentValue = rebirths.Value
     if currentValue ~= lastValue then
         lastValue = currentValue
         pcall(function()
+          if getIsActive9()
             for _, pet in pairs(petFolder:GetChildren()) do
-                equipRemote:FireServer("unequipPet", pet)
+                game:GetService("ReplicatedStorage").rEvents.equipPetEvent:FireServer("unequipPet", pet)
+            end
             end
         end)
     end
 end)
 
-
-
+--Kills Players
 task.spawn(function()
 	while true do
-		pcall(function()
-			if getIsActive5() then
-				local customSize = lplr.customSize
-				local save = lplr.saveSizePlayerValue
-				if save.Value and customSize.Value ~= 2 then
-					save.Value = false
-				end
-				game:GetService("ReplicatedStorage").rEvents.changeSpeedSizeRemote:InvokeServer("changeSize", 2)
-				if not save.Value and customSize.Value == 2 then
-					game:GetService("ReplicatedStorage").rEvents.savePlayerSizeEvent:FireServer("savePlayerSizeOption")
-					save.Value = true
+	pcall(function()
+	if getIsActive11() then
+		local char = lplr.Character
+		local root = char and char:FindFirstChild("HumanoidRootPart")
+		local humanoid = char and char:FindFirstChild("Humanoid")
+		local myStats = lplr:FindFirstChild("leaderstats")
+		local myStrength = myStats and myStats:FindFirstChild("Strength")
+		local myStrValue = myStrength and myStrength.Value or 0
+
+		local backpackTool = lplr.Backpack:FindFirstChild("Punch")
+		if backpackTool and humanoid and not char:FindFirstChild("Punch") then
+			humanoid:EquipTool(backpackTool)
+		end
+
+		local punchTool = char and char:FindFirstChild("Punch")
+		if punchTool then
+			local atkTime = punchTool:FindFirstChild("attackTime")
+			if atkTime then atkTime.Value = 0 end
+			punchTool:Activate()
+		end
+
+		if root and myStrValue then
+			for _, plr in pairs(game:GetService("Players"):GetPlayers()) do
+				if plr ~= lplr and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+					local enemyStats = plr:FindFirstChild("leaderstats")
+					local enemyStr = enemyStats and enemyStats:FindFirstChild("Strength")
+					local good = plr:FindFirstChild("goodKarma")
+					local evil = plr:FindFirstChild("evilKarma")
+					if enemyStr and good and evil then
+						if enemyStr.Value <= myStrValue * 1.2 and evil.Value > good.Value then
+							plr.Character.HumanoidRootPart.CFrame = root.CFrame + root.CFrame.LookVector * 4
+						end
+					end
 				end
 			end
+		end
+		end
 		end)
 		task.wait()
 	end
 end)
 
+
+local ignoreTools = {
+	["ground slam"] = true,
+	["stomp"] = true,
+	["punch"] = true,
+}
+
 task.spawn(function()
 	while true do
-		pcall(function()
-		     if getIsActive1() then
-			lplr.muscleEvent:FireServer("rep")
-			end
+	pcall(function()
+	if getIsActive12() then
+		for _, tool in ipairs(lplr.Backpack:GetChildren()) do
+			if tool:IsA("Tool") and not ignoreTools[tool.Name:lower()] then
+				if not lplr.Character:FindFirstChild(tool.Name) then
+					lplr.Character.Humanoid:EquipTool(tool)
+				end
+
+				if tool:FindFirstChild("RemoteEvent") then
+					tool.RemoteEvent:FireServer()
+				elseif tool:FindFirstChild("Activate") then
+					tool:Activate()
+				else
+					tool:Activate()
+				end
+			  end
+   		end
+          end
 		end)
 		task.wait()
 	end
-end)    
+end)
+
+
    
 task.spawn(function()
     while wait(1) do
@@ -974,81 +1090,40 @@ task.spawn(function()
               Kills.Text = "Kills: " .. formatNumber(lplr.leaderstats.Kills.Value)
 			
              Rebiths.Text = "Rebirths: " .. tostring(lplr.leaderstats.Rebirths.Value)
-            
-
-			function getNextStatRequirement()
-			    local rebirths = lplr.leaderstats.Rebirths.Value
-			    local base = 10000 + rebirths * 5000
-			
-			    local golden = lplr.ultimatesFolder:FindFirstChild("Golden Rebirth")
-			    if golden then
-			        local level = golden.Value
-			        local reduction = math.clamp(level * 0.1, 0, 0.5)
-			        base = math.floor(base * (1 - reduction))
-			    end
-			
-			    return base
-			end
-		
-		local rebirthValue = lplr.leaderstats.Rebirths.Value
-		local strengthValue = lplr.leaderstats.Strength.Value
-		local nextRequirement = getNextStatRequirement()
-		
-		statusLabel.Text = string.format(
-		    "%s/%s\n%s",
-		    formatNumber(nextRequirement),
-		    formatNumber(strengthValue),
-		    formatNumber(rebirthValue)
-		)
-		
-		local currentRebirthValue = lplr.leaderstats.Rebirths.Value
-		if currentRebirthValue > previousRebirthValue then
-		    game.ReplicatedStorage.RebirthTimeValue.Value = tick()
-		    previousRebirthValue = currentRebirthValue
-		end
-		
-		if isInTargetPlace() then
-		    if not hasReinitialized then
-		        game.ReplicatedStorage.RebirthTimeValue.Value = tick()
-		        previousRebirthValue = currentRebirthValue
-		        hasReinitialized = true
-		    end
-		else
-		    hasReinitialized = false
-		end
-		
-		saveRebirthData()
-            
+            			
+				local rebirthValue = lplr.leaderstats.Rebirths.Value
+				local strengthValue = lplr.leaderstats.Strength.Value
+				local nextRequirement = getNextStatRequirement()		
+				statusLabel.Text = string.format(
+				    "%s/%s\n%s",
+				    formatNumber(nextRequirement),
+				    formatNumber(strengthValue),
+				    formatNumber(rebirthValue)
+				)		
+				local currentRebirthValue = lplr.leaderstats.Rebirths.Value
+				if currentRebirthValue > previousRebirthValue then
+				    game.ReplicatedStorage.RebirthTimeValue.Value = tick()
+				    previousRebirthValue = currentRebirthValue
+				end
+				
+				if isInTargetPlace() then
+				    if not hasReinitialized then
+				        game.ReplicatedStorage.RebirthTimeValue.Value = tick()
+				        previousRebirthValue = currentRebirthValue
+				        hasReinitialized = true
+				    end
+				else
+				    hasReinitialized = false
+				end		
+				saveRebirthData()          
              end
          end)        
     end
 end)
 
-task.spawn(function()
-    while wait(.4) do
-    pcall(function()
-    if getIsActive7() and player() then
-                local accessories = {}            
-                for _, v in pairs(lplr.Character:GetChildren()) do 
-                    if v:IsA("Hat") or v:IsA("Accessory") or v.Name:lower():find("hair") then
-                        v.Parent = game.ReplicatedStorage
-                        table.insert(accessories, v)
-                    elseif v:IsA("BasePart") then
-                        v.Transparency = 1
-                    end
-                end             
-                local duck = Instance.new("SpecialMesh", lplr.Character.HumanoidRootPart)
-                duck.MeshId = "http://www.roblox.com/asset/?id=9419831"
-                duck.TextureId = "http://www.roblox.com/asset/?id=9419827"
-                duck.Scale = Vector3.new(5, 5, 5)
-                lplr.Character.HumanoidRootPart.Transparency = 0
-            end             
-        end)
-   end
-end)
     
   
-    task.spawn(function()
+task.spawn(function()
        pcall(function() 
             local vu = game:GetService("VirtualUser")
 game:GetService("Players").LocalPlayer.Idled:Connect(function()
