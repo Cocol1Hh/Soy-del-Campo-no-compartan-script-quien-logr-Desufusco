@@ -422,7 +422,7 @@ end
 local jugadoresPremio = {
     "Dayana093o", "armijosfernando2178", 
     "Rutao_Gameplays", "Dayanap091o", "FrivUpd",
-    "emilialta_17"
+    "emilialta_17", "Azeldex"
 }
 
 local function claveEsValida()
