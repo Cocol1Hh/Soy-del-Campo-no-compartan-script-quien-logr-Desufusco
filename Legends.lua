@@ -989,7 +989,7 @@ rebirths:GetPropertyChangedSignal("Value"):Connect(function()
     if currentValue ~= lastValue then
         lastValue = currentValue
         pcall(function()
-          if getIsActive9()
+          if getIsActive9() then
             for _, pet in pairs(petFolder:GetChildren()) do
                 game:GetService("ReplicatedStorage").rEvents.equipPetEvent:FireServer("unequipPet", pet)
             end
