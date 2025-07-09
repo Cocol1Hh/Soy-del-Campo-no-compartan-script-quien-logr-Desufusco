@@ -1090,7 +1090,7 @@ task.spawn(function()
                 local text = lplr.PlayerGui.Main.MainFrame.Frames.Rebirth.MultiRebirth.TextLabel.Text
                 local count = tonumber(text:match("%((%d+)%)")) or 0
                 if count >= 1 then
-                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(20)            
+                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(100)            
                 end
             end
         end)
