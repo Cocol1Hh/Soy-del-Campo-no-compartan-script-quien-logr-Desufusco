@@ -1375,11 +1375,11 @@ task.spawn(function()
     while task.wait() do       
        pcall(function() 
             if getIsActive10() then
-            if yo() >= 7e9  and game.PlaceId == 3311165597  then
+            if yo() >= 700e7  and game.PlaceId == 3311165597  then
                 game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
                 wait(5)
             end
-            if yo() < 7e9 and game.PlaceId == 5151400895  then
+            if yo() < 700e7 and game.PlaceId == 5151400895  then
                 game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
                 wait(5)
             end
