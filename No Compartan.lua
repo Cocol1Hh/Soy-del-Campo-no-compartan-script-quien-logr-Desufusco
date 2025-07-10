@@ -492,7 +492,8 @@ local function script()
         3623096087,
     }
     local Speed_IDS = {
-        3623096087,
+        3101667897,
+        3276265788,
     }
 
     task.spawn(function()
