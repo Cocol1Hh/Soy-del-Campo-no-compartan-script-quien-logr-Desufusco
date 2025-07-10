@@ -491,6 +491,9 @@ local function script()
     local MLGD_IDS = {
         3623096087,
     }
+    local Speed_IDS = {
+        3623096087,
+    }
 
     task.spawn(function()
         if table.find(DBU_IDS, id) then
@@ -506,6 +509,15 @@ local function script()
             logInfo("MAIN", "🎮 Cargando script de Muscle Legends...")
             pcall(function()
                 loadstring(game:HttpGet("https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Campo-no-compartan-script-quien-logr-Desufusco/refs/heads/main/Legends.lua"))()
+            end)
+        end
+    end)
+    
+    task.spawn(function()
+        if table.find(Speed_IDS, id) then
+            logInfo("MAIN", "🎮 Cargando script de Speed of Lengeds ...")
+            pcall(function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Campo-no-compartan-script-quien-logr-Desufusco/refs/heads/main/Eped.lua"))()
             end)
         end
     end)
