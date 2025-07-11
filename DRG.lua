@@ -1244,7 +1244,6 @@ task.spawn(function()
     while task.wait() do       
        pcall(function() 
        if Congela() then
-       if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then   
        if getIsActive1() and player()  then
        if data.Quest.Value ~= "" then
                         local currentQuest = data.Quest.Value
@@ -1280,7 +1279,6 @@ task.spawn(function()
                      end 
                  end
               end
-           end
         end)
     end
 end) 
