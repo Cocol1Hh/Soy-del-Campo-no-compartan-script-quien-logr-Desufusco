@@ -747,9 +747,12 @@ createBar(0.513, "Ambient", Color3.fromRGB(0, 255, 0), 0.37, 700, function(v) Li
 --Casi fin del interrutor /\
 --Ciclo Para Auto = Main y Start
 spawn(function()
+if game.PlaceId == 3311165597 then
     Ex.Start:InvokeServer()
     lplr.Character.Humanoid:ChangeState(15)
+    end
 end)
+
 
 
 task.spawn(function()
@@ -1115,63 +1118,12 @@ task.spawn(function()
     end
 end)
 
-local emptyStartTime = nil
-local sameQuestStartTime = nil
-local lastQuest = nil
-local lastExecutionTime = 0
-local cooldown = 15
-
-task.spawn(function()
-    while task.wait() do
-        pcall(function()
-            if getIsActive1() and Congela() then
-                local char = lplr.Character
-                local humanoid = char and char:FindFirstChild("Humanoid")
-                local hrp = char and char:FindFirstChild("HumanoidRootPart")        
-                if humanoid and humanoid.Health > 0 and hrp and hrp:IsDescendantOf(workspace) then
-                    local currentQuest = data.Quest.Value
-                    local now = os.clock()
-
-                    if currentQuest == "" then
-                        sameQuestStartTime = nil
-                        if not emptyStartTime then
-                            emptyStartTime = now
-                        elseif now - emptyStartTime >= 15 then
-                            if now - lastExecutionTime >= cooldown then
-                                humanoid:ChangeState(15)
-                                lastExecutionTime = now
-                            end
-                        end
-                    else
-                        emptyStartTime = nil
-                        if currentQuest == lastQuest then
-                            if not sameQuestStartTime then
-                                sameQuestStartTime = now
-                            elseif now - sameQuestStartTime >= 150 then
-                                if now - lastExecutionTime >= cooldown then
-                                    humanoid:ChangeState(15)
-                                    lastExecutionTime = now
-                                end
-                            end
-                        else
-                            sameQuestStartTime = now
-                        end
-                    end
-                    lastQuest = currentQuest
-                else
-                    emptyStartTime = nil
-                    sameQuestStartTime = nil
-                end
-            end
-        end)
-    end
-end)
 
 
 task.spawn(function()
     while task.wait() do
         pcall(function()       
-            if player() and Congela() then
+            if player() and Congela() then           
             if game.Players.LocalPlayer.Status.Blocking.Value == false and getIsActive1() then
                     game.Players.LocalPlayer.Status.Blocking.Value = true               
              end                                                    
@@ -1245,6 +1197,7 @@ task.spawn(function()
        pcall(function() 
        if Congela() then
        if getIsActive1() and player()  then
+       if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then        
        if data.Quest.Value ~= "" then
                         local currentQuest = data.Quest.Value
                         local playerStats = yo()
@@ -1278,6 +1231,7 @@ task.spawn(function()
                         end
                      end 
                  end
+              end
               end
         end)
     end
@@ -1856,6 +1810,7 @@ txt.Parent = gui
 
 task.spawn(function()
     while true do
+    pcall(function()
         local s11, a11 = pcall(getIsActive11)
         local s12, a12 = pcall(getIsActive12)
         local s1, a1 = pcall(getIsActive1)
@@ -1864,6 +1819,7 @@ task.spawn(function()
         else
             txt.Visible = false
         end
+        end)
         task.wait(1)
     end
 end)
