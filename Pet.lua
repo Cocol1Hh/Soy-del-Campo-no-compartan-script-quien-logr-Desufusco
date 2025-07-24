@@ -129,7 +129,7 @@ pingLabel.Position = UDim2.new(0.380, 0, 0.009, 0)
 pingLabel.BackgroundTransparency = 1 
 pingLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 pingLabel.TextSize = 7
-pingLabel.Parent = Barra1
+pingLabel.Parent = Barra1 
 
 
 local Cash = Instance.new("TextLabel")
