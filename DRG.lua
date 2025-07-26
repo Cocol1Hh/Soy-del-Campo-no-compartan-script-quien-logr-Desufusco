@@ -1,8 +1,8 @@
-local fffg = game.CoreGui:FindFirstChild("fffg")
-if fffg then
+local FFFHG = game.CoreGui:FindFirstChild("FFFHG")
+if FFFHG then
     return  
 end
-local Fernando = Instance.new("ScreenGui")
+local Gokui = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame")
 local TextLabel = Instance.new("TextLabel")
 local Cuadro1 = Instance.new("Frame")
@@ -23,8 +23,8 @@ local lplr = game.Players.LocalPlayer
 local data = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(lplr.UserId)
 local Ex = game:GetService("ReplicatedStorage").Package.Events
 
-Fernando.Name = "fffg"
-Fernando.Parent = game.CoreGui
+Gokui.Name = "FFFHG"
+Gokui.Parent = game.CoreGui
 
 
 local suffixes = {'', 'K', 'M', 'B', 'T', 'qd', 'Qn'}
@@ -41,7 +41,7 @@ local function formatNumber(number)
     return (isNegative and "-" or "") .. tostring(number):reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
 end 
 
-Frame.Parent = Fernando
+Frame.Parent = Gokui
 Frame.BackgroundTransparency = 1
 Frame.Position = UDim2.new(0.5, -150, 0.4, -130)
 Frame.Size = UDim2.new(0, 410, 0, 30)
@@ -501,7 +501,7 @@ Mix.MouseButton1Click:Connect(function()
 end)
 
 --Aki ya es del interrutor <: \/
-local saveFileName = "DBU_Switches.json"
+local saveFileName = "DBU_Estados.json"
 local function SaveSwitchState(isActive, switchName)
     local states = {}
     if isfile(saveFileName) then
