@@ -1,479 +1,103 @@
-
-local service, useNonce = 1951, true
-local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
-local StarterGui = game:GetService("StarterGui")
-local ArchivoClaveGuardada = "jses_syn_debug"
+local HttpService = game:GetService("HttpService")
+local LocalPlayer = Players.LocalPlayer
 
-local DEBUG = {
-    enabled = true,
-    logs = {},
-    maxLogs = 50,
-    startTime = tick()
+local serviceId = 1951
+local useNonce = true
+local playerName = LocalPlayer.Name
+local keyFile = playerName .. "_key.json"
+local hosts = {
+    "https://api.platoboost.com",
+    "https://api.platoboost.net"
 }
 
-local function getTimestamp()
-    return string.format("[%.2f] %s", tick() - DEBUG.startTime, os.date("%H:%M:%S"))
-end
+local juegosPermitidos = {
+    ["TuNombreDeUsuario"] = {12345678, 87654321},
+    ["OtroJugador"] = {1111111111}
+}
 
-local function debugLog(level, category, message, data)
-    local logEntry = {
-        timestamp = getTimestamp(),
-        level = level,
-        category = category,
-        message = message,
-        data = data
-    }
-    
-    table.insert(DEBUG.logs, logEntry)
-    if #DEBUG.logs > DEBUG.maxLogs then
-        table.remove(DEBUG.logs, 1)
-    end
-    
-    local logString = string.format("%s [%s] [%s] %s", 
-        logEntry.timestamp, level, category, message)
-    
-    if level == "ERROR" then
-        warn(logString)
+local setClipboard = setclipboard or toclipboard or function(text) print("Link:", text) end
+local requestFunc = request or http_request or (syn and syn.request) or function(options)
+    if options.Method == "GET" then
+        return {StatusCode = 200, Body = HttpService:GetAsync(options.Url)}
     else
-        print(logString)
-    end
-    
-    if data then
-        print("Data:", HttpService:JSONEncode(data))
-    end
-    
-    if level == "ERROR" then
-        pcall(function()
-            StarterGui:SetCore("SendNotification", {
-                Title = "Debug Error - " .. category,
-                Text = message,
-                Duration = 5
-            })
-        end)
+        return {StatusCode = 200, Body = HttpService:PostAsync(options.Url, options.Body or "", Enum.HttpContentType.ApplicationJson)}
     end
 end
 
-local function logError(cat, msg, data) debugLog("ERROR", cat, msg, data) end
-local function logWarn(cat, msg, data) debugLog("WARN", cat, msg, data) end
-local function logInfo(cat, msg, data) debugLog("INFO", cat, msg, data) end
-local function logDebug(cat, msg, data) debugLog("DEBUG", cat, msg, data) end
-
-local function getSystemInfo()
-    local info = {
-        player_name = Players.LocalPlayer.Name,
-        player_id = Players.LocalPlayer.UserId,
-        game_loaded = game:IsLoaded(),
-        executor = "Unknown",
-        functions = {},
-        time = os.time(),
-        tick = tick()
-    }
-    
-    if syn then info.executor = "Synapse X"
-    elseif KRNL_LOADED then info.executor = "KRNL"
-    elseif getgenv and getgenv().OXYGEN_LOADED then info.executor = "Oxygen U"
-    elseif request then info.executor = "Generic (request available)"
-    end
-    
-    local funcs = {"setclipboard", "toclipboard", "request", "http_request", "syn.request", "gethwid", "isfile", "readfile", "writefile", "delfile"}
-    for _, func in ipairs(funcs) do
-        info.functions[func] = _G[func] ~= nil
-    end
-    
-    return info
-end
-
-logInfo("SYSTEM", "Debug system initialized")
-logInfo("SYSTEM", "System info", getSystemInfo())
-
-local fSetClipboard = setclipboard or toclipboard or function(text)
-    logWarn("CLIPBOARD", "Using fallback clipboard", {text = text:sub(1, 50) .. "..."})
-    print("CLIPBOARD:", text)
-end
-
-local fRequest = request or http_request or (syn and syn.request) or function(options)
-    logWarn("REQUEST", "Using HttpService fallback", {url = options.Url, method = options.Method})
-    
-    local success, result = pcall(function()
-        if options.Method == "GET" then
-            return {StatusCode = 200, Body = HttpService:GetAsync(options.Url)}
-        else
-            return {StatusCode = 200, Body = HttpService:PostAsync(options.Url, options.Body or "", Enum.HttpContentType.ApplicationJson)}
-        end
-    end)
-    
-    if success then
-        logInfo("REQUEST", "HttpService fallback successful")
-        return result
-    else
-        logError("REQUEST", "HttpService fallback failed", {error = result})
-        return {StatusCode = 500, Body = '{"success": false}'}
-    end
-end
-
-local fGetHwid = gethwid or function() 
-    local hwid = tostring(Players.LocalPlayer.UserId)
-    logInfo("HWID", "Using fallback HWID", {hwid = hwid})
-    return hwid
-end
-
-local fIsFile = isfile or function() logWarn("FILE", "isfile not available"); return false end
-local fReadFile = readfile or function() logWarn("FILE", "readfile not available"); return "" end
-local fWriteFile = writefile or function(path, content) logWarn("FILE", "writefile not available", {path = path}) end
-local fDelFile = delfile or function(path) logWarn("FILE", "delfile not available", {path = path}) end
-
-local function log(...) 
-    logInfo("MAIN", table.concat({...}, " "))
+local function getHwid()
+    return tostring(LocalPlayer.UserId)
 end
 
 local function generateNonce()
-    logDebug("NONCE", "Generating nonce")
-    local nonce = string.gsub(HttpService:GenerateGUID(false), "-", ""):sub(1, 16)
-    logDebug("NONCE", "Nonce generated", {nonce = nonce, length = #nonce})
-    return nonce
+    return HttpService:GenerateGUID(false):gsub("-", ""):sub(1, 16)
 end
 
-local hosts = {
-    "https://api.platoboost.com",
-    "https://api.platoboost.net",
-}
-
-local function makeRequest(url, method, body, timeout)
-    timeout = timeout or 15
-    method = method or "GET"
-    
-    logInfo("REQUEST", "Making request", {
-        url = url,
-        method = method,
-        has_body = body ~= nil,
-        timeout = timeout
-    })
-    
-    local requestData = {
-        Url = url,
-        Method = method,
-        Headers = {
-            ["Content-Type"] = "application/json",
-            ["User-Agent"] = "Roblox/Debug-KeySystem"
-        },
-        Body = body and HttpService:JSONEncode(body) or nil
-    }
-    
-    local startTime = tick()
-    local success, response = pcall(function()
-        return fRequest(requestData)
+local function makeRequest(url, method, body)
+    local ok, res = pcall(function()
+        return requestFunc({
+            Url = url,
+            Method = method or "GET",
+            Headers = {
+                ["Content-Type"] = "application/json",
+                ["User-Agent"] = "Roblox/KeySystem"
+            },
+            Body = body and HttpService:JSONEncode(body) or nil
+        })
     end)
-    local duration = tick() - startTime
-    
-    if success and response then
-        logInfo("REQUEST", "Request completed", {
-            status_code = response.StatusCode,
-            duration = string.format("%.2fs", duration),
-            body_length = response.Body and #response.Body or 0
-        })
-        
-        if response.Body and response.Body:find("cloudflare") and response.Body:find("blocked") then
-            logError("REQUEST", "Cloudflare block detected!", {
-                url = url,
-                status_code = response.StatusCode
-            })
-        end
-        
-        if response.Body and response.StatusCode == 200 then
-            local parseSuccess, parsed = pcall(function()
-                return HttpService:JSONDecode(response.Body)
-            end)
-            
-            if parseSuccess then
-                logDebug("REQUEST", "Response parsed successfully", parsed)
-            else
-                logWarn("REQUEST", "Failed to parse JSON", {
-                    error = parsed,
-                    body_preview = response.Body:sub(1, 200)
-                })
-            end
-        end
-        
-        return response
-    else
-        logError("REQUEST", "Request failed", {
-            error = tostring(response),
-            url = url,
-            duration = string.format("%.2fs", duration)
-        })
-        return nil
-    end
+    return ok and res or nil
 end
 
-local function testConnectivity()
-    logInfo("CONNECTIVITY", "Testing all hosts for connectivity")
-    
-    for i, host in ipairs(hosts) do
-        logInfo("CONNECTIVITY", string.format("Testing host %d/%d", i, #hosts), {host = host})
-        
-        local response = makeRequest(host .. "/public/connectivity", "GET", nil, 5)
-        
-        if response then
-            if response.StatusCode == 200 or response.StatusCode == 404 then
-                logInfo("CONNECTIVITY", "Host is working", {host = host, status = response.StatusCode})
-                return host
-            elseif response.StatusCode == 403 and response.Body and response.Body:find("cloudflare") then
-                logWarn("CONNECTIVITY", "Host blocked by Cloudflare", {host = host})
-            else
-                logWarn("CONNECTIVITY", "Host returned error", {host = host, status = response.StatusCode})
-            end
-        else
-            logError("CONNECTIVITY", "Host completely unreachable", {host = host})
+local function testHost()
+    for _, host in ipairs(hosts) do
+        local res = makeRequest(host .. "/public/connectivity", "GET")
+        if res and (res.StatusCode == 200 or res.StatusCode == 404) then
+            return host
         end
-        
-        task.wait(1)
     end
-    
-    logError("CONNECTIVITY", "All hosts failed, using primary as fallback")
-    return hosts[1]
-end
-
-local function generateLink()
-    logInfo("LINK", "Starting link generation process")
-    
-    local workingHost = testConnectivity()
-    if not workingHost then
-        logError("LINK", "No working host found")
-        return nil
-    end
-    
-    local requestData = {
-        service = service,
-        identifier = fGetHwid(),
-        timestamp = os.time(),
-        random = math.random(1000, 9999),
-        debug = true
-    }
-    
-    logInfo("LINK", "Sending link generation request", {
-        host = workingHost,
-        data = requestData
-    })
-    
-    local response = makeRequest(workingHost .. "/public/start", "POST", requestData, 20)
-    
-    if response and response.StatusCode == 200 then
-        local success, decoded = pcall(function()
-            return HttpService:JSONDecode(response.Body)
-        end)
-        
-        if success and decoded then
-            logInfo("LINK", "Response decoded", decoded)
-            
-            if decoded.success and decoded.data and decoded.data.url then
-                logInfo("LINK", "Link generated successfully", {url = decoded.data.url})
-                return decoded.data.url
-            else
-                logError("LINK", "Invalid response structure", decoded)
-            end
-        else
-            logError("LINK", "Failed to decode response", {
-                error = decoded,
-                body = response.Body:sub(1, 500)
-            })
-        end
-    else
-        logError("LINK", "Link generation failed", {
-            status_code = response and response.StatusCode,
-            host = workingHost
-        })
-    end
-    
     return nil
 end
 
-local function verificarClave(clave)
-    logInfo("KEY", "Starting key verification", {key_length = #clave, key_preview = clave:sub(1, 8) .. "..."})
-    
-    local identifier = fGetHwid()
-    local nonce = useNonce and generateNonce() or nil
-    
-    logInfo("KEY", "Verification parameters", {
-        identifier = identifier,
-        nonce = nonce,
-        use_nonce = useNonce
-    })
-    
-    for i, currentHost in ipairs(hosts) do
-        logInfo("KEY", string.format("Trying host %d/%d", i, #hosts), {host = currentHost})
-        
-        local whitelistUrl = string.format("%s/public/whitelist/%d?identifier=%s&key=%s%s",
-            currentHost, service, HttpService:UrlEncode(identifier), 
-            HttpService:UrlEncode(clave), nonce and "&nonce="..nonce or "")
-        
-        logDebug("KEY", "Checking whitelist", {url = whitelistUrl})
-        
-        local whitelistResponse = makeRequest(whitelistUrl, "GET", nil, 10)
-        
-        if whitelistResponse and whitelistResponse.StatusCode == 200 then
-            local success, decoded = pcall(function()
-                return HttpService:JSONDecode(whitelistResponse.Body)
-            end)
-            
-            if success and decoded then
-                logInfo("KEY", "Whitelist response", decoded)
-                
-                if decoded.success and decoded.data and decoded.data.valid then
-                    logInfo("KEY", "Key is valid, saving to file")
-                    
-                    pcall(function()
-                        fWriteFile(ArchivoClaveGuardada, HttpService:JSONEncode({
-                            clave = clave, 
-                            fecha = os.time(),
-                            host = currentHost,
-                            method = "whitelist"
-                        }))
-                    end)
-                    
-                    return true
-                end
-            else
-                logWarn("KEY", "Failed to decode whitelist response", {error = decoded})
-            end
-        else
-            logWarn("KEY", "Whitelist check failed", {
-                status = whitelistResponse and whitelistResponse.StatusCode,
-                host = currentHost
-            })
-        end
-        
-        logInfo("KEY", "Attempting key redemption", {host = currentHost})
-        
-        local redeemResponse = makeRequest(currentHost .. "/public/redeem/" .. service, "POST", {
-            identifier = identifier,
-            key = clave,
-            nonce = nonce
-        }, 10)
-        
-        if redeemResponse and redeemResponse.StatusCode == 200 then
-            local success, decoded = pcall(function()
-                return HttpService:JSONDecode(redeemResponse.Body)
-            end)
-            
-            if success and decoded then
-                logInfo("KEY", "Redeem response", decoded)
-                
-                if decoded.success then
-                    logInfo("KEY", "Key redeemed successfully, saving to file")
-                    
-                    pcall(function()
-                        fWriteFile(ArchivoClaveGuardada, HttpService:JSONEncode({
-                            clave = clave, 
-                            fecha = os.time(),
-                            host = currentHost,
-                            method = "redeem"
-                        }))
-                    end)
-                    
-                    return true
-                else
-                    logWarn("KEY", "Redeem failed", {message = decoded.message})
-                end
-            else
-                logWarn("KEY", "Failed to decode redeem response", {error = decoded})
-            end
-        else
-            logWarn("KEY", "Redeem request failed", {
-                status = redeemResponse and redeemResponse.StatusCode,
-                host = currentHost
-            })
-        end
-        
-        task.wait(0.5)
-    end
-    
-    logError("KEY", "Key verification failed on all hosts")
-    return false
-end
-
-local jugadoresPremio = {
-    "Dayana093o", "armijosfernando2178", 
-    "Rutao_Gameplays", "Dayanap091o", "FrivUpd"
-}
-
-local function claveEsValida()
-    local playerName = Players.LocalPlayer.Name
-    logInfo("VALIDATION", "Checking if player has valid access", {player = playerName})
-    
-    if table.find(jugadoresPremio, playerName) then
-        logInfo("VALIDATION", "Premium player detected", {player = playerName})
+local function estaEnJuegoPermitido()
+    local lista = juegosPermitidos[playerName]
+    if not lista then
         return true
     end
-    
-    if fIsFile(ArchivoClaveGuardada) then
-        logInfo("VALIDATION", "Saved key file found, reading...")
-        
-        local success, datos = pcall(function()
-            return HttpService:JSONDecode(fReadFile(ArchivoClaveGuardada))
-        end)
-        
-        if success and datos and datos.clave then
-            logInfo("VALIDATION", "Saved key data loaded", {
-                date = datos.fecha,
-                host = datos.host,
-                method = datos.method
-            })
-            
-            if verificarClave(datos.clave) then
-                logInfo("VALIDATION", "Saved key is still valid")
-                return true
-            else
-                logWarn("VALIDATION", "Saved key expired, deleting file")
-                pcall(function() fDelFile(ArchivoClaveGuardada) end)
-            end
-        else
-            logError("VALIDATION", "Failed to parse saved key file", {error = datos})
+    for _, placeId in ipairs(lista) do
+        if game.PlaceId == placeId then
+            return true
         end
-    else
-        logInfo("VALIDATION", "No saved key file found")
     end
-    
     return false
 end
 
-local function script()
-    logInfo("MAIN", "EXECUTING MAIN SCRIPT")
-    
-    pcall(function()
-        StarterGui:SetCore("SendNotification", {
-            Title = "Script Loaded",
-            Text = "Main script is now running!",
-            Duration = 5
-        })
-    end)
-    
-    print("=== MAIN SCRIPT EXECUTED ===")
-    print("Player:", Players.LocalPlayer.Name)
-    print("Time:", os.date("%X"))
-    print("Debug logs:", #DEBUG.logs)
-    print("============================")
-    
-    
-   local id = game.PlaceId
-    local DBU_IDS = {
-        3311165597,
-        5151400895,
-    }
-    local MLGD_IDS = {
-        3623096087,
-    }
-    local Speed_IDS = {
-        3101667897,
-        3276265788,
-    }
-    local Brainrot_IDS = {
-        109983668079237,
-    }
+
+ 
+local function ejecutarScriptPremium()
+    local id = game.PlaceId
+    local player = game.Players.LocalPlayer
+    local name = player.Name
+
+    local DBU_IDS = {3311165597, 5151400895}
+    local MLGD_IDS = {3623096087}
+    local Speed_IDS = {3101667897, 3276265788}
+    local Brainrot_IDS = {109983668079237}
+
+    local StarterGui = game:GetService("StarterGui")
+
+    local function notificar(juego)
+        pcall(function()
+            StarterGui:SetCore("SendNotification", {
+                Title = "🎮 " .. juego,
+                Text = "👤 " .. name .. " está listo. ¡Disfruta el script!",
+                Duration = 6
+            })
+        end)
+    end
 
     task.spawn(function()
         if table.find(DBU_IDS, id) then
-            logInfo("MAIN", "🎮 Cargando script de Dragon Ball Ultimate...")
+            notificar("Dragon Ball Ultimate")
             pcall(function()
                 loadstring(game:HttpGet("https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Campo-no-compartan-script-quien-logr-Desufusco/refs/heads/main/DRG.lua"))()
             end)
@@ -482,264 +106,187 @@ local function script()
 
     task.spawn(function()
         if table.find(MLGD_IDS, id) then
-            logInfo("MAIN", "🎮 Cargando script de Muscle Legends...")
+            notificar("Muscle Legends")
             pcall(function()
                 loadstring(game:HttpGet("https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Campo-no-compartan-script-quien-logr-Desufusco/refs/heads/main/Legends.lua"))()
             end)
         end
     end)
-    
+
     task.spawn(function()
         if table.find(Speed_IDS, id) then
-            logInfo("MAIN", "🎮 Cargando script de Speed of Lengeds ...")
+            notificar("Speed of Legends")
             pcall(function()
                 loadstring(game:HttpGet("https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Campo-no-compartan-script-quien-logr-Desufusco/refs/heads/main/Eped.lua"))()
             end)
         end
     end)
-    
+
     task.spawn(function()
         if table.find(Brainrot_IDS, id) then
-            logInfo("MAIN", "🎮 Cargando script de Steal a Brainrot ...")
+            notificar("Steal a Brainrot")
             pcall(function()
                 loadstring(game:HttpGet("https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Campo-no-compartan-script-quien-logr-Desufusco/refs/heads/main/Pet.lua"))()
             end)
         end
     end)
-  
+end
     
-    logInfo("MAIN", "Main script execution completed")
+
+local function generateKeyLink()
+    local host = testHost()
+    if not host then return nil, "❌ No hay conexión con los servidores" end
+
+    local body = {
+        service = serviceId,
+        identifier = getHwid(),
+        timestamp = os.time(),
+        random = math.random(1000, 9999),
+        debug = true,
+        nonce = useNonce and generateNonce() or nil
+    }
+
+    local res = makeRequest(host .. "/public/start", "POST", body)
+    if res and res.StatusCode == 200 then
+        local ok, data = pcall(function()
+            return HttpService:JSONDecode(res.Body)
+        end)
+        if ok and data and data.success and data.data and data.data.url then
+            setClipboard(data.data.url)
+            return data.data.url, "🔗 Link generado y copiado"
+        end
+    end
+    return nil, "❌ Error al generar el link"
 end
 
-local function crearGUI()
-    logInfo("GUI", "Creating debug GUI interface")
-    
-    pcall(function()
-        if game.CoreGui:FindFirstChild("locoy") then
-            game.CoreGui.locoy:Destroy()
-        end
-    end)
-    
-    local Guio = Instance.new("ScreenGui")
-    Guio.Name = "locoy"
-    Guio.Parent = game.CoreGui
-    Guio.ResetOnSpawn = false
-    
-    local Frame = Instance.new("Frame")
-    Frame.Parent = Guio
-    Frame.Size = UDim2.new(0, 450, 0, 350)
-    Frame.Position = UDim2.new(0.5, -225, 0.5, -175)
-    Frame.AnchorPoint = Vector2.new(0, 0)
-    Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
-    Frame.BorderSizePixel = 0
-    
-    local Corner = Instance.new("UICorner")
-    Corner.CornerRadius = UDim.new(0, 8)
-    Corner.Parent = Frame
-    
-    local Title = Instance.new("TextLabel")
-    Title.Parent = Frame
-    Title.Size = UDim2.new(1, 0, 0, 25)
-    Title.Position = UDim2.new(0, 0, 0, 5)
-    Title.BackgroundTransparency = 1
-    Title.Text = "Debug Key System - " .. getSystemInfo().executor
-    Title.TextColor3 = Color3.new(1, 1, 1)
-    Title.TextSize = 14
-    Title.Font = Enum.Font.GothamBold
-    
-    local SystemInfo = Instance.new("TextLabel")
-    SystemInfo.Parent = Frame
-    SystemInfo.Size = UDim2.new(1, 0, 0, 15)
-    SystemInfo.Position = UDim2.new(0, 0, 0, 30)
-    SystemInfo.BackgroundTransparency = 1
-    SystemInfo.Text = string.format("Player: %s | HWID: %s | Logs: %d", 
-        Players.LocalPlayer.Name, fGetHwid():sub(1, 8) .. "...", #DEBUG.logs)
-    SystemInfo.TextColor3 = Color3.fromRGB(180, 180, 180)
-    SystemInfo.TextSize = 10
-    SystemInfo.Font = Enum.Font.Gotham
-    
-    local TextBox = Instance.new("TextBox")
-    TextBox.Parent = Frame
-    TextBox.Size = UDim2.new(0.9, 0, 0, 30)
-    TextBox.Position = UDim2.new(0.05, 0, 0, 55)
-    TextBox.PlaceholderText = "Introduce tu clave aqui"
-    TextBox.Font = Enum.Font.Gotham
-    TextBox.TextColor3 = Color3.new(1, 1, 1)
-    TextBox.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
-    TextBox.BorderSizePixel = 0
-    TextBox.TextSize = 12
-    
-    local TextBoxCorner = Instance.new("UICorner")
-    TextBoxCorner.CornerRadius = UDim.new(0, 4)
-    TextBoxCorner.Parent = TextBox
+local function verificarClave(clave)
+    local hwid = getHwid()
+    local nonce = useNonce and generateNonce() or nil
 
-    local function crearBoton(texto, posX, color)
-        local boton = Instance.new("TextButton")
-        boton.Parent = Frame
-        boton.Size = UDim2.new(0.4, 0, 0, 30)
-        boton.Position = UDim2.new(posX, 0, 0, 95)
-        boton.Text = texto
-        boton.Font = Enum.Font.GothamBold
-        boton.TextColor3 = Color3.new(1, 1, 1)
-        boton.BackgroundColor3 = color
-        boton.BorderSizePixel = 0
-        boton.TextSize = 11
-        
-        local BotonCorner = Instance.new("UICorner")
-        BotonCorner.CornerRadius = UDim.new(0, 4)
-        BotonCorner.Parent = boton
-        
-        return boton
-    end
+    for _, host in ipairs(hosts) do
+        local url = string.format("%s/public/whitelist/%d?identifier=%s&key=%s%s",
+            host, serviceId, HttpService:UrlEncode(hwid), HttpService:UrlEncode(clave),
+            nonce and "&nonce=" .. nonce or "")
 
-    local BotonVerificar = crearBoton("Verificar Clave", 0.05, Color3.fromRGB(0, 180, 120))
-    local BotonCopiar = crearBoton("Generar Link", 0.55, Color3.fromRGB(0, 120, 200))
-    
-    local Status = Instance.new("TextLabel")
-    Status.Parent = Frame
-    Status.Size = UDim2.new(0.9, 0, 0, 20)
-    Status.Position = UDim2.new(0.05, 0, 0, 135)
-    Status.BackgroundTransparency = 1
-    Status.Text = "Ready - Check console for detailed logs"
-    Status.TextColor3 = Color3.fromRGB(180, 180, 180)
-    Status.TextSize = 10
-    Status.Font = Enum.Font.Gotham
-    
-    local LogFrame = Instance.new("ScrollingFrame")
-    LogFrame.Parent = Frame
-    LogFrame.Size = UDim2.new(0.9, 0, 0, 180)
-    LogFrame.Position = UDim2.new(0.05, 0, 0, 160)
-    LogFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
-    LogFrame.BorderSizePixel = 0
-    LogFrame.ScrollBarThickness = 6
-    
-    local LogFrameCorner = Instance.new("UICorner")
-    LogFrameCorner.CornerRadius = UDim.new(0, 4)
-    LogFrameCorner.Parent = LogFrame
-    
-    local LogList = Instance.new("UIListLayout")
-    LogList.Parent = LogFrame
-    LogList.SortOrder = Enum.SortOrder.LayoutOrder
-    LogList.Padding = UDim.new(0, 2)
-    
-    local function updateLogDisplay()
-        for _, child in ipairs(LogFrame:GetChildren()) do
-            if child:IsA("TextLabel") then
-                child:Destroy()
+        local res = makeRequest(url, "GET")
+        if res and res.StatusCode == 200 then
+            local ok, data = pcall(function()
+                return HttpService:JSONDecode(res.Body)
+            end)
+            if ok and data and data.success and data.data and data.data.valid then
+                writefile(keyFile, HttpService:JSONEncode({
+                    key = clave,
+                    time = os.time(),
+                    host = host
+                }))
+                return true, "✅ Clave válida"
             end
         end
-        
-        local recentLogs = {}
-        for i = math.max(1, #DEBUG.logs - 15), #DEBUG.logs do
-            if DEBUG.logs[i] then
-                table.insert(recentLogs, DEBUG.logs[i])
-            end
-        end
-        
-        for i, logEntry in ipairs(recentLogs) do
-            local LogLabel = Instance.new("TextLabel")
-            LogLabel.Parent = LogFrame
-            LogLabel.Size = UDim2.new(1, -10, 0, 18)
-            LogLabel.BackgroundTransparency = 1
-            LogLabel.Text = string.format("%s [%s] %s", 
-                logEntry.timestamp:sub(1, 15), logEntry.level, logEntry.message)
-            LogLabel.TextColor3 = logEntry.level == "ERROR" and Color3.fromRGB(255, 120, 120) or
-                                 logEntry.level == "WARN" and Color3.fromRGB(255, 200, 120) or
-                                 logEntry.level == "INFO" and Color3.fromRGB(120, 200, 255) or
-                                 Color3.fromRGB(180, 180, 180)
-            LogLabel.TextSize = 9
-            LogLabel.Font = Enum.Font.Code
-            LogLabel.TextXAlignment = Enum.TextXAlignment.Left
-            LogLabel.LayoutOrder = i
-        end
-        
-        LogFrame.CanvasSize = UDim2.new(0, 0, 0, #recentLogs * 20)
-        LogFrame.CanvasPosition = Vector2.new(0, LogFrame.CanvasSize.Y.Offset)
     end
-    
-    task.spawn(function()
-        while Guio.Parent do
-            updateLogDisplay()
-            task.wait(2)
-        end
-    end)
+    return false, "❌ Clave inválida"
+end
 
-    BotonVerificar.MouseButton1Click:Connect(function()
-        local clave = TextBox.Text:gsub("%s+", "")
-        
-        if clave == "" then
-            Status.Text = "Por favor, introduce una clave"
-            Status.TextColor3 = Color3.fromRGB(255, 120, 120)
+if isfile(keyFile) then
+    local success, content = pcall(readfile, keyFile)
+    if success then
+        local data = HttpService:JSONDecode(content)
+        local ok, msg = verificarClave(data.key)
+        if ok and estaEnJuegoPermitido() then
+            warn("✅ Acceso autorizado con clave guardada.")
+            ejecutarScriptPremium()
             return
-        end
-
-        Status.Text = "Verificando clave... (revisa logs)"
-        Status.TextColor3 = Color3.fromRGB(255, 255, 120)
-        
-        task.spawn(function()
-            if verificarClave(clave) then
-                Status.Text = "Clave aceptada!"
-                Status.TextColor3 = Color3.fromRGB(120, 255, 120)
-                task.wait(0.2)
-                Guio:Destroy()
-                script()
-            else
-                Status.Text = "Clave invalida (revisa logs para detalles)"
-                Status.TextColor3 = Color3.fromRGB(255, 120, 120)
-                TextBox.Text = ""
-            end
-        end)
-    end)
-
-    BotonCopiar.MouseButton1Click:Connect(function()
-        Status.Text = "Generando link... (revisa logs)"
-        Status.TextColor3 = Color3.fromRGB(255, 255, 120)
-        
-        task.spawn(function()
-            local link = generateLink()
-            if link then
-                Status.Text = "Link generado y copiado"
-                Status.TextColor3 = Color3.fromRGB(120, 255, 120)
-                if fSetClipboard then fSetClipboard(link) end
-            else
-                Status.Text = "No se pudo generar el link (revisa logs)"
-                Status.TextColor3 = Color3.fromRGB(255, 120, 120)
-            end
-        end)
-    end)
-    
-    logInfo("GUI", "Debug GUI created successfully")
-end
-
-logInfo("INIT", "Starting debug key system")
-
-local connectivityTest = makeRequest(hosts[1] .. "/public/connectivity", "GET", nil, 5)
-if connectivityTest then
-    logInfo("INIT", "Initial connectivity test", {status = connectivityTest.StatusCode})
-else
-    logWarn("INIT", "Initial connectivity test failed - may be blocked")
-end
-
-if claveEsValida() then
-    logInfo("INIT", "Valid access detected, executing main script")
-    script()
-else
-    logInfo("INIT", "No valid access, showing GUI")
-    crearGUI()
-end
-
-_G.ShowAllLogs = function()
-    print("=== DEBUG LOGS ===")
-    for i, log in ipairs(DEBUG.logs) do
-        print(string.format("%d. %s [%s] [%s] %s", 
-            i, log.timestamp, log.level, log.category, log.message))
-        if log.data then
-            print("Data:", HttpService:JSONEncode(log.data))
+        elseif ok then
+            warn("❌ Clave válida pero no estás en un juego permitido")
+        else
+            delfile(keyFile)
         end
     end
-    print("=== END LOGS ===")
 end
 
-logInfo("INIT", "Debug system ready. Use _G.ShowAllLogs() to see all logs")
+if game.CoreGui:FindFirstChild("KeyLinkGui") then
+    game.CoreGui.KeyLinkGui:Destroy()
+end
 
-        
+local Gui = Instance.new("ScreenGui", game.CoreGui)
+Gui.Name = "KeyLinkGui"
+Gui.ResetOnSpawn = false
+
+local Frame = Instance.new("Frame", Gui)
+Frame.Size = UDim2.new(0, 400, 0, 200)
+Frame.Position = UDim2.new(0.5, -200, 0.5, -100)
+Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 8)
+
+local Title = Instance.new("TextLabel", Frame)
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Text = "🔐 Sistema de Clave"
+Title.TextColor3 = Color3.new(1, 1, 1)
+Title.BackgroundTransparency = 1
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 16
+
+local TextBox = Instance.new("TextBox", Frame)
+TextBox.Size = UDim2.new(0.9, 0, 0, 30)
+TextBox.Position = UDim2.new(0.05, 0, 0, 40)
+TextBox.PlaceholderText = "Introduce tu clave aquí"
+TextBox.Text = ""
+TextBox.Font = Enum.Font.Gotham
+TextBox.TextColor3 = Color3.new(1, 1, 1)
+TextBox.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+TextBox.BorderSizePixel = 0
+Instance.new("UICorner", TextBox).CornerRadius = UDim.new(0, 4)
+
+local BtnVerificar = Instance.new("TextButton", Frame)
+BtnVerificar.Size = UDim2.new(0.4, 0, 0, 30)
+BtnVerificar.Position = UDim2.new(0.05, 0, 0, 80)
+BtnVerificar.Text = "Verificar Clave"
+BtnVerificar.Font = Enum.Font.GothamBold
+BtnVerificar.TextColor3 = Color3.new(1, 1, 1)
+BtnVerificar.BackgroundColor3 = Color3.fromRGB(0, 180, 100)
+Instance.new("UICorner", BtnVerificar).CornerRadius = UDim.new(0, 4)
+
+local BtnGenerar = Instance.new("TextButton", Frame)
+BtnGenerar.Size = UDim2.new(0.4, 0, 0, 30)
+BtnGenerar.Position = UDim2.new(0.55, 0, 0, 80)
+BtnGenerar.Text = "Generar Link"
+BtnGenerar.Font = Enum.Font.GothamBold
+BtnGenerar.TextColor3 = Color3.new(1, 1, 1)
+BtnGenerar.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+Instance.new("UICorner", BtnGenerar).CornerRadius = UDim.new(0, 4)
+
+local Estado = Instance.new("TextLabel", Frame)
+Estado.Size = UDim2.new(1, -20, 0, 50)
+Estado.Position = UDim2.new(0, 10, 0, 130)
+Estado.Text = "🔄 Esperando acción..."
+Estado.TextColor3 = Color3.new(1, 1, 1)
+Estado.Font = Enum.Font.Gotham
+Estado.TextSize = 14
+Estado.BackgroundTransparency = 1
+Estado.TextWrapped = true
+
+BtnGenerar.MouseButton1Click:Connect(function()
+    Estado.Text = "🔄 Generando link..."
+    local link, msg = generateKeyLink()
+    Estado.Text = msg
+end)
+
+BtnVerificar.MouseButton1Click:Connect(function()
+    local clave = TextBox.Text:gsub("%s+", "")
+    if clave == "" then
+        Estado.Text = "⚠️ Introduce una clave válida"
+        return
+    end
+
+    Estado.Text = "🔍 Verificando clave..."
+    local ok, msg = verificarClave(clave)
+    if ok and estaEnJuegoPermitido() then
+        Estado.Text = "✅ Clave válida"
+        task.wait(1)
+        Gui:Destroy()
+        ejecutarScriptPremium()
+    elseif ok then
+        Estado.Text = "❌ Clave válida pero no estás en un juego permitido"
+    else
+        Estado.Text = msg
+    end
+end)
