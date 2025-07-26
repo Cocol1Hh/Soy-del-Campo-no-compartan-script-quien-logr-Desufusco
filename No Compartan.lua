@@ -542,18 +542,18 @@ local function crearGUI()
     logInfo("GUI", "Creating debug GUI interface")
     
     pcall(function()
-        if game.CoreGui:FindFirstChild("DebugKeySystemGUI") then
-            game.CoreGui.DebugKeySystemGUI:Destroy()
+        if game.CoreGui:FindFirstChild("locoy") then
+            game.CoreGui.locoy:Destroy()
         end
     end)
     
-    local KeyGui = Instance.new("ScreenGui")
-    KeyGui.Name = "DebugKeySystemGUI"
-    KeyGui.Parent = game.CoreGui
-    KeyGui.ResetOnSpawn = false
+    local Guio = Instance.new("ScreenGui")
+    Guio.Name = "locoy"
+    Guio.Parent = game.CoreGui
+    Guio.ResetOnSpawn = false
     
     local Frame = Instance.new("Frame")
-    Frame.Parent = KeyGui
+    Frame.Parent = Guio
     Frame.Size = UDim2.new(0, 450, 0, 350)
     Frame.Position = UDim2.new(0.5, -225, 0.5, -175)
     Frame.AnchorPoint = Vector2.new(0, 0)
@@ -685,7 +685,7 @@ local function crearGUI()
     end
     
     task.spawn(function()
-        while KeyGui.Parent do
+        while Guio.Parent do
             updateLogDisplay()
             task.wait(2)
         end
@@ -708,7 +708,7 @@ local function crearGUI()
                 Status.Text = "Clave aceptada!"
                 Status.TextColor3 = Color3.fromRGB(120, 255, 120)
                 task.wait(0.2)
-                KeyGui:Destroy()
+                Guio:Destroy()
                 script()
             else
                 Status.Text = "Clave invalida (revisa logs para detalles)"
