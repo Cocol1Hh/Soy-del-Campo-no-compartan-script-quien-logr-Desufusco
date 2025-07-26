@@ -343,7 +343,7 @@ Selct.ScrollBarThickness = 5
 Selct.ScrollingDirection = Enum.ScrollingDirection.Y  
 Selct.CanvasSize = UDim2.new(0, 0, 0, 0)  -- lo actualizaremos después
 
-local forms = { 'Ultra Super Villain', 'Nephalem', 'Seraphim Of Destruction', 'Seraphim', 'Ego Instinct 2', 'Ego Instinct', 'Divine Rose Prominence', 'Divine Blue', 'God of Destruction', 'God of Creation', 'Beast', 'Mastered Ultra Instinct', 'SSJR2', 'SSJB2', 'Ultra Instinct Omen', 'Dark Rose', 'Blue Evolution', 'SSJ Rose', 'SSJ Blue', 'SSJ4', 'SSJG', 'Mystic', 'SSJ3', 'LSSJ', 'SSJ2', 'SSJ', 'FSSJ', 'Kaioken' }
+local forms = {'Beast', 'SSJBUI', 'Ultra Ego', 'LBSSJ4', 'SSJR3', 'SSJB3', 'God Of Destruction', 'God Of Creation', 'Jiren Ultra Instinct', 'Mastered Ultra Instinct', 'Godly SSJ2', 'Ultra Instinct Omen', 'Evil SSJ', 'Blue Evolution', 'Dark Rose', 'Kefla SSJ2', 'SSJ Berserker', 'True Rose', 'SSJB Kaioken', 'SSJ Rose', 'SSJ Blue', 'Corrupt SSJ', 'SSJ Rage', 'SSJG', 'SSJ4', 'Mystic', 'LSSJ', 'SSJ3', 'Spirit SSJ', 'SSJ2 Majin', 'SSJ2', 'SSJ', 'FSSJ', 'Kaioken'}
 
 local frame = Instance.new("Frame", Selct)  
 frame.Size = UDim2.new(1, 0, 0, 0)  -- ancho igual al ScrollingFrame, altura dinámica  
@@ -664,68 +664,6 @@ if selectedForm then
 end
 
 
---Menu de Contador 1H:30M
-local lplr = game.Players.LocalPlayer
-local gui = Instance.new("ScreenGui")
-gui.Name = "TimerGui"
-gui.ResetOnSpawn = false
-gui.Parent = game:GetService("CoreGui")
-
-local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 180, 0, 40)
-frame.Position = UDim2.new(0, 20, 0, 20)
-frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-frame.BackgroundTransparency = 0.3
-frame.Active = true
-frame.Draggable = true
-
-local lbl = Instance.new("TextLabel", frame)
-lbl.Size = UDim2.new(1, 0, 1, 0)
-lbl.BackgroundTransparency = 1
-lbl.TextColor3 = Color3.fromRGB(255, 255, 255)
-lbl.TextScaled = true
-lbl.Font = Enum.Font.SourceSansBold
-lbl.Text = "Tiempo: 1:04:00"
-
-local function destinoFijo()
-	local id = game.PlaceId
-	if id == 3311165597 then
-		return "Earth", 3311165597
-	elseif id == 5151400895 then
-		return "Vills Planet", 5151400895
-	end
-end
-
-local function formatTime(seconds)
-	local h = math.floor(seconds / 3600)
-	local m = math.floor((seconds % 3600) / 60)
-	local s = seconds % 60
-	return string.format("%d:%02d:%02d", h, m, s)
-end
-
-task.spawn(function()
-	local t = 3275
-	while task.wait(1) do
-		pcall(function()
-		t -= 1
-		lbl.Text = "Tiempo: " .. formatTime(t)
-		if t <= 0 then
-			local destino, actualId = destinoFijo()
-			if destino then
-				repeat
-					pcall(function()
-						game.ReplicatedStorage.Package.Events.TP:InvokeServer(destino)
-					end)
-					task.wait()
-				until game.PlaceId ~= actualId
-			end
-			t = 3275
-		end
-		end)
-	end
-end)
-
-
 
 local getIsActive1 = createSwitch(Barra1, UDim2.new(0.2, 0, 0.120, 0), "DBU1", LoadSwitchState("DBU1")) -- Farm  
 local getIsActive2 = createSwitch(Barra1, UDim2.new(0.735, 0, 0.115, 0), "DBU2", LoadSwitchState("DBU2")) -- Form  
@@ -747,9 +685,22 @@ createBar(0.513, "Ambient", Color3.fromRGB(0, 255, 0), 0.37, 700, function(v) Li
 --Casi fin del interrutor /\
 --Ciclo Para Auto = Main y Start
 spawn(function()
-if game.PlaceId == 3311165597 then
-    Ex.Start:InvokeServer()
-    lplr.Character.Humanoid:ChangeState(15)
+    if lplr.PlayerGui:FindFirstChild("Start") then
+        Ex.Start:InvokeServer()
+        if game:GetService("Workspace").Others:FindFirstChild("Title") then
+            game:GetService("Workspace").Others.Title:Destroy()
+        end
+        local cam = Workspace.CurrentCamera
+        cam.CameraType = Enum.CameraType.Custom
+        cam.CameraSubject = lplr.Character.Humanoid
+        _G.Ready = true
+        game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
+        lplr.PlayerGui.Main.Enabled = true
+        if lplr.PlayerGui:FindFirstChild("Start") then
+            lplr.PlayerGui.Start:Destroy()
+        end
+        lplr.PlayerGui.Main.bruh.Enabled = false
+        lplr.PlayerGui.Main.bruh.Enabled = true
     end
 end)
 
@@ -907,34 +858,40 @@ task.spawn(function()
         pcall(function()
             if getIsActive11() and player() and Congela() then
                 local Forms = {
-                    'Ultra Super Villain',
-                    'Nephalem',
-                    'Seraphim Of Destruction',
-                    'Seraphim',
-                    'Ego Instinct 2', 
-                    'Ego Instinct',
-                    'Divine Rose Prominence',
-                    'Divine Blue',
-                    'God of Destruction',
-                    'God of Creation',
                     'Beast',
-                    'Mastered Ultra Instinct',
-                    'SSJR2',
-                    'SSJB2',
-                    'Ultra Instinct Omen',
-                    'Dark Rose',
-                    'Blue Evolution',
-                    'SSJ Rose',
-                    'SSJ Blue',
-                    'SSJ4',
-                    'SSJG',
-                    'Mystic',
-                    'SSJ3',
-                    'LSSJ',
-                    'SSJ2',
-                    'SSJ',
-                    'FSSJ',
-                    'Kaioken'
+			    'SSJBUI',
+			    'Ultra Ego',
+			    'LBSSJ4',
+			    'SSJR3',
+			    'SSJB3',
+			    'God Of Destruction',
+			    'God Of Creation',
+			    'Jiren Ultra Instinct',
+			    'Mastered Ultra Instinct',
+			    'Godly SSJ2',
+			    'Ultra Instinct Omen',
+			    'Evil SSJ',
+			    'Blue Evolution',
+			    'Dark Rose',
+			    'Kefla SSJ2',
+			    'SSJ Berserker',
+			    'True Rose',
+			    'SSJB Kaioken',
+			    'SSJ Rose',
+			    'SSJ Blue',
+			    'Corrupt SSJ',
+			    'SSJ Rage',
+			    'SSJG',
+			    'SSJ4',
+			    'Mystic',
+			    'LSSJ',
+			    'SSJ3',
+			    'Spirit SSJ',
+			    'SSJ2 Majin',
+			    'SSJ2',
+			    'SSJ',
+			    'FSSJ',
+			    'Kaioken'
                 }
               local status = lplr.Status    
                   for _, form in ipairs(Forms) do 
@@ -963,29 +920,20 @@ task.spawn(function()
     while task.wait() do
         pcall(function()
         if getIsActive12() and not getIsActive11()  and player() and Congela() then
-        local Forms = {                                
-                                  'True SSJG',
-                                  'Blanco',
-                                  'CSSJB3',
-                                  'SSJ6',
-                                  'SSJB4',
-                                  'SSJR4',
-                                  'LSSJ5',
-                                  'True God of Creation',
-                                  'True God of Destruction',
-                                  'CSSJB2',
-                                  'CSSJB',
-                                  'Super Broly',
-                                  'LSSJB',
-                                  'False God of Destruction',
-                                  'False God of Creation',
-                                  'SSJG4',
-                                  'LSSJ4',
-                                  'LSSJ3',
-                                  'Mystic Kaioken',
-                                  'LSSJ2',
-                                  'LSSJ Kaioken',
-                                  'SSJ2 Kaioken'}
+        local Forms = {                                                           
+    'Blanco', 
+    'SSJB4', 
+    'True God of Creation', 
+    'True God of Destruction', 
+    'Super Broly', 
+    'LSSJG', 
+    'LSSJ4', 
+    'SSJG4', 
+    'LSSJ3', 
+    'SSJ5', 
+    'Mystic Kaioken', 
+    'LSSJ Kaioken', 
+    'SSJ2 Kaioken'}
                              local status = lplr.Status    
                            for _, form in ipairs(Forms) do 
                    if Ex.equipskill:InvokeServer(form) then break end  
@@ -999,36 +947,29 @@ task.spawn(function()
 end)   
      
 
-local tiempo = tick()
 task.spawn(function()
-    while true do
-        pcall(function()
-        if Congela() then
-            local char = workspace.Living:FindFirstChild(lplr.Name)
-            if not char then return end
-            local stats = char:FindFirstChild("Stats")
-            if not stats then return end
-            local ki = stats:FindFirstChild("Ki")
-            local maxKi = stats:FindFirstChild("MaxKi")
-            if not ki or not maxKi then return end
-            if not ki:IsA("NumberValue") or not maxKi:IsA("NumberValue") then return end
-            local limite = maxKi.Value * 0.20
-            if ki.Value < limite then
-                if tick() - tiempo >= 2 then
-                    game.ReplicatedStorage.Package.Events.cha:InvokeServer(false, "dbuexploiterssucklol")
-                    task.wait(0.1)
-                    tiempo = tick()
+    while task.wait() do
+        if player() and Congela() then
+            pcall(function()
+                local char = game.Workspace.Living:FindFirstChild(lplr.Name)
+                if char then
+                    local stats = char:FindFirstChild("Stats")
+                    if stats then
+                        local ki = stats:FindFirstChild("Ki")
+                        local maxKi = stats:FindFirstChild("MaxKi")
+                        if ki and maxKi and ki:IsA("NumberValue") and maxKi:IsA("NumberValue") then
+                            local porcentaje = game.PlaceId == 5151400895 and 0.25 or 0.70
+                            if ki.Value <= (maxKi.Value * porcentaje) and player() and getIsActive1() and yo() <= 800e15 then
+                                Ex.cha:InvokeServer("Blacknwhite27")
+                            end
+                        end
+                    end
                 end
-                game.ReplicatedStorage.Package.Events.cha:InvokeServer(true, "dbuexploiterssucklol")
-            else
-                game.ReplicatedStorage.Package.Events.cha:InvokeServer(false, "dbuexploiterssucklol")
-                tiempo = tick()
-               end
-            end
-         end)
-        task.wait()
+            end)
+        end
     end
 end)
+     
 
 
 
@@ -1037,8 +978,8 @@ task.spawn(function()
         pcall(function()
         if player() then
         if getIsActive1()  and data.Quest.Value ~= "" and Congela() then         
-           game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol", 1)
-           game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol", 2)
+           game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
+           game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
                end          
             end --player() 
          end)         
@@ -1079,25 +1020,15 @@ end
 task.spawn(function()
     while true do
         pcall(function()
-            if getIsActive3() and player() and Congela() then
-                local rebirthLabel = lplr.PlayerGui.Main.MainFrame.Frames.Rebirth.MultiRebirth.TextLabel
-                local text = rebirthLabel.Text
-                local count = tonumber(text:match("%((%d+)%)")) or 0
-                local valor = tonumber(inputBox.Text) or 4
-                valor = math.clamp(valor, 1, MAX_VALOR)
-                if count >= valor then
-                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(valor)
-                end
-            end
-            if getIsActive3() and player() then
-                local text = lplr.PlayerGui.Main.MainFrame.Frames.Rebirth.MultiRebirth.TextLabel.Text
-                local count = tonumber(text:match("%((%d+)%)")) or 0
-                if count >= 1 then
-                    game.ReplicatedStorage.Package.Events.reb:InvokeServer(100)            
+            local fuerzaActual = yo()
+            local rebirthReq = getRebirthRequirement()
+               if getIsActive3() and player() and Congela() then
+            if fuerzaActual >= rebirthReq and fuerzaActual < rebirthReq * 2 then
+                Ex.reb:InvokeServer()
                 end
             end
         end)
-        task.wait(0.8)
+        task.wait(.3)
     end
 end)
 
@@ -1140,8 +1071,8 @@ task.spawn(function()
                   for _, boss in ipairs(workspace.Living:GetChildren()) do
              if boss.Name == "X Fighter" and boss:FindFirstChild("Humanoid") and boss.Humanoid.Health > 0 then
                  lplr.Character.HumanoidRootPart.CFrame = boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.5)
-                   game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol", 1)
-                   game:GetService("ReplicatedStorage").Package.Events.p:FireServer("dbuexploiterssucklol", 2) 
+                   game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
+                   game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2) 
                            break
                              end
                           end
@@ -1157,48 +1088,38 @@ task.spawn(function()
 
 
 
-local npcList = {
-	{"Ultra Super Villain Jiran", 200e12, true},
-	{"Mira (final form)", 50e12, true},
-	{"Android 21 (janemba absorbed)", 20e12, true},
-	{"Ultra Vekuta", 5e12, true},
-	{"Seraphim of Destruction Vegetable", 2.30e12, true},
-	{"Wukong Seraphim", 1.50e12, true},
-	{"Ego Instinct Kakata (Buu absorbed)", 396e9, true},
-    {"Kakata (Ego Instinct)", 150e9, true}, 
-    {"Wukong True God", 100e9, true},
-    {"Wukong (SSJB3)", 75e9, true},
-    {"Xicor", 46e9, true},
-    {"Vis (Ultra Instinct)", 35e9, true},
-    {"Vills (True God of Destruction)", 25e9, true},
-    {"Black Chilly", 15e9, true},
-    {"Vegetable (Ultra Ego)", 9e9, true},
-    {"Jiran The Gray", 7e9, true},
-    {"Broccoli", 5e9, true},
-    {"Merged Zamas", 3.5e9, true},
-    {"Gold Chilly", 2e9, true},
-    {"Vills (1%)", 1e9, true},
-    {"Kakata (SSJ)", 800e6, true},
-    {"Super Boo", 500e6, true},
-    {"Z Broccoli", 390e6, true},
-    {"Perfect Atom", 210e6, true},
-    {"Chilly", 75e6, true},
-    {"Lord Sloog", 7e6, true},   
-    {"Mapa", 950e3, true},
-    {"Radish", 700e3, true},
-    {"Kid Nohag", 500e3, true},
-    {"Roshi", 250e3, true},
-    {"Klirin", 200e3, true}
+local npcList = {	
+	{"Wukong (MUI)", 2.975e9, true},
+    {"Vekuta (SSJBUI)", 2.375e9, true},
+    {"Wukong Rose", 1.65e9, true},
+    {"Vekuta (LBSSJ4)", 1.05e9, true},
+    {"Wukong (LBSSJ4)", 950e6, true},
+    {"Vegetable (LBSSJ4)", 650e6, true},
+    {"Vis (20%)", 500e6, true},
+    {"Vills (50%)", 350e6, true},
+    {"Wukong (Omen)", 200e6, true},
+    {"Vegetable (GoD in-training)", 100e6, true},
+    {"SSJG Kakata", 70e6, true},
+    {"Broccoli", 35.5e6, true},
+    {"SSJB Wukong", 4e6, true},
+    {"Kai-fist Master", 3025000, true},
+    {"SSJ2 Wukong", 2250000, true},
+    {"Perfect Atom", 1275000, true},
+    {"Chilly", 950000, true},
+    {"Super Vegetable", 358000, true},
+    {"Mapa", 158000, true},
+    {"Radish", 55000, true},
+    {"Kid Nohag", 40000, true},
+    {"Klirin", 0, true}
 }
     
-
 task.spawn(function()
-    while task.wait() do       
-       pcall(function() 
-       if Congela() then
-       if getIsActive1() and player()  then
-       if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then        
-       if data.Quest.Value ~= "" then
+while true do
+pcall(function()
+if Congela() then
+if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then   
+if getIsActive1() and player()  then
+               if data.Quest.Value ~= "" then
                         local currentQuest = data.Quest.Value
                         local playerStats = yo()
                         for _, npc in ipairs(npcList) do
@@ -1226,14 +1147,15 @@ task.spawn(function()
                                     end
                                 lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Jefe.HumanoidRootPart.CFrame * CFrame.new(0,0,6.2).p, Jefe.HumanoidRootPart.Position)	           
                                 break
-                             end
-                          end
-                        end
-                     end 
+                         end
+                   end
                  end
-              end
-              end
-        end)
+                end 
+           end
+           end
+           end
+     end)
+     task.wait()
     end
 end) 
 
@@ -1258,14 +1180,14 @@ task.spawn(function()
                     for i, move in pairs(moves) do
                         if not lplr.Status:FindFirstChild(move) then
                             spawn(function()
-                                game:GetService("ReplicatedStorage").Package.Events.mel:InvokeServer(move, "dbuexploiterssucklol")                                        
+                                game:GetService("ReplicatedStorage").Package.Events.mel:InvokeServer(move, "Blacknwhite27")                                        
                             end)
                             attacked = true
                         end
                     end
                     if stats > 5000 and canvolley then
                         canvolley = false
-                           game.ReplicatedStorage.Package.Events.voleys:InvokeServer("Energy Volley", {FaceMouse = false, MouseHit = CFrame.new()}, "dbuexploiterssucklol")
+                           game.ReplicatedStorage.Package.Events.voleys:InvokeServer("Energy Volley", {FaceMouse = false, MouseHit = CFrame.new()}, "Blacknwhite27")
                         attacked = true
                         spawn(function()
                             wait(.01)
@@ -1327,11 +1249,11 @@ task.spawn(function()
     while task.wait() do       
        pcall(function() 
             if getIsActive10() then
-            if yo() >= 700e7  and game.PlaceId == 3311165597  then
+            if yo() >= 150e6  and game.PlaceId == 3311165597  then
                 game.ReplicatedStorage.Package.Events.TP:InvokeServer("Vills Planet")
                 wait(5)
             end
-            if yo() < 700e7 and game.PlaceId == 5151400895  then
+            if yo() < 150e6 and game.PlaceId == 5151400895  then
                 game.ReplicatedStorage.Package.Events.TP:InvokeServer("Earth")
                 wait(5)
             end
