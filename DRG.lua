@@ -1073,7 +1073,7 @@ task.spawn(function()
             pcall(function()
             task.spawn(function()
             if player() and game.PlaceId == 3311165597 and getIsActive1() then
-                 if data.Quest.Value ~= "X Fighter Trainer" and yo() <= 200e3 then
+                 if data.Quest.Value ~= "X Fighter Trainer" and yo() <= 40000 then
                  local npc = workspace.Others.NPCs["X Fighter Trainer"]
                     lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)
                        local args = {
@@ -1122,7 +1122,6 @@ local npcList = {
     {"Mapa", 158000, true},
     {"Radish", 55000, true},
     {"Kid Nohag", 40000, true},
-    {"Klirin", 0, true}
 }
     
 task.spawn(function()
