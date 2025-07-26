@@ -947,31 +947,43 @@ task.spawn(function()
 end)   
      
 
+
+
+local lplr = game.Players.LocalPlayer
+
 task.spawn(function()
-    while task.wait() do
-        if player() and Congela() then
-            pcall(function()
-                local char = game.Workspace.Living:FindFirstChild(lplr.Name)
-                if char then
-                    local stats = char:FindFirstChild("Stats")
-                    if stats then
-                        local ki = stats:FindFirstChild("Ki")
-                        local maxKi = stats:FindFirstChild("MaxKi")
-                        if ki and maxKi and ki:IsA("NumberValue") and maxKi:IsA("NumberValue") then
-                            local porcentaje = game.PlaceId == 5151400895 and 0.25 or 0.70
-                            if ki.Value <= (maxKi.Value * porcentaje) and player() and getIsActive1() and yo() <= 800e15 then
-                                Ex.cha:InvokeServer("Blacknwhite27")
-                            end
-                        end
-                    end
-                end
-            end)
-        end
-    end
+	while true do
+		pcall(function()
+		if getIsActive1() and player() and Congela() then 
+			local player = workspace.Living:FindFirstChild(lplr.Name)
+			if player then			
+				local ki = player.Stats.Ki
+				local maxKi = ki.MaxValue
+				local currentKi = ki.Value
+
+				if currentKi <= maxKi * 0.70 then
+					game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")
+				end
+			end
+			end
+		end)
+		task.wait()
+	end
 end)
-     
-
-
+task.spawn(function()
+	repeat task.wait() until workspace.Living:FindFirstChild(lplr.Name)
+	local player = workspace.Living:FindFirstChild(lplr.Name)
+	local ki = player.Stats.Ki
+	ki:GetPropertyChangedSignal("Value"):Connect(function()
+		pcall(function()
+			local maxKi = ki.MaxValue
+			local currentKi = ki.Value
+			if currentKi <= maxKi * 0.70 then			
+				game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")
+			end			
+		end)
+	end)
+end)
 
 task.spawn(function()
     while task.wait(.5) do
