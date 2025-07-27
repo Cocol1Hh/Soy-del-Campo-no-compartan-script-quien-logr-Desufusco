@@ -129,7 +129,7 @@ pingLabel.Position = UDim2.new(0.380, 0, 0.009, 0)
 pingLabel.BackgroundTransparency = 1 
 pingLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 pingLabel.TextSize = 7
-pingLabel.Parent = Barra1 
+pingLabel.Parent = Barra1
 
 
 local Cash = Instance.new("TextLabel")
@@ -250,7 +250,7 @@ local textProperties = {
     {text = "Duck", position = UDim2.new(-0.160 + 0, 0, 0.420, 0), color = Color3.fromRGB(200, 100, 200), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Buys", position = UDim2.new(0.350 + 0, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "Reb|Stats", position = UDim2.new(-0.160 + 0.170, 0, 0.495, 0), color = Color3.fromRGB(0, 255, 255), parent = Barra1, size = UDim2.new(0, 75, 0, 36)},
-    {text = "Speed", position = UDim2.new(0.350 + 0.170, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 80, 0, 36)},
+    {text = "PetsF", position = UDim2.new(0.350 + 0.170, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 80, 0, 36)},
     {text = "Goal", position = UDim2.new(-0.140 + 0, 0, 0.570, 0), color = Color3.fromRGB(200, 200, 90), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
     {text = "F|Vip", position = UDim2.new(0.360 + 0.1, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 120, 0, 36)},
 }
@@ -471,12 +471,23 @@ local getIsActive11 = createSwitch(Barra1, UDim2.new(0.2,   0, 0.570, 0), "Legen
 local getIsActive12 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.570, 0), "Legends12", LoadSwitchState("Legends12")) -- Klirin
 
 
-createBar(0, "Speed", Color3.fromRGB(255, 0, 0), 0.37, 100, function(v) 
+
+local defaultSpeed = 16 
+
+createBar(0, "Speed", Color3.fromRGB(255, 0, 0), 0.37, 100, function(v)
     speed = v
-    if lplr.Character and lplr.Character:FindFirstChild("Humanoid") then
-        lplr.Character.Humanoid.WalkSpeed = speed
-    end
 end, "speed")
+game:GetService("RunService").Stepped:Connect(function()
+    local char = workspace:FindFirstChild(lplr.Name)
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    if hum then
+        if not speed or speed == 0 then
+            hum.WalkSpeed = defaultSpeed
+        else
+            hum.WalkSpeed = speed
+        end
+    end
+end)
 createBar(0.513, "Ambient", Color3.fromRGB(0, 255, 0), 0.37, 700, function(v) Lighting.Ambient = Color3.fromRGB(v, v, v) end, "ambient")
 
 
@@ -1867,6 +1878,202 @@ game:GetService("ReplicatedStorage").Packages.Net["RF/Rebirth/RequestRebirth"]:I
    end)
  end
 end)
+
+
+--Dectetar bases Mascota más Fuerte
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+local workspace = game:GetService("Workspace")
+
+
+local function extractOwner(text)
+    local name = text:match("^(.-)'s Base$") or text:match("^(.-) Base$") or text
+    if name and name:lower():find("empty") then return nil end
+    return name
+end
+
+local function parseGenerate(text)
+    local numPart, suffix = text:match("([%d%.]+)([KMB]?)")
+    local num = tonumber(numPart) or 0
+    if suffix == "K" then num = num * 1e3
+    elseif suffix == "M" then num = num * 1e6
+    elseif suffix == "B" then num = num * 1e9
+    end
+    return num
+end
+
+local function findStrongestPet()
+    local maxGenerate = -math.huge
+    local strongestPetData = nil
+    local plotsFolder = workspace:FindFirstChild("Plots")
+    if not plotsFolder then return nil end
+    for _, plot in ipairs(plotsFolder:GetChildren()) do
+        local sign = plot:FindFirstChild("PlotSign")
+        if not sign then continue end
+        local surfaceGui = sign:FindFirstChildWhichIsA("SurfaceGui")
+        if not surfaceGui then continue end
+        local frame = surfaceGui:FindFirstChild("Frame")
+        if not frame then continue end
+        local ownerName = extractOwner(frame:FindFirstChildWhichIsA("TextLabel") and frame:FindFirstChildWhichIsA("TextLabel").Text)
+        if not ownerName then continue end
+        if ownerName == LocalPlayer.DisplayName then continue end
+        local animalPodiums = plot:FindFirstChild("AnimalPodiums")
+        if not animalPodiums then continue end
+        for _, podium in ipairs(animalPodiums:GetChildren()) do
+            local spawn = podium.Base and podium.Base:FindFirstChild("Spawn")
+            if not spawn then continue end
+            local attachment = spawn:FindFirstChild("Attachment")
+            if not attachment then continue end
+            local animalOverhead = attachment:FindFirstChild("AnimalOverhead")
+            if not animalOverhead then continue end
+            local generateLabel = animalOverhead:FindFirstChild("Generation")
+            local displayNameLabel = animalOverhead:FindFirstChild("DisplayName")
+            if generateLabel and displayNameLabel and generateLabel:IsA("TextLabel") and displayNameLabel:IsA("TextLabel") then
+                local genValue = parseGenerate(generateLabel.Text)
+                if genValue > maxGenerate then
+                    maxGenerate = genValue
+                    strongestPetData = { name = displayNameLabel.Text, generateText = generateLabel.Text, part = spawn }
+                end
+            end
+        end
+    end
+    return strongestPetData
+end
+
+local function createPetBillboard(petData)
+    if not petData or not petData.part then return end
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "StrongestPetBillboard"
+    billboard.Adornee = petData.part
+    billboard.Size = UDim2.new(0, 150, 0, 50)
+    billboard.StudsOffset = Vector3.new(0, 3, 0)
+    billboard.AlwaysOnTop = true
+    billboard.LightInfluence = 0
+    billboard.Parent = petData.part
+    local textLabel = Instance.new("TextLabel", billboard)
+    textLabel.BackgroundTransparency = 1
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.TextColor3 = Color3.new(1, 1, 1)
+    textLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
+    textLabel.TextStrokeTransparency = 0
+    textLabel.Font = Enum.Font.SourceSansBold
+    textLabel.TextScaled = true
+    textLabel.Text = petData.name .. " | " .. petData.generateText
+    billboard.Enabled = getIsActive10()
+    return billboard
+end
+
+local function createLockBillboard(plot, bill)
+    local lockGui = Instance.new("BillboardGui", plot)
+    lockGui.Name = "LockUI"
+    lockGui.Adornee = plot
+    lockGui.Size = UDim2.new(0, 150, 0, 30)
+    lockGui.StudsOffset = Vector3.new(0, 10, 0)
+    lockGui.AlwaysOnTop = true
+    lockGui.MaxDistance = 500
+    local lockLabel = Instance.new("TextLabel", lockGui)
+    lockLabel.Size = UDim2.new(1, 0, 1, 0)
+    lockLabel.BackgroundTransparency = 1
+    lockLabel.TextScaled = true
+    lockLabel.Font = Enum.Font.SourceSansBold
+    lockLabel.TextColor3 = Color3.new(1, 1, 1)
+    lockLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
+    lockLabel.TextStrokeTransparency = 0
+    lockLabel.Text = "🔒 Lock: --"
+    lockGui.Enabled = getIsActive10()
+    RunService.RenderStepped:Connect(function()
+        local text = bill.Text
+        local numStr = text:match("(%d+%.?%d*)") or text:match("(%d+)")
+        local num = tonumber(numStr)
+        if num then
+            lockLabel.Text = "🔒 Lock: " .. num
+        end
+        lockGui.Enabled = getIsActive10()
+    end)
+end
+
+local function updateLockForPlot(plot)
+    local existingLock = plot:FindFirstChild("LockUI")
+    if existingLock then existingLock:Destroy() end
+    local sign = plot:FindFirstChild("PlotSign")
+    if not sign then return end
+    local surfaceGui = sign:FindFirstChildWhichIsA("SurfaceGui")
+    if not surfaceGui then return end
+    local frame = surfaceGui:FindFirstChild("Frame")
+    if not frame then return end
+    local ownerName = extractOwner(frame:FindFirstChildWhichIsA("TextLabel") and frame:FindFirstChildWhichIsA("TextLabel").Text)
+    if not ownerName then return end
+    if ownerName == LocalPlayer.DisplayName then return end
+    local purchases = plot:FindFirstChild("Purchases")
+    local main = purchases and purchases:FindFirstChild("PlotBlock") and purchases.PlotBlock:FindFirstChild("Main")
+    local bill = main and main:FindFirstChild("BillboardGui") and main.BillboardGui:FindFirstChild("RemainingTime")
+    if bill and bill:IsA("TextLabel") then
+        createLockBillboard(plot, bill)
+    end
+end
+
+local function listenPlotChanges(plot)
+    plot.ChildAdded:Connect(function(child)
+        if child.Name == "PlotSign" or child.Name == "Purchases" then
+            updateLockForPlot(plot)
+        end
+    end)
+    plot.ChildRemoved:Connect(function(child)
+        if child.Name == "PlotSign" or child.Name == "Purchases" then
+            updateLockForPlot(plot)
+        end
+    end)
+    local sign = plot:FindFirstChild("PlotSign")
+    if sign then
+        local surfaceGui = sign:FindFirstChildWhichIsA("SurfaceGui")
+        if surfaceGui then
+            local frame = surfaceGui:FindFirstChild("Frame")
+            if frame then
+                for _, textLabel in ipairs(frame:GetChildren()) do
+                    if textLabel:IsA("TextLabel") then
+                        textLabel.Changed:Connect(function()
+                            updateLockForPlot(plot)
+                        end)
+                    end
+                end
+            end
+        end
+    end
+end
+
+local function processLocksDynamic()
+    local plots = workspace:FindFirstChild("Plots")
+    if not plots then return end
+    for _, plot in ipairs(plots:GetChildren()) do
+        updateLockForPlot(plot)
+        listenPlotChanges(plot)
+    end
+    plots.ChildAdded:Connect(function(newPlot)
+        updateLockForPlot(newPlot)
+        listenPlotChanges(newPlot)
+    end)
+end
+
+local currentPetGui = nil
+
+RunService.Heartbeat:Connect(function()
+    local success, petData = pcall(findStrongestPet)
+    if success and petData then
+        if not currentPetGui or currentPetGui.Adornee ~= petData.part then
+            if currentPetGui then currentPetGui:Destroy() end
+            currentPetGui = createPetBillboard(petData)
+        end
+        if currentPetGui then currentPetGui.Enabled = getIsActive10() end
+    else
+        if currentPetGui then
+            currentPetGui:Destroy()
+            currentPetGui = nil
+        end
+    end
+end)
+
+processLocksDynamic()
 
 task.spawn(function()
     while wait(.4) do
