@@ -186,6 +186,13 @@ local function verificarClave(clave)
     return false, "❌ Clave inválida"
 end
 
+
+if estaEnJuegoPermitido() then
+    warn("🎉 Jugador premiado y en juego permitido. Ejecutando sin pedir clave.")
+    ejecutarScriptPremium()
+    return
+end
+
 if isfile(keyFile) then
     local success, content = pcall(readfile, keyFile)
     if success then
