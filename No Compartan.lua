@@ -210,6 +210,25 @@ if isfile(keyFile) then
     end
 end
 
+
+local juegosConClave = {
+    -- Dragon Ball Ultimate
+    [3311165597] = true,
+    -- Muscle Legends
+    [5151400895] = true,
+    -- Speed of Legends
+    [3101667897] = true,
+    [3276265788] = true,
+    -- Steal a Brainrot
+    [109983668079237] = true,
+}
+
+
+if not juegosConClave[game.PlaceId] then
+    warn("🔒 Juego no requiere clave. Menú no cargado.")
+    return
+end
+
 if game.CoreGui:FindFirstChild("KeyLinkGui") then
     game.CoreGui.KeyLinkGui:Destroy()
 end
