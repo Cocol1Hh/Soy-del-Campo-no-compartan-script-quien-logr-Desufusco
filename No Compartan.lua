@@ -12,8 +12,8 @@ local hosts = {
 }
 
 local juegosPermitidos = {
-    ["TuNombreDeUsuario"] = {12345678, 87654321},
-    ["OtroJugador"] = {1111111111}
+    ["FrivUpd"] = {3311165597, 5151400895},
+    ["Azeldex"] = {3311165597, 5151400895}
 }
 
 local setClipboard = setclipboard or toclipboard or function(text) print("Link:", text) end
