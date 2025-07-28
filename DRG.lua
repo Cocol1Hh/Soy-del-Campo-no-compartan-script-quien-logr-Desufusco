@@ -491,7 +491,13 @@ Siguiente.MouseButton1Click:Connect(function()
 end)
 
 button.MouseButton1Click:Connect(function()
-    lplr.Character.Humanoid:ChangeState(15)
+	Ex.equipskill:InvokeServer("Godly SSJ2")
+delay(0.5, function()
+	lplr.Character.Humanoid:ChangeState(15)
+	delay(5, function()
+		game.ReplicatedStorage.Package.Events.Higoober:InvokeServer()
+	end)
+end)
 end)
 
 Mix.MouseButton1Click:Connect(function()
@@ -1031,22 +1037,21 @@ function getRebirthRequirement()
     return number or 0
 end
 
-
-
 task.spawn(function()
-    while true do
-        pcall(function()
-            local fuerzaActual = yo()
-            local rebirthReq = getRebirthRequirement()
-               if getIsActive3() and player() and Congela() then
-            if fuerzaActual >= rebirthReq and fuerzaActual < rebirthReq * 2 then
-                Ex.reb:InvokeServer()
-                end
-            end
-        end)
-        task.wait(.3)
-    end
+	while true do
+		pcall(function()
+			local fuerzaActual = yo()
+			local rebirthReq = getRebirthRequirement()
+			if getIsActive3() and player() and Congela() then
+				if fuerzaActual >= rebirthReq and fuerzaActual < rebirthReq * 2 then
+game.ReplicatedStorage.Package.Events.d:InvokeServer()
+				end
+			end
+		end)
+		task.wait(0.3)
+	end
 end)
+
 
 task.spawn(function()
     while true do
@@ -1105,16 +1110,16 @@ task.spawn(function()
 
 
 local npcList = {	
-	{"Wukong (MUI)", 2.975e9, true},
-    {"Vekuta (SSJBUI)", 2.375e9, true},
-    {"Wukong Rose", 1.65e9, true},
-    {"Vekuta (LBSSJ4)", 1.05e9, true},
-    {"Wukong (LBSSJ4)", 950e6, true},
-    {"Vegetable (LBSSJ4)", 650e6, true},
-    {"Vis (20%)", 500e6, true},
-    {"Vills (50%)", 350e6, true},
-    {"Wukong (Omen)", 200e6, true},
-    {"Vegetable (GoD in-training)", 130e6, true},
+	{"Wukong (MUI)", 15.975e9, true},
+    {"Vekuta (SSJBUI)", 6.375e9, true},
+    {"Wukong Rose", 4.65e9, true},
+    {"Vekuta (LBSSJ4)", 3.05e9, true},
+    {"Wukong (LBSSJ4)", 2e9, true},
+    {"Vegetable (LBSSJ4)", 950e6, true},
+    {"Vis (20%)", 700e6, true},
+    {"Vills (50%)", 450e6, true},
+    {"Wukong (Omen)", 250e6, true},
+    {"Vegetable (GoD in-training)", 150e6, true},
     {"SSJG Kakata", 130e6, true},
     {"Broccoli", 45.5e6, true},
     {"SSJB Wukong", 6e6, true},
@@ -1176,10 +1181,6 @@ if getIsActive1() and player()  then
 end) 
 
 
-local lplr = game.Players.LocalPlayer
-local backpack = lplr:WaitForChild("Backpack")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local equipSkillEvent = ReplicatedStorage:WaitForChild("Package"):WaitForChild("Events"):WaitForChild("equipskill")
 
 local habilidades = {
     { name = "Wolf Fang Fist", requerimiento = 5000 },
@@ -1190,10 +1191,11 @@ local habilidades = {
 }
 
 local equipadas = {}
-
 local function equipToolByName(toolName)
-    spawn(function()
-        equipSkillEvent:InvokeServer(toolName)
+    task.spawn(function()
+    pcall(function()
+        game:GetService("ReplicatedStorage"):WaitForChild("Package"):WaitForChild("Events"):WaitForChild("equipskill"):InvokeServer(toolName)
+        end)
     end)
 end
 
@@ -1223,10 +1225,10 @@ end
 task.spawn(function()
     while true do
         pcall(function()
-            if data.Quest.Value ~= "" then
+            if data.Quest.Value ~= "" and player() then
             if lplr.Status.Transformation.Value ~= "None" then   
             task.spawn(function()
-                for _, tool in ipairs(backpack:GetChildren()) do
+                for _, tool in ipairs(lplr:WaitForChild("Backpack"):GetChildren()) do
                     if tool:IsA("Tool") then
                         if not isInHabilidades(tool.Name) then
                             tool:Destroy()
@@ -1256,6 +1258,7 @@ end)
 task.spawn(function()
     while true do
         pcall(function()
+        if player() then 
             local stats = yo()
             for _, info in ipairs(habilidades) do
                 if stats >= info.requerimiento and not equipadas[info.name] then
@@ -1263,8 +1266,9 @@ task.spawn(function()
                     equipadas[info.name] = true
                 end
             end
+            end
         end)
-        task.wait(.5)
+        task.wait()
     end
 end)
 
