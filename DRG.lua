@@ -495,7 +495,11 @@ button.MouseButton1Click:Connect(function()
 delay(0.5, function()
 	lplr.Character.Humanoid:ChangeState(15)
 	delay(5, function()
-		game.ReplicatedStorage.Package.Events.Higoober:InvokeServer()
+		if game.PlaceId == 3311165597 then
+            game.ReplicatedStorage.Package.Events.Higoober:InvokeServer()
+            elseif game.PlaceId ~= 3311165597 then 
+            Ex.ta:InvokeServer()
+            end 
 	end)
 end)
 end)
@@ -743,12 +747,17 @@ function checkplr()
     if not found then return table end
 end
 
+local lastWasDead = false
 function player()
 	if lplr.Character and lplr.Character:FindFirstChild("Humanoid") then
 		if lplr.Character.Humanoid.Health > 0 and lplr.Character:FindFirstChild("HumanoidRootPart") then
+			lastWasDead = false
 			return true
 		else
-			data.Quest.Value = ""
+			if not lastWasDead then
+				data.Quest.Value = ""
+				lastWasDead = true
+			end
 		end
 	end
 	return false
@@ -904,14 +913,22 @@ task.spawn(function()
                    if Ex.equipskill:InvokeServer(form) then break end  
              end
         if status and status.SelectedTransformation.Value ~= status.Transformation.Value then
+            if game.PlaceId == 3311165597 then
             game.ReplicatedStorage.Package.Events.Higoober:InvokeServer()
+            elseif game.PlaceId ~= 3311165597 then 
+            Ex.ta:InvokeServer()
+            end 
             end                
          end      
          if not getIsActive11() and not getIsActive12()  and selectedForm and not transforming and lplr.Status.Transformation.Value ~= selectedForm  then
                   transforming = true
                     pcall(function()
                 if Ex.equipskill:InvokeServer(selectedForm) then
-                    game.ReplicatedStorage.Package.Events.Higoober:InvokeServer()
+                    if game.PlaceId == 3311165597 then
+            game.ReplicatedStorage.Package.Events.Higoober:InvokeServer()
+            elseif game.PlaceId ~= 3311165597 then 
+            Ex.ta:InvokeServer()
+            end 
                     end
                   end)
                 transforming = false
@@ -945,7 +962,11 @@ task.spawn(function()
                    if Ex.equipskill:InvokeServer(form) then break end  
              end
         if status and status.SelectedTransformation.Value ~= status.Transformation.Value then
+        if game.PlaceId == 3311165597 then
             game.ReplicatedStorage.Package.Events.Higoober:InvokeServer()
+            elseif game.PlaceId ~= 3311165597 then 
+            Ex.ta:InvokeServer()
+            end 
             end                
          end      
       end)
@@ -960,19 +981,24 @@ local lplr = game.Players.LocalPlayer
 task.spawn(function()
 	while true do
 		pcall(function()
-		if getIsActive1() and player() and Congela() then 
-		if lplr.Status.Transformation.Value ~= "None" then   
-			local player = workspace.Living:FindFirstChild(lplr.Name)
-			if player then			
-				local ki = player.Stats.Ki
-				local maxKi = ki.MaxValue
-				local currentKi = ki.Value
+			if getIsActive1() and player() and Congela() then 
+				local player = workspace.Living:FindFirstChild(lplr.Name)
+				if player then
+					local ki = player.Stats.Ki
+					local maxKi = ki.MaxValue
+					local currentKi = ki.Value
+					local transform = lplr.Status.Transformation.Value
 
-				if currentKi <= maxKi * 0.70 then
-					game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")
+					if transform ~= "None" then
+						if currentKi <= maxKi * 0.70 then
+							game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")
+						end
+					else
+						if currentKi <= maxKi * 0.15 then
+							game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer("/charge", "All")
+						end
+					end
 				end
-			end
-			end
 			end
 		end)
 		task.wait()
@@ -1082,7 +1108,7 @@ task.spawn(function()
             pcall(function()
             task.spawn(function()
             if player() and game.PlaceId == 3311165597 and getIsActive1() then
-                 if data.Quest.Value ~= "X Fighter Trainer" and yo() <= 70000 then
+                 if data.Quest.Value ~= "X Fighter Trainer" and yo() <= 39000 then
                  local npc = workspace.Others.NPCs["X Fighter Trainer"]
                     lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)
                        local args = {
@@ -1131,6 +1157,7 @@ local npcList = {
     {"Mapa", 498000, true},
     {"Radish", 105000, true},
     {"Kid Nohag", 70000, true},
+    {"Klirin", 39000, true}
 }
     
     
@@ -1225,7 +1252,7 @@ end
 task.spawn(function()
     while true do
         pcall(function()
-            if data.Quest.Value ~= "" and player() then
+            if data.Quest.Value ~= "" and player() and getIsActive1() then
             if lplr.Status.Transformation.Value ~= "None" then   
             task.spawn(function()
                 for _, tool in ipairs(lplr:WaitForChild("Backpack"):GetChildren()) do
@@ -1471,34 +1498,27 @@ end)
 
 --REQUISITOS LEER
 local npcList = {
-    {"Kid Nohag", 17801},
-    {"Klirin", 90551},
-    {"Roshi", 130071},
-    {"Radish", 200000},
-    {"Mapa", 750000},
-    {"Lord Sloog", 7000000},
-    {"Chilly", 75000000},
-    {"Perfect Atom", 110000000},
-    {"Z Broccoli", 190000000},
-    {"Super Boo", 350000000},
-    {"Kakata (SSJ)", 530000000},
-    {"Vills (1%)", 700000000},
-    {"Gold Chilly", 990000000},
-    {"Merged Zamas", 1e9},
-    {"Broccoli", 2e9},
-    {"Jiran The Gray", 7e9},
-    {"Vegetable (Ultra Ego)", 9e9},
-    {"Black Chilly", 15e9},
-    {"Vills (True God of Destruction)", 25e9},
-    {"Vis (Ultra Instinct)", 35e9},
-    {"Xicor", 46e9},
-    {"Wukong (SSJB3)", 75e9},
-    {"Wukong True God", 100e9},
-    {"Kakata (Ego Instinct)", 150e9},
-    {"Ego Instinct Kakata (Buu absorbed)", 396e9},
-    {"Wukong Seraphim", 1.5e12},
-    {"Seraphim of Destruction Vegetable", 2.3e12},
-    {"Ultra Vekuta", 5e12}
+	{"Kid Nohag", 70000, true},
+	{"Radish", 105000, true},
+	{"Mapa", 498000, true},
+	{"Super Vegetable", 758000, true},
+	{"Chilly", 1550000, true},
+	{"Perfect Atom", 2075000, true},
+	{"SSJ2 Wukong", 2950000, true},
+	{"Kai-fist Master", 3725000, true},
+	{"SSJB Wukong", 6e6, true},
+	{"Broccoli", 45.5e6, true},
+	{"SSJG Kakata", 130e6, true},
+	{"Vegetable (GoD in-training)", 150e6, true},
+	{"Wukong (Omen)", 250e6, true},
+	{"Vills (50%)", 450e6, true},
+	{"Vis (20%)", 700e6, true},
+	{"Vegetable (LBSSJ4)", 950e6, true},
+	{"Wukong (LBSSJ4)", 2e9, true},
+	{"Vekuta (LBSSJ4)", 3.05e9, true},
+	{"Wukong Rose", 4.65e9, true},
+	{"Vekuta (SSJBUI)", 6.375e9, true},
+	{"Wukong (MUI)", 15.975e9, true},
 }
 
 
