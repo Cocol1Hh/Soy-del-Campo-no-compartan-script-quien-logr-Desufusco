@@ -12,7 +12,7 @@ local hosts = {
 }
 
 local juegosPermitidos = {
-    ["FrivUpd"] = {3311165597, 5151400895, 109983668079237},
+    ["FrivUpd"] = {3311165597, 5151400895, 109983668079237, 11063612131},
     ["Azeldex"] = {3311165597, 5151400895}
 }
 
@@ -82,6 +82,7 @@ local function ejecutarScriptPremium()
     local MLGD_IDS = {3623096087}
     local Speed_IDS = {3101667897, 3276265788}
     local Brainrot_IDS = {109983668079237}
+    local Jump_IDS = {11063612131}
 
     local StarterGui = game:GetService("StarterGui")
 
@@ -130,7 +131,17 @@ local function ejecutarScriptPremium()
             end)
         end
     end)
-end
+    
+    task.spawn(function()
+        if table.find(Jump_IDS, id) then
+            notificar("Every Second You Get +1 Jump")
+            pcall(function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Campo-no-compartan-script-quien-logr-Desufusco/refs/heads/main/Jump.lua"))()
+            end)
+        end
+    end)
+end--Fin de function ejecutarScriptPremium()
+
     
 
 local function generateKeyLink()
@@ -221,6 +232,8 @@ local juegosConClave = {
     [3276265788] = true,
     -- Steal a Brainrot
     [109983668079237] = true,
+    -- Every Second You Get +1 Jump
+    [11063612131] = true,
 }
 
 
