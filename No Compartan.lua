@@ -12,7 +12,7 @@ local hosts = {
 }
 
 local juegosPermitidos = {
-    ["FrivUpd"] = {3311165597, 5151400895, 109983668079237, 11063612131},
+    ["FrivUpd"] = {3311165597, 5151400895,  109983668079237, 11063612131, 12742233841, 3623096087},
     ["Azeldex"] = {3311165597, 5151400895}
 }
 
@@ -83,6 +83,7 @@ local function ejecutarScriptPremium()
     local Speed_IDS = {3101667897, 3276265788}
     local Brainrot_IDS = {109983668079237}
     local Jump_IDS = {11063612131}
+    local SpeedV2_IDS = {12742233841}
 
     local StarterGui = game:GetService("StarterGui")
 
@@ -137,6 +138,15 @@ local function ejecutarScriptPremium()
             notificar("Every Second You Get +1 Jump")
             pcall(function()
                 loadstring(game:HttpGet("https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Campo-no-compartan-script-quien-logr-Desufusco/refs/heads/main/Jump.lua"))()
+            end)
+        end
+    end)
+    
+    task.spawn(function()
+        if table.find(SpeedV2_IDS, id) then
+            notificar("Every Second You Get +1 Speed")
+            pcall(function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Campo-no-compartan-script-quien-logr-Desufusco/refs/heads/main/Correrv2.lua"))()
             end)
         end
     end)
@@ -234,6 +244,8 @@ local juegosConClave = {
     [109983668079237] = true,
     -- Every Second You Get +1 Jump
     [11063612131] = true,
+    -- Every Second You Get +1 Speed
+    [12742233841] = true,
 }
 
 
