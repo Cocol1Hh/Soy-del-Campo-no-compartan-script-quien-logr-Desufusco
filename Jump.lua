@@ -77,7 +77,7 @@ TextLabel.TextScaled = true
 
 local textLabel = Instance.new("TextLabel")
 textLabel.Parent = Frame
-textLabel.Size = UDim2.new(1, 0, 1, 0)
+textLabel.Size = UDim2.new(0.9, 0, 1, 0)
 textLabel.Position = UDim2.new(0, 0, 0, 0)
 textLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 textLabel.BackgroundTransparency = 1
