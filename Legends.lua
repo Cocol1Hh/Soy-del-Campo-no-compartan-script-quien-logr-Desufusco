@@ -879,9 +879,13 @@ task.spawn(function()
               else          
                 if distancia <= 5  then
                 task.spawn(function()
-            if hum.MoveDirection.Magnitude == 0 then
-                hum:Move(Vector3.new(0, 0, -1), true)
-                          end
+					game:GetService("RunService").Heartbeat:Connect(function()
+					if getIsActive6() then
+						    local p=game.Players.LocalPlayer
+						    local c=p.Character or p.CharacterAdded:Wait()
+						    c:WaitForChild("Humanoid"):Move(c.HumanoidRootPart.CFrame.LookVector,true)
+						   end 
+						end)	    
                        end)
                    end
                 end
