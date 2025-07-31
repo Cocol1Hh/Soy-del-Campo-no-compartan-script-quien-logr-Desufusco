@@ -273,33 +273,53 @@ end)
 
 --incio de color txt\/
 local textProperties = {
-    {text = "Farm", position = UDim2.new(-0.155 + 0, 0, 0.115, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Spin", position = UDim2.new(0.350 + 0, 0, 0.115, 0), color = Color3.fromRGB(0, 255, 0), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Reb|Stats", position = UDim2.new(-0.160 + 0.170, 0, 0.195, 0), color = Color3.fromRGB(0, 255, 255), parent = Barra1, size = UDim2.new(0, 75, 0, 36)},
-    {text = "Gift", position = UDim2.new(0.360 + 0, 0, 0.195, 0), color = Color3.fromRGB(0, 0, 255), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Pets", position = UDim2.new(-0.160 + 0, 0, 0.270, 0), color = Color3.fromRGB(255, 255, 0), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Equip", position = UDim2.new(0.350 + 0, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 255), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Jump", position = UDim2.new(-0.04 + 0, 0, 0.320, 0), color = Color3.fromRGB(200, 200, 200), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Brillo", position = UDim2.new(0.473 + 0, 0, 0.320, 0), color = Color3.fromRGB(180, 200, 100), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Duck", position = UDim2.new(-0.160 + 0, 0, 0.420, 0), color = Color3.fromRGB(200, 100, 200), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "PestTP", position = UDim2.new(0.350 + 0, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Pets", position = UDim2.new(-0.160 + 0, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Speed", position = UDim2.new(0.350 + 0.170, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 80, 0, 36)},
-    {text = "Goal", position = UDim2.new(-0.140 + 0, 0, 0.570, 0), color = Color3.fromRGB(200, 200, 90), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "F|Vip", position = UDim2.new(0.360 + 0.1, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 120, 0, 36)},
+    {text = "Farm", position = UDim2.new(0.010, 0, 0.115, 0), color = Color3.fromRGB(255, 0, 0)},
+    {text = "Spin", position = UDim2.new(0.520, 0, 0.115, 0), color = Color3.fromRGB(0, 255, 0)},
+    {text = "Reb|Stats", position = UDim2.new(0.010, 0, 0.195, 0), color = Color3.fromRGB(0, 255, 255)},
+    {text = "Gift", position = UDim2.new(0.520, 0, 0.195, 0), color = Color3.fromRGB(0, 0, 255)},
+    {text = "Pets", position = UDim2.new(0.010, 0, 0.270, 0), color = Color3.fromRGB(255, 255, 0)},
+    {text = "Equip", position = UDim2.new(0.520, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 255)},
+    {text = "Jump", position = UDim2.new(0.1, 0, 0.320, 0), color = Color3.fromRGB(200, 200, 200)},
+    {text = "Speed", position = UDim2.new(0.653, 0, 0.320, 0), color = Color3.fromRGB(180, 200, 100)},
+    {text = "Duck", position = UDim2.new(0.010, 0, 0.420, 0), color = Color3.fromRGB(200, 100, 200)},
+    {text = "PestTP", position = UDim2.new(0.520, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70)},
+    {text = "NoTouch", position = UDim2.new(0.010, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100)},
+    {text = "Mortal", position = UDim2.new(0.520, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100)},
+    {text = "Goal", position = UDim2.new(0.010, 0, 0.570, 0), color = Color3.fromRGB(200, 200, 90)},
+    {text = "F|Vip", position = UDim2.new(0.520, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100)},
 }
 
+local uniformSize = UDim2.new(0, 75, 0, 36)
+
 for _, props in pairs(textProperties) do
+    local Frame = Instance.new("Frame")
+    Frame.Parent = Barra1
+    Frame.BackgroundTransparency = 1
+    Frame.Size = uniformSize
+    Frame.Position = props.position
+    Frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    Frame.BorderSizePixel = 0
+    Frame.ClipsDescendants = true
+
+    if props.position.X.Scale < 0 then
+        Frame.Position = UDim2.new(0.001, 0, props.position.Y.Scale, 0)
+    end
+
     local TextLabel = Instance.new("TextLabel")
-    TextLabel.Parent = props.parent
-    TextLabel.Size = props.size
-    TextLabel.Position = props.position
+    TextLabel.Parent = Frame
+    TextLabel.Size = UDim2.new(1, 0, 1, 0) 
+    TextLabel.Position = UDim2.new(0, 0, 0, 0)
     TextLabel.BackgroundTransparency = 1
     TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
     TextLabel.TextStrokeColor3 = props.color
     TextLabel.TextStrokeTransparency = 0
     TextLabel.Text = props.text
-    TextLabel.TextScaled = true
+    TextLabel.TextScaled = true 
+    TextLabel.TextWrapped = true 
+    TextLabel.Font = Enum.Font.SourceSansBold
+    TextLabel.TextXAlignment = Enum.TextXAlignment.Center 
+    TextLabel.TextYAlignment = Enum.TextYAlignment.Center 
+    TextLabel.TextSize = 50
 end
  --Fin del color txt/\
  
@@ -532,7 +552,28 @@ task.spawn(function()
         task.wait()
     end
 end)
-createBar(0.513, "Ambient", Color3.fromRGB(0, 255, 0), 0.37, 700, function(v) Lighting.Ambient = Color3.fromRGB(v, v, v) end, "ambient")
+
+local originalSpeed = nil
+createBar(0.513, "Speed", Color3.fromRGB(0, 255, 0), 0.37, 200, function(v)
+    if originalSpeed == nil then
+        local char = lplr.Character or lplr.CharacterAdded:Wait()
+        local hum = char:FindFirstChild("Humanoid")
+        if hum then
+            originalSpeed = hum.WalkSpeed
+        end
+    end
+    speed = (v == 0 and originalSpeed) or v    
+    task.spawn(function()
+        while true do
+            task.wait()
+            local char = lplr.Character or lplr.CharacterAdded:Wait()
+            local hum = char:FindFirstChild("Humanoid")
+            if hum then
+                hum.WalkSpeed = speed
+            end
+        end
+    end)
+end, "Speed")
 
 
 
@@ -667,7 +708,7 @@ end)
     while task.wait(.5) do
     pcall(function()  
     if getIsActive2() then
-game:GetService("ReplicatedStorage").SpinFolder.Spin:FireServer()
+game:GetService("ReplicatedStorage"):WaitForChild("SpinFolder"):WaitForChild("Spin"):FireServer()
          end
      end)
   end
@@ -688,7 +729,7 @@ task.spawn(function()
     pcall(function()  
     if getIsActive4() then
 for i = 1, 15 do
-    game:GetService("ReplicatedStorage").Recv:InvokeServer("TimeGift", tostring(i))
+    game:GetService("ReplicatedStorage"):WaitForChild("Recv"):InvokeServer("TimeGift", tostring(i))
             end
          end
      end)
@@ -744,82 +785,85 @@ end)
 
 
 
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local evento = ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("EggOpened")
-local lplr = Players.LocalPlayer
 
 local huevos = {
-    {nombre = "Heaven", requisito = 5000},
-    {nombre = "Beach", requisito = 4000},
-    {nombre = "Steampunk", requisito = 3000},
-    {nombre = "Candy", requisito = 2000},
-    {nombre = "Forest", requisito = 1200},
-    {nombre = "Desert", requisito = 500},
-    {nombre = "Void", requisito = 300},
-    {nombre = "Dark", requisito = 150},
-    {nombre = "Godly", requisito = 80},
-    {nombre = "Mythical", requisito = 40},
-    {nombre = "Legendary", requisito = 20},
-    {nombre = "Epic", requisito = 10},
-    {nombre = "Pro", requisito = 8},
-    {nombre = "Rare", requisito = 3},
-    {nombre = "Starter", requisito = 2},
     {nombre = "Noob", requisito = 1},
+    {nombre = "Starter", requisito = 2},
+    {nombre = "Rare", requisito = 3},
+    {nombre = "Pro", requisito = 8},
+    {nombre = "Epic", requisito = 10},
+    {nombre = "Legendary", requisito = 20},
+    {nombre = "Mythical", requisito = 40},
+    {nombre = "Godly", requisito = 80},
+    {nombre = "Dark", requisito = 150},
+    {nombre = "Void", requisito = 300},
+    {nombre = "Desert", requisito = 500},
+    {nombre = "Forest", requisito = 1200},
+    {nombre = "Candy", requisito = 2000},
+    {nombre = "Steampunk", requisito = 3000},
+    {nombre = "Beach", requisito = 4000},
+    {nombre = "Heaven", requisito = 5000},
 }
+
 
 task.spawn(function()
     while true do
-    if getIsActive10() then      
-        local lplrChar = lplr.Character
-        local hrp = lplrChar and lplrChar:FindFirstChild("HumanoidRootPart")
-        if not hrp then
-            task.wait(1)
-            continue
-        end
-
-        local wins = lplr:WaitForChild("leaderstats"):WaitForChild("Wins").Value
-        local disponibles = {}
-        for _, huevo in ipairs(huevos) do
-            if wins >= huevo.requisito then
-                table.insert(disponibles, huevo)
+    pcall(function()
+    if getIsActive8() then
+        local wins = lplr.leaderstats:FindFirstChild("Wins")
+        if wins then
+            local disponibles = {}
+            for _, huevo in ipairs(huevos) do
+                if wins.Value >= huevo.requisito then
+                    table.insert(disponibles, huevo)
+                end
             end
-        end
-
-        table.sort(disponibles, function(a, b)
-            return a.requisito > b.requisito
-        end)
-
-        local top = {}
-        for i = 1, math.min(4, #disponibles) do
-            table.insert(top, disponibles[i])
-        end
-
-        table.sort(top, function(a, b)
-            return a.requisito < b.requisito
-        end)
-
-        for _, huevo in ipairs(top) do
-            wins = lplr:WaitForChild("leaderstats"):WaitForChild("Wins").Value
-            if wins >= huevo.requisito then
-                local obj = workspace:FindFirstChild("Eggs") and workspace.Eggs:FindFirstChild(huevo.nombre)
-                if obj and obj:FindFirstChild("UIanchor") and getIsActive6() then
-                    hrp.CFrame = obj.UIanchor.CFrame + Vector3.new(0, 3, 0)
-                    local t0 = tick()
-                    while tick() - t0 < 10 do
-                        task.spawn(function()
-                            pcall(function()
-                                evento:InvokeServer(huevo.nombre, "Single")
-                            end)
-                        end)
-                        task.wait()
+            local top = {}
+            for i = math.max(#disponibles - 3, 1), #disponibles do
+                table.insert(top, disponibles[i])
+            end
+            for _, huevo in ipairs(top) do
+                local obj = workspace:FindFirstChild("Eggs")
+                if obj and obj:FindFirstChild(huevo.nombre) then
+                    local pos = obj[huevo.nombre]:FindFirstChild("PriceBrick")
+                    if pos then
+                        lplr.Character:PivotTo(pos.CFrame + Vector3.new(0, 3, 0))
+                        task.wait(10)
                     end
                 end
             end
         end
         end
+        end)
         task.wait()
     end
+end)
+
+task.spawn(function()
+    while task.wait() do
+    pcall(function()		
+    if getIsActive9() then
+         local char = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
+		char:WaitForChild("Humanoid").BreakJointsOnDeath = false
+		char:WaitForChild("Humanoid").Health = char.Humanoid.MaxHealth
+             end
+         end)
+    end
+end)
+
+task.spawn(function()
+	while task.wait() do
+	pcall(function()		
+	    if getIsActive10() then
+		local char = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
+		for _, v in pairs(char:GetDescendants()) do
+			if v:IsA("BasePart") then
+				v.CanCollide = false
+			end
+		end
+	    	end
+		 end)
+	end
 end)
    
 task.spawn(function()
