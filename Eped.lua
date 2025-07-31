@@ -20,6 +20,24 @@ local HttpService = game:GetService("HttpService")--Barra
 local Lighting = game:GetService("Lighting")--Barra
 local UserInputService = game:GetService("UserInputService")--Barra
 local lplr = game:GetService("Players").LocalPlayer
+local MarketplaceService = game:GetService("MarketplaceService")
+local fullName = MarketplaceService:GetProductInfo(game.PlaceId).Name
+
+local filteredName = fullName:gsub("%b[]", function(match)
+	local inner = match:sub(2, -2)
+	if inner:find("[%z\1-\127\194-\244][\128-\191]*") and not inner:find("[%w]") then
+		return inner
+	else
+		return ""
+	end
+end)
+
+filteredName = filteredName:gsub("%s%s+", " "):gsub("^%s+", ""):gsub("%s+$", ""):upper()
+if filteredName:sub(-1) == "." then
+	filteredName = filteredName:sub(1, -2)
+end
+
+
 
 Fernando.Name = "fffg"
 Fernando.Parent = game.CoreGui
@@ -49,13 +67,27 @@ Frame.Draggable = true
 TextLabel.Parent = Frame
 TextLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 TextLabel.Size = UDim2.new(1, 0, 1, 0)
-TextLabel.Text = "Speed Lengeds                          "
+TextLabel.Text = ""
 TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
 TextLabel.TextStrokeColor3 = Color3.fromRGB(0, 255, 0)
 TextLabel.TextSize = 14
 TextLabel.TextStrokeTransparency = 0
 TextLabel.TextScaled = true
 
+local textLabel = Instance.new("TextLabel")
+textLabel.Parent = Frame
+textLabel.Size = UDim2.new(0.9, 0, 1, 0)
+textLabel.Position = UDim2.new(0, 0, 0, 0)
+textLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+textLabel.BackgroundTransparency = 1
+textLabel.Text = filteredName
+textLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+textLabel.TextStrokeColor3 = Color3.fromRGB(0, 255, 0)
+textLabel.TextStrokeTransparency = 0
+textLabel.TextScaled = true
+textLabel.Font = Enum.Font.SourceSansBold
+textLabel.TextXAlignment = Enum.TextXAlignment.Left
+textLabel.TextYAlignment = Enum.TextYAlignment.Top
 
 Cuadro1.Parent = TextLabel
 Cuadro1.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -239,33 +271,53 @@ end)
 
 --incio de color txt\/
 local textProperties = {
-    {text = "Farm", position = UDim2.new(-0.155 + 0, 0, 0.115, 0), color = Color3.fromRGB(255, 0, 0), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Quets", position = UDim2.new(0.350 + 0, 0, 0.115, 0), color = Color3.fromRGB(0, 255, 0), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Reb|Stats", position = UDim2.new(-0.160 + 0.170, 0, 0.195, 0), color = Color3.fromRGB(0, 255, 255), parent = Barra1, size = UDim2.new(0, 75, 0, 36)},
-    {text = "Gift", position = UDim2.new(0.360 + 0, 0, 0.195, 0), color = Color3.fromRGB(0, 0, 255), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Orb", position = UDim2.new(-0.160 + 0, 0, 0.270, 0), color = Color3.fromRGB(255, 255, 0), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Hoop", position = UDim2.new(0.350 + 0, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 255), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Speed", position = UDim2.new(-0.04 + 0, 0, 0.320, 0), color = Color3.fromRGB(200, 200, 200), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Brillo", position = UDim2.new(0.473 + 0, 0, 0.320, 0), color = Color3.fromRGB(180, 200, 100), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Duck", position = UDim2.new(-0.160 + 0, 0, 0.420, 0), color = Color3.fromRGB(200, 100, 200), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Jump", position = UDim2.new(0.350 + 0, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Pets", position = UDim2.new(-0.160 + 0, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "Speed", position = UDim2.new(0.350 + 0.170, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 80, 0, 36)},
-    {text = "Goal", position = UDim2.new(-0.140 + 0, 0, 0.570, 0), color = Color3.fromRGB(200, 200, 90), parent = Barra1, size = UDim2.new(0, 200, 0, 36)},
-    {text = "F|Vip", position = UDim2.new(0.360 + 0.1, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100), parent = Barra1, size = UDim2.new(0, 120, 0, 36)},
+    {text = "Farm", position = UDim2.new(0.010, 0, 0.115, 0), color = Color3.fromRGB(255, 0, 0)},
+    {text = "Quets", position = UDim2.new(0.520, 0, 0.115, 0), color = Color3.fromRGB(0, 255, 0)},
+    {text = "Reb|Stats", position = UDim2.new(0.010, 0, 0.195, 0), color = Color3.fromRGB(0, 255, 255)},
+    {text = "Gift", position = UDim2.new(0.520, 0, 0.195, 0), color = Color3.fromRGB(0, 0, 255)},
+    {text = "Orb", position = UDim2.new(0.010, 0, 0.270, 0), color = Color3.fromRGB(255, 255, 0)},
+    {text = "Hoop", position = UDim2.new(0.520, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 255)},
+    {text = "Speed", position = UDim2.new(0.1, 0, 0.320, 0), color = Color3.fromRGB(200, 200, 200)},
+    {text = "Brillo", position = UDim2.new(0.653, 0, 0.320, 0), color = Color3.fromRGB(180, 200, 100)},
+    {text = "Duck", position = UDim2.new(0.010, 0, 0.420, 0), color = Color3.fromRGB(200, 100, 200)},
+    {text = "PetsEquip", position = UDim2.new(0.520, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70)},
+    {text = "Speed", position = UDim2.new(0.010, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100)},
+    {text = "Mortal", position = UDim2.new(0.520, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100)},
+    {text = "Goal", position = UDim2.new(0.010, 0, 0.570, 0), color = Color3.fromRGB(200, 200, 90)},
+    {text = "F|Vip", position = UDim2.new(0.520, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100)},
 }
 
+local uniformSize = UDim2.new(0, 75, 0, 36)
+
 for _, props in pairs(textProperties) do
+    local Frame = Instance.new("Frame")
+    Frame.Parent = Barra1
+    Frame.BackgroundTransparency = 1
+    Frame.Size = uniformSize
+    Frame.Position = props.position
+    Frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    Frame.BorderSizePixel = 0
+    Frame.ClipsDescendants = true
+
+    if props.position.X.Scale < 0 then
+        Frame.Position = UDim2.new(0.001, 0, props.position.Y.Scale, 0)
+    end
+
     local TextLabel = Instance.new("TextLabel")
-    TextLabel.Parent = props.parent
-    TextLabel.Size = props.size
-    TextLabel.Position = props.position
+    TextLabel.Parent = Frame
+    TextLabel.Size = UDim2.new(1, 0, 1, 0) 
+    TextLabel.Position = UDim2.new(0, 0, 0, 0)
     TextLabel.BackgroundTransparency = 1
     TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
     TextLabel.TextStrokeColor3 = props.color
     TextLabel.TextStrokeTransparency = 0
     TextLabel.Text = props.text
-    TextLabel.TextScaled = true
+    TextLabel.TextScaled = true 
+    TextLabel.TextWrapped = true 
+    TextLabel.Font = Enum.Font.SourceSansBold
+    TextLabel.TextXAlignment = Enum.TextXAlignment.Center 
+    TextLabel.TextYAlignment = Enum.TextYAlignment.Center 
+    TextLabel.TextSize = 50
 end
  --Fin del color txt/\
  
