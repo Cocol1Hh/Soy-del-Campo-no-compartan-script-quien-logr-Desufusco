@@ -12,7 +12,8 @@ local hosts = {
 }
 
 local juegosPermitidos = {
-    ["FrivUpd"] = {3311165597, 5151400895,  109983668079237, 11063612131, 12742233841, 3623096087},
+	                                     --DBU                                 
+    ["FrivUpd"] = {3311165597, 5151400895,  109983668079237, 11063612131, 12742233841, 3623096087, 117327625970270, 128696516339161},
     ["Azeldex"] = {3311165597, 5151400895}
 }
 
@@ -84,6 +85,8 @@ local function ejecutarScriptPremium()
     local Brainrot_IDS = {109983668079237}
     local Jump_IDS = {11063612131}
     local SpeedV2_IDS = {12742233841}
+    local Jump1_IDS = {117327625970270}
+    local SpeedV3_IDS = {128696516339161}
 
     local StarterGui = game:GetService("StarterGui")
 
@@ -119,7 +122,7 @@ local function ejecutarScriptPremium()
         if table.find(Speed_IDS, id) then
             notificar("Speed of Legends")
             pcall(function()
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Campo-no-compartan-script-quien-logr-Desufusco/refs/heads/main/Eped.lua"))()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Campo-no-compartan-script-quien-logr-Desufusco/refs/heads/main/Speed.lua"))()
             end)
         end
     end)
@@ -146,10 +149,31 @@ local function ejecutarScriptPremium()
         if table.find(SpeedV2_IDS, id) then
             notificar("Every Second You Get +1 Speed")
             pcall(function()
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Campo-no-compartan-script-quien-logr-Desufusco/refs/heads/main/Correrv2.lua"))()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Campo-no-compartan-script-quien-logr-Desufusco/refs/heads/main/Speed2.lua"))()
             end)
         end
     end)
+    
+    task.spawn(function()
+        if table.find(SpeedV3_IDS, id) then
+            notificar("Italian Brainrot Speed Clicker 🧠⚡")
+            pcall(function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Campo-no-compartan-script-quien-logr-Desufusco/refs/heads/main/Speed3.lua"))()
+            end)
+        end
+    end)
+    
+    
+    task.spawn(function()
+        if table.find(Jump1_IDS, id) then
+            notificar("Italian Brainrot Jump Clicker 🧠🚀")
+            pcall(function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/Cocol1Hh/Soy-del-Campo-no-compartan-script-quien-logr-Desufusco/refs/heads/main/Jump1.lua"))()
+            end)
+        end
+    end)
+    
+   
 end--Fin de function ejecutarScriptPremium()
 
     
@@ -246,6 +270,10 @@ local juegosConClave = {
     [11063612131] = true,
     -- Every Second You Get +1 Speed
     [12742233841] = true,
+    --Italian Brainrot Jump Clicker 🧠🚀
+    [117327625970270] = true,
+    --Italian Brainrot Speed Clicker 🧠🚀
+    [128696516339161] = true,
 }
 
 
