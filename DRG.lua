@@ -1905,8 +1905,8 @@ local task11 = task.spawn(function()
                     if getIsActive11() then
                     if getIsActive11() and player() and Congela() then
 		                local Forms = {
-		            	'Pure Astral'
-                        'Corrupt Astral'
+		            	'Pure Astral',
+                        'Corrupt Astral',
 		                'Beast',
 					    'SSJBUI',
 					    'Ultra Ego',
@@ -2608,7 +2608,7 @@ txt.Font = Enum.Font.Arcade
 txt.TextSize = 45
 txt.Text = "Active [Form] or [F|Vip]"
 txt.Visible = false
-txt.Parent = gui 
+txt.Parent = gui
 
 task.spawn(function()
     while true do
