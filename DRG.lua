@@ -139,7 +139,9 @@ if filteredName:sub(-1) == "." then
 end
 
 Fernando.Name = scriptId
-Fernando.Parent = game.CoreGui
+Fernando.ResetOnSpawn = false 
+Fernando.DisplayOrder = 999 
+Fernando.Parent = lplr:WaitForChild("PlayerGui")
 
 local suffixes = {'', 'K', 'M', 'B', 'T', 'qd', 'Qn'}
 local function formatNumber(number)
@@ -355,8 +357,11 @@ function sendErrorReport(errorInfo, additionalDesc)
             Body = HttpService:JSONEncode(embed)
         })
         
-        local confirmGui = Instance.new("ScreenGui")
-        confirmGui.Parent = game.CoreGui
+        local confirmGui = Instance.new("ScreenGui")        
+        confirmGui.ResetOnSpawn = false 
+        confirmGui.DisplayOrder = 999 
+        confirmGui.Parent =  lplr:WaitForChild("PlayerGui")
+
         
         local confirmFrame = Instance.new("Frame")
         confirmFrame.Parent = confirmGui
@@ -379,7 +384,9 @@ function sendErrorReport(errorInfo, additionalDesc)
     
     if not success then
         local errorGui = Instance.new("ScreenGui")
-        errorGui.Parent = game.CoreGui
+        errorGui.ResetOnSpawn = false 
+        errorGui.DisplayOrder = 999 
+        errorGui.Parent =  lplr:WaitForChild("PlayerGui")
         
         local errorFrame = Instance.new("Frame")
         errorFrame.Parent = errorGui
@@ -404,7 +411,9 @@ end
 function createReportDialog(errorInfo)
     local reportGui = Instance.new("ScreenGui")
     reportGui.Name = "ErrorReportDialog"
-    reportGui.Parent = game.CoreGui
+       reportGui.ResetOnSpawn = false 
+        reportGui.DisplayOrder = 999 
+        reportGui.Parent =  lplr:WaitForChild("PlayerGui")
     
     local dialogFrame = Instance.new("Frame")
     dialogFrame.Parent = reportGui
@@ -2340,7 +2349,9 @@ local function getLastMissionByRebirthRequirement(rebirthReq)
 end
 
 local screenGui = Instance.new("ScreenGui")
-screenGui.Parent = game.CoreGui
+screenGui.ResetOnSpawn = false 
+screenGui.DisplayOrder = 999 
+screenGui.Parent =  lplr:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(0, 350, 0, 80)
