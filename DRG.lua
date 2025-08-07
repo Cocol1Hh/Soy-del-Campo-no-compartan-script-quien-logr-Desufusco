@@ -10,13 +10,13 @@ local function generateUniqueComplexId()
     return finalId
 end
 
-local scriptIdentifier = "FernandoHubV2_UniqueID"
-if _G[scriptIdentifier] then
+local scriptId = generateUniqueComplexId()
+local scriptName = "FernandoHubV2"
+if _G[scriptName] then
+    print("Ya hay un " .. scriptName .. " abierto!")
     return
 end
-_G[scriptIdentifier] = true
-
-local scriptId = generateUniqueComplexId()
+_G[scriptName] = true
 
 local Fernando = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame")
@@ -29,7 +29,6 @@ local Barra2 = Instance.new("ScrollingFrame")
 local Barra3 = Instance.new("ScrollingFrame")
 local Siguiente = Instance.new("TextButton")
 local Mix = Instance.new("TextButton")
-local CloseButton = Instance.new("TextButton")
 local Borde1 = Instance.new("UIStroke")
 local Borde2 = Instance.new("UIStroke")
 local Borde3 = Instance.new("UIStroke")
@@ -110,12 +109,6 @@ local function stopAllTasks()
     runningTasks = {}
 end
 
-local function cleanupAndClose()
-    stopAllTasks()
-    if Fernando and Fernando.Parent then
-        Fernando:Destroy()
-    end
-end
 
 local function getAvatarUrl(userId)
     local url = "https://thumbnails.roblox.com/v1/users/avatar?userIds=" .. userId .. "&size=420x420&format=Png"
@@ -259,19 +252,6 @@ local mixCorner = Instance.new("UICorner")
 mixCorner.CornerRadius = UDim.new(0, 5)
 mixCorner.Parent = Mix
 
-CloseButton.Parent = Frame
-CloseButton.BackgroundTransparency = 1
-CloseButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-CloseButton.Position = UDim2.new(0.820, 0, 0, 0)
-CloseButton.Size = UDim2.new(0, 30, 0, 30)
-CloseButton.Text = "X"
-CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseButton.TextSize = 20
-CloseButton.Font = Enum.Font.SourceSansBold
-
-local closeCorner = Instance.new("UICorner")
-closeCorner.CornerRadius = UDim.new(0, 5)
-closeCorner.Parent = CloseButton
 
 local errorTitle = Instance.new("TextLabel")
 errorTitle.Parent = Barra2
@@ -942,9 +922,6 @@ Mix.MouseButton1Click:Connect(function()
     UpdateVisibility()
 end)
 
-CloseButton.MouseButton1Click:Connect(function()
-    cleanupAndClose()
-end)
 
 local saveFileName = "Legends_Switches.json"
 local function SaveSwitchState(isActive, switchName)
@@ -1948,7 +1925,7 @@ local task11 = task.spawn(function()
              end
         if status and status.SelectedTransformation.Value ~= status.Transformation.Value then
             if game.PlaceId == 3311165597 then
-            game.ReplicatedStorage.Package.Events.Higoober:InvokeServer()
+            game:GetService("ReplicatedStorage").Package.Events.a.Cece:InvokeServer()
             elseif game.PlaceId ~= 3311165597 then 
             Ex.ta:InvokeServer()
                 end 
@@ -1959,7 +1936,7 @@ local task11 = task.spawn(function()
                     pcall(function()
            if Ex.equipskill:InvokeServer(selectedForm) then
             if game.PlaceId == 3311165597 then
-            game.ReplicatedStorage.Package.Events.Higoober:InvokeServer()
+            game:GetService("ReplicatedStorage").Package.Events.a.Cece:InvokeServer()
             elseif game.PlaceId ~= 3311165597 then 
             Ex.ta:InvokeServer()
                        end 
@@ -2001,7 +1978,7 @@ local task12 = task.spawn(function()
              end
 		        if status and status.SelectedTransformation.Value ~= status.Transformation.Value then
 		        if game.PlaceId == 3311165597 then
-		            game.ReplicatedStorage.Package.Events.Higoober:InvokeServer()
+		            game:GetService("ReplicatedStorage").Package.Events.a.Cece:InvokeServer()
 		            elseif game.PlaceId ~= 3311165597 then 
 		            Ex.ta:InvokeServer()
 		                    end 
@@ -2309,6 +2286,8 @@ local npcList = {
 	{"Wukong Rose", 4.65e9, true},
 	{"Vekuta (SSJBUI)", 6.375e9, true},
 	{"Wukong (MUI)", 15.975e9, true},
+	{"Nohag (Beast)", 25.975e9, true},
+    {"Vegetable (Ultra Ego)", 20.975e9, true},
 }
 
 
@@ -2622,7 +2601,7 @@ task.spawn(function()
             txt.Visible = false
         end
         end)
-        task.wait(1)
+        task.wait(.5)
     end
 end)
 
