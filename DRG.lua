@@ -1925,9 +1925,9 @@ local task11 = task.spawn(function()
              end
         if status and status.SelectedTransformation.Value ~= status.Transformation.Value then
             if game.PlaceId == 3311165597 then
-            game:GetService("ReplicatedStorage").Package.Events.a.Cece:InvokeServer()
+            game.ReplicatedStorage.Package.Events.Higoober:InvokeServer()
             elseif game.PlaceId ~= 3311165597 then 
-            Ex.ta:InvokeServer()
+            game:GetService("ReplicatedStorage").Package.Events.a.Cece:InvokeServer()
                 end 
             end                
          end      
@@ -1936,9 +1936,9 @@ local task11 = task.spawn(function()
                     pcall(function()
            if Ex.equipskill:InvokeServer(selectedForm) then
             if game.PlaceId == 3311165597 then
-            game:GetService("ReplicatedStorage").Package.Events.a.Cece:InvokeServer()
+            game.ReplicatedStorage.Package.Events.Higoober:InvokeServer()
             elseif game.PlaceId ~= 3311165597 then 
-            Ex.ta:InvokeServer()
+            game:GetService("ReplicatedStorage").Package.Events.a.Cece:InvokeServer()
                        end 
                     end
                   end)
@@ -1978,9 +1978,9 @@ local task12 = task.spawn(function()
              end
 		        if status and status.SelectedTransformation.Value ~= status.Transformation.Value then
 		        if game.PlaceId == 3311165597 then
-		            game:GetService("ReplicatedStorage").Package.Events.a.Cece:InvokeServer()
+		            game.ReplicatedStorage.Package.Events.Higoober:InvokeServer()
 		            elseif game.PlaceId ~= 3311165597 then 
-		            Ex.ta:InvokeServer()
+		            game:GetService("ReplicatedStorage").Package.Events.a.Cece:InvokeServer()
 		                    end 
 		                 end                
 		               end      
