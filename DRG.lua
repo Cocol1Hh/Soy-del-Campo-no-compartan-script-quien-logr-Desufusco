@@ -810,7 +810,7 @@ local textProperties = {
     {text = "Farm", position = UDim2.new(0.010, 0, 0.115, 0), color = Color3.fromRGB(255, 0, 0)},
     {text = "NoTouch", position = UDim2.new(0.520, 0, 0.115, 0), color = Color3.fromRGB(0, 255, 0)},
     {text = "Reb|Stats", position = UDim2.new(0.010, 0, 0.195, 0), color = Color3.fromRGB(0, 255, 255)},
-    {text = "Nill", position = UDim2.new(0.520, 0, 0.195, 0), color = Color3.fromRGB(0, 0, 255)},
+    {text = "MultiRebirth", position = UDim2.new(0.520, 0, 0.195, 0), color = Color3.fromRGB(0, 0, 255)},
     {text = "Nill", position = UDim2.new(0.010, 0, 0.270, 0), color = Color3.fromRGB(255, 255, 0)},
     {text = "Nill", position = UDim2.new(0.520, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 255)},
     {text = "Jump", position = UDim2.new(0.1, 0, 0.320, 0), color = Color3.fromRGB(200, 200, 200)},
@@ -819,7 +819,7 @@ local textProperties = {
     {text = "Security", position = UDim2.new(0.520, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70)},
     {text = "Requesito", position = UDim2.new(0.010, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100)},
     {text = "Tp|Planet", position = UDim2.new(0.520, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100)},
-    {text = "Transform", position = UDim2.new(0.010, 0, 0.570, 0), color = Color3.fromRGB(200, 200, 90)},
+    {text = "Formas|Normal", position = UDim2.new(0.010, 0, 0.570, 0), color = Color3.fromRGB(200, 200, 90)},
     {text = "Formas|Vip", position = UDim2.new(0.520, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100)},
 }
 
@@ -1742,7 +1742,7 @@ local task3 = task.spawn(function()
 							local rebirthReq = getRebirthRequirement()
 							if getIsActive3() and player() and Congela() then
 								if fuerzaActual >= rebirthReq and fuerzaActual < rebirthReq * 2 then
-				                game.ReplicatedStorage.Package.Events.d:InvokeServer()
+				                game:GetService("ReplicatedStorage").Package.Events.reb:InvokeServer()
 								end
 							end
                     end
@@ -1776,7 +1776,7 @@ local task4 = task.spawn(function()
             while task.wait() do
                 local success, errorMsg = pcall(function()
                     if getIsActive4() then
-                        
+                        game:GetService("ReplicatedStorage").Package.Events.Multireb:InvokeServer()
                     end
                 end)             
                 if not success then
