@@ -1427,7 +1427,7 @@ local task1 = task.spawn(function()
 						end
 					else
 						if currentKi <= maxKi * 0.15 then
-							game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer("/charge", "All")
+							game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")
 						end
 					end
 				end
