@@ -143,18 +143,28 @@ Fernando.ResetOnSpawn = false
 Fernando.DisplayOrder = 999 
 Fernando.Parent = lplr:WaitForChild("PlayerGui")
 
-local suffixes = {'', 'K', 'M', 'B', 'T', 'qd', 'Qn'}
-local function formatNumber(number)
-    local isNegative = number < 0
-    number = math.abs(number)
-    for i = 1, #suffixes do
-        if number < 10^(i * 3) then
-            local divisor = 10^((i - 1) * 3)
-            local formatted = math.floor((number / divisor) * 100) / 100
-            return (isNegative and "-" or "") .. formatted .. suffixes[i]
-        end
-    end
-    return (isNegative and "-" or "") .. tostring(number):reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
+local function formatNumber(value)
+	local suffixes = {'', 'K', 'M', 'B', 'T', 'qd', 'Qn'}
+	local multipliers = {K = 1e3, M = 1e6, B = 1e9, T = 1e12, qd = 1e15, Qn = 1e18}
+	local isNegative = false
+	if type(value) == "string" then
+		local num, suffix = string.match(value, "([%-]?[%d%.]+)([KMBTqdQn]?)")
+		num = tonumber(num)
+		if num and suffix ~= "" then
+			value = num * (multipliers[suffix] or 1)
+		else
+			value = tonumber(value) or 0
+		end
+	end
+	if value < 0 then isNegative = true value = math.abs(value) end
+	for i = 1, #suffixes do
+		if value < 10^(i * 3) then
+			local divisor = 10^((i - 1) * 3)
+			local formatted = math.floor((value / divisor) * 100) / 100
+			return (isNegative and "-" or "") .. formatted .. suffixes[i]
+		end
+	end
+	return (isNegative and "-" or "") .. tostring(value):reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
 end
 
 Frame.Parent = Fernando
