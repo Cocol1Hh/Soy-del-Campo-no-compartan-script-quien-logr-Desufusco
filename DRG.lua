@@ -811,8 +811,8 @@ local textProperties = {
     {text = "NoTouch", position = UDim2.new(0.520, 0, 0.115, 0), color = Color3.fromRGB(0, 255, 0)},
     {text = "Reb|Stats", position = UDim2.new(0.010, 0, 0.195, 0), color = Color3.fromRGB(0, 255, 255)},
     {text = "MultiRebirth", position = UDim2.new(0.520, 0, 0.195, 0), color = Color3.fromRGB(0, 0, 255)},
-    {text = "Nill", position = UDim2.new(0.010, 0, 0.270, 0), color = Color3.fromRGB(255, 255, 0)},
-    {text = "Nill", position = UDim2.new(0.520, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 255)},
+    {text = "Atackes1", position = UDim2.new(0.010, 0, 0.270, 0), color = Color3.fromRGB(255, 255, 0)},
+    {text = "Atackes2", position = UDim2.new(0.520, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 255)},
     {text = "Jump", position = UDim2.new(0.1, 0, 0.320, 0), color = Color3.fromRGB(200, 200, 200)},
     {text = "Fly", position = UDim2.new(0.653, 0, 0.320, 0), color = Color3.fromRGB(180, 200, 100)},
     {text = "Duck", position = UDim2.new(0.010, 0, 0.420, 0), color = Color3.fromRGB(200, 100, 200)},
@@ -1622,13 +1622,15 @@ local task1 = task.spawn(function()
 addTask(task1)
         
         
- --Meles Equip       
+ --Equip Meles [Atakes]--Inicio
 local habilidades = {
     { name = "Wolf Fang Fist", requerimiento = 5000 },
     { name = "Meteor Crash", requerimiento = 40000 },
     { name = "High Power Rush", requerimiento = 100000 },
     { name = "Mach Kick", requerimiento = 125000 },
     { name = "Super Dragon Fist", requerimiento = 125000 },
+    { name = "Flash Kick", requerimiento = 200000 },
+    { name = "Spirit Breaking Cannon", requerimiento = 500000 },
 }
 
 local equipadas = {}
@@ -1666,21 +1668,23 @@ end
 task.spawn(function()
     while true do
         pcall(function()
-            if data.Quest.Value ~= "" and player() and getIsActive1() then
-            if lplr.Status.Transformation.Value ~= "None" then   
-            task.spawn(function()
-                for _, tool in ipairs(lplr:WaitForChild("Backpack"):GetChildren()) do
-                    if tool:IsA("Tool") then
-                        if not isInHabilidades(tool.Name) then
-                            tool:Destroy()
-                        else
-                            activateToolModule(tool)
+            if data.Quest.Value ~= "" and player() and getIsActive5() then
+                if lplr.Status.Transformation.Value ~= "None" then   
+                    task.spawn(function()
+                        local activados = 0
+                        for _, tool in ipairs(lplr:WaitForChild("Backpack"):GetChildren()) do
+                            if tool:IsA("Tool") then
+                                if not isInHabilidades(tool.Name) then
+                                    tool:Destroy()
+                                elseif activados < 3 then
+                                    activateToolModule(tool)
+                                    activados += 1
+                                end
+                            end
                         end
-                     end
-                    end
-                    game.ReplicatedStorage.Package.Events.voleys:InvokeServer("Energy Volley", {FaceMouse = false, MouseHit = CFrame.new()}, "Blacknwhite27")
-                end)
-            end
+                        game.ReplicatedStorage.Package.Events.voleys:InvokeServer("Energy Volley", {FaceMouse = false, MouseHit = CFrame.new()}, "Blacknwhite27")
+                    end)
+                end
             end
         end)
         task.wait()
@@ -1712,8 +1716,51 @@ task.spawn(function()
         task.wait()
     end
 end)
---Fin Meles
-        
+--Meles [Atakes] --Fin
+
+--Equip Meles [Atakes1]--Inicio
+canvolley = true        
+task.spawn(function() 
+    while true do
+       pcall(function()
+        if player() and Congela() then  
+        if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then        
+        if (yo() >= 5000 and data.Quest.Value ~= "" and getIsActive6())  then                                                     
+                    local stats = yo()
+                    local moves = {}
+                    local attacked = false                    
+                    if stats < 900e16 then             
+                        if stats >= 5000 then table.insert(moves, "Wolf Fang Fist") end
+                        if stats >= 40000 then table.insert(moves, "Meteor Crash") end
+                        if stats >= 100000 then table.insert(moves, "High Power Rush") end
+                        if stats >= 125000 then table.insert(moves, "Mach Kick") end                  
+                             if stats >= 125000 then table.insert(moves, "Super Dragon Fist") end                               
+                    end
+                    for i, move in pairs(moves) do
+                        if not lplr.Status:FindFirstChild(move) then
+                            spawn(function()                            
+                                game:GetService("ReplicatedStorage").Package.Events.letsplayagame:InvokeServer(move, "Blacknwhite27")                                        
+                            end)
+                            attacked = true
+                        end
+                    end
+                    if stats > 5000 and canvolley then
+                        canvolley = false
+                           game.ReplicatedStorage.Package.Events.voleys:InvokeServer("Energy Volley", {FaceMouse = false, MouseHit = CFrame.new()}, "Blacknwhite27")
+                        attacked = true
+                        spawn(function()
+                            wait(.01)
+                            canvolley = true
+                        end)
+                    end                                  
+                  end              
+                end
+            end
+        end)
+        task.wait()
+    end
+end)
+--Meles [Atakes1] --Fin        
         
 local task2 = task.spawn(function()
             while task.wait() do
@@ -1754,23 +1801,6 @@ local task3 = task.spawn(function()
         end)
 addTask(task3)
         
-        
-task.spawn(function()
-    while true do
-        pcall(function()
-        if data.Quest.Value ~= "" and player() and getIsActive1() and Congela() then
-         wait(2)
-       for _, npc in ipairs(game.Workspace.Others.NPCs:GetChildren()) do
-          if npc:FindFirstChild("HumanoidRootPart") and (npc.HumanoidRootPart.Position - lplr.Character.HumanoidRootPart.Position).Magnitude <= 50 and npc.Name ~= "X Fighter Trainer" then
-              data.Quest.Value = ""
-                break
-                 end
-              end
-           end
-        end)
-        task.wait()
-    end
-end)
         
 local task4 = task.spawn(function()
             while task.wait() do
@@ -1937,10 +1967,11 @@ local task11 = task.spawn(function()
             game.ReplicatedStorage.Package.Events.Higoober:InvokeServer()
             elseif game.PlaceId ~= 3311165597 then 
             game:GetService("ReplicatedStorage").Package.Events.a.Cece:InvokeServer()
-                end 
-            end                
-         end      
-         if not getIsActive11() and not getIsActive12()  and selectedForm and not transforming and lplr.Status.Transformation.Value ~= selectedForm  then
+                               end 
+                           end                
+                        end                               
+                    end
+                    if not getIsActive11() and not getIsActive12()  and selectedForm and not transforming and lplr.Status.Transformation.Value ~= selectedForm  then
                   transforming = true
                     pcall(function()
            if Ex.equipskill:InvokeServer(selectedForm) then
@@ -1952,7 +1983,6 @@ local task11 = task.spawn(function()
                     end
                   end)
                 transforming = false
-              end
                     end
                 end)             
                 if not success then
@@ -1961,6 +1991,9 @@ local task11 = task.spawn(function()
             end
         end)
 addTask(task11)
+
+
+        
         
 local task12 = task.spawn(function()
             while task.wait() do
