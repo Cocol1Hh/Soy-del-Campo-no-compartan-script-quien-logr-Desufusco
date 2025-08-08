@@ -324,8 +324,6 @@ detailedErrorsTitle.Font = Enum.Font.SourceSansBold
 
 
 
-
-
 function sendErrorReport(errorInfo, additionalDesc)
     local success, errorMsg = pcall(function()
         local avatarUrl = getAvatarUrl(lplr.UserId)
@@ -480,7 +478,7 @@ function createReportDialog(errorInfo)
     descTextBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     descTextBox.BorderColor3 = Color3.fromRGB(100, 100, 100)
     descTextBox.BorderSizePixel = 1
-    descTextBox.Text = "Describe qué estabas haciendo cuando ocurrió el error en la línea " .. errorInfo.line .. "..."
+    descTextBox.Text = "Detalles del Error" .. errorInfo.line .. "..."
     descTextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
     descTextBox.TextScaled = true
     descTextBox.TextWrapped = true
@@ -684,7 +682,7 @@ Fps.Parent = Barra1
 
 local VS = Instance.new("TextLabel")
 VS.Parent = Barra1
-VS.Text = "V [0.8]"
+VS.Text = "V [1.0]"
 VS.Size = UDim2.new(0, 100, 0, 10)
 VS.Position = UDim2.new(0.783, 0, 0.009, 0)
 VS.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -1470,7 +1468,7 @@ local task1 = task.spawn(function()
                     end
                 end)
                 if not success then
-                    addError(errorMsg, 723, "Switch Task 1", "task1", "Farm Switch")
+                    addError(errorMsg, debug.info(1, "l"), "Switch Task 1", "task1", "Farm Switch")
                 end
             end
         end)
@@ -1485,33 +1483,18 @@ local task1 = task.spawn(function()
         if getIsActive1()  and data.Quest.Value ~= "" and Congela() then         
            game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
            game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
-               end          
-            end --player() 
-                    end
+                           end          
+                       end --player() 
+                       lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
+                    end                    
                 end)               
                 if not success then
-                    addError(errorMsg, 743, "Switch Task 2", "task2", "Spin Switch")
+                    addError(errorMsg, debug.info(1, "l"), "Switch Task 1", "task1", "Puch")
                 end
             end
         end)
 addTask(task1)
-        
-local task1 = task.spawn(function()
-            while task.wait() do
-                local success, errorMsg = pcall(function()
-                    if getIsActive1() then
-                        if getIsActive1() and player() and Congela() then
-                lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
-            end
-                    end
-                end)               
-                if not success then
-                    addError(errorMsg, 743, "Switch Task 2", "task2", "Spin Switch")
-                end
-            end
-        end)
-addTask(task1)
-        
+      
         
 local task1 = task.spawn(function()
             while task.wait() do
@@ -1547,7 +1530,7 @@ local task1 = task.spawn(function()
                     end
                 end)               
                 if not success then
-                    addError(errorMsg, 743, "Switch Task 2", "task2", "Spin Switch")
+                    addError(errorMsg, debug.info(1, "l"), "Switch Task 1", "task1", "Block")
                 end
             end
         end)
@@ -1625,7 +1608,7 @@ local task1 = task.spawn(function()
                     end
                 end)               
                 if not success then
-                    addError(errorMsg, 743, "Switch Task 2", "task2", "Spin Switch")
+                    addError(errorMsg, debug.info(1, "l"), "Switch Task 1", "task1", "AutoFarm")
                 end
             end
         end)
@@ -1641,6 +1624,8 @@ local habilidades = {
     { name = "Super Dragon Fist", requerimiento = 125000 },
     { name = "Flash Kick", requerimiento = 200000 },
     { name = "Spirit Breaking Cannon", requerimiento = 500000 },
+    { name = "Spirit Barrage", requerimiento = 60e6 },
+    { name = "God Slicer", requerimiento = 60e6 },
 }
 
 local equipadas = {}
@@ -1678,7 +1663,7 @@ end
 task.spawn(function()
     while true do
         pcall(function()
-            if data.Quest.Value ~= "" and player() and getIsActive5() then
+            if data.Quest.Value ~= "" and player() and getIsActive5() and not getIsActive6() then
                 if lplr.Status.Transformation.Value ~= "None" then   
                     task.spawn(function()
                         local activados = 0
@@ -1703,7 +1688,7 @@ end)
 
 task.spawn(function()
     while true do
-        pcall(function()
+        pcall(function()           
             game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
         end)
         task.wait()
@@ -1713,7 +1698,7 @@ end)
 task.spawn(function()
     while true do
         pcall(function()
-        if player() then 
+if player() and getIsActive5() and not getIsActive6() then 
             local stats = yo()
             for _, info in ipairs(habilidades) do
                 if stats >= info.requerimiento and not equipadas[info.name] then
@@ -1730,26 +1715,34 @@ end)
 
 --Equip Meles [Atakes1]--Inicio
 canvolley = true        
-task.spawn(function() 
-    while true do
-       pcall(function()
-        if player() and Congela() then  
-        if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then        
-        if (yo() >= 5000 and data.Quest.Value ~= "" and getIsActive6())  then                                                     
+local Actakes2 = task.spawn(function()
+            while task.wait() do
+                local success, errorMsg = pcall(function()
+                 if player() and Congela() then          
+        if (yo() >= 5000 and data.Quest.Value ~= ""  and getIsActive6() and not getIsActive5()) then                                                     
                     local stats = yo()
                     local moves = {}
-                    local attacked = false                    
-                    if stats < 900e16 then             
+                    local attacked = false                                                     
+                                            
                         if stats >= 5000 then table.insert(moves, "Wolf Fang Fist") end
                         if stats >= 40000 then table.insert(moves, "Meteor Crash") end
                         if stats >= 100000 then table.insert(moves, "High Power Rush") end
-                        if stats >= 125000 then table.insert(moves, "Mach Kick") end                  
-                             if stats >= 125000 then table.insert(moves, "Super Dragon Fist") end                               
-                    end
+                        if stats >= 125000 then table.insert(moves, "Mach Kick") end                   
+                       if stats >= 60e6 then
+                        if data.Allignment.Value == "Good" then
+                            table.insert(moves, "Spirit Barrage")
+                        else
+                            table.insert(moves, "God Slicer")
+                        end
+                    end                      
                     for i, move in pairs(moves) do
                         if not lplr.Status:FindFirstChild(move) then
-                            spawn(function()                            
-                                game:GetService("ReplicatedStorage").Package.Events.letsplayagame:InvokeServer(move, "Blacknwhite27")                                        
+                            spawn(function()                           
+                                 if game.PlaceId == 3311165597 then 
+                               game:GetService("ReplicatedStorage").Package.Events.letsplayagame:InvokeServer(move, "Blacknwhite27")                                           
+                                elseif game.PlaceId ~= 3311165597 then
+                                game:GetService("ReplicatedStorage").Package.Events.b.Dece:InvokeServer(move, "Blacknwhite27")               
+                                 end                                                    
                             end)
                             attacked = true
                         end
@@ -1762,14 +1755,17 @@ task.spawn(function()
                             wait(.01)
                             canvolley = true
                         end)
-                    end                                  
-                  end              
+                    end                                                
+                end
+             end
+          end)
+        if not success then
+                    addError(errorMsg, debug.info(1, "l"), "Error:", "Actakes2", "Actakes2")
                 end
             end
         end)
-        task.wait()
-    end
-end)
+addTask(Actakes2)
+
 --Meles [Atakes1] --Fin        
         
 local task2 = task.spawn(function()
@@ -1785,7 +1781,7 @@ local task2 = task.spawn(function()
                     end
                 end)               
                 if not success then
-                    addError(errorMsg, 743, "Switch Task 2", "task2", "BasePart")
+                    addError(errorMsg, debug.info(1, "l"), "Switch Task 2", "task2", "BasePart")
                 end
             end
         end)
@@ -1805,7 +1801,7 @@ local task3 = task.spawn(function()
                     end
                 end)             
                 if not success then
-                    addError(errorMsg, 767, "Switch Task 3", "task3", "Rebirth Switch")
+                    addError(errorMsg, debug.info(1, "l"), "Switch Task 3", "task3", "Rebirth Normal")
                 end
             end
         end)
@@ -1820,85 +1816,11 @@ local task4 = task.spawn(function()
                     end
                 end)             
                 if not success then
-                    addError(errorMsg, 767, "Switch Task 3", "task3", "Rebirth Switch")
+                    addError(errorMsg, debug.info(1, "l"), "Switch Task 4", "task4", "Milti|Rebirth")
                 end
             end
         end)
 addTask(task4)
-        
-        
-local task5 = task.spawn(function()
-            while task.wait() do
-                local success, errorMsg = pcall(function()
-                    if getIsActive5() then
-                        
-                    end
-                end)             
-                if not success then
-                    addError(errorMsg, 767, "Switch Task 3", "task3", "Rebirth Switch")
-                end
-            end
-        end)
-addTask(task5)
-        
-        
-local task6 = task.spawn(function()
-            while task.wait() do
-                local success, errorMsg = pcall(function()
-                    if getIsActive6() then
-                        
-                    end
-                end)             
-                if not success then
-                    addError(errorMsg, 767, "Switch Task 3", "task3", "Rebirth Switch")
-                end
-            end
-        end)
-addTask(task6)
-        
-        
-local task7 = task.spawn(function()
-            while task.wait() do
-                local success, errorMsg = pcall(function()
-                    if getIsActive7() then
-                        
-                    end
-                end)             
-                if not success then
-                    addError(errorMsg, 767, "Switch Task 3", "task3", "Rebirth Switch")
-                end
-            end
-        end)
-addTask(task7)
-        
-local task8 = task.spawn(function()        
-            while task.wait() do
-                local success, errorMsg = pcall(function()
-                    if getIsActive8() then
-                        
-                    end
-                end)             
-                if not success then
-                    addError(errorMsg, 767, "Switch Task 3", "task3", "Rebirth Switch")
-                end
-            end
-        end)
-addTask(task8)
-        
-        
-local task9 = task.spawn(function()
-            while task.wait() do
-                local success, errorMsg = pcall(function()
-                    if getIsActive9() then
-                        
-                    end
-                end)             
-                if not success then
-                    addError(errorMsg, 767, "Switch Task 3", "task3", "Rebirth Switch")
-                end
-            end
-        end)
-addTask(task9)
         
         
 local task10 = task.spawn(function()
@@ -1918,7 +1840,7 @@ local task10 = task.spawn(function()
                     end
                 end)             
                 if not success then
-                    addError(errorMsg, 767, "Switch Task 3", "task3", "Rebirth Switch")
+                    addError(errorMsg, debug.info(1, "l"), "Switch Task 10", "task10", "Tp|Planet")
                 end
             end
         end)
@@ -1996,15 +1918,13 @@ local task11 = task.spawn(function()
                     end
                 end)             
                 if not success then
-                    addError(errorMsg, 767, "Switch Task 3", "task3", "Rebirth Switch")
+                    addError(errorMsg, debug.info(1, "l"), "Switch Task 11", "task11", "Form|Normal")
                 end
             end
         end)
 addTask(task11)
 
 
-        
-        
 local task12 = task.spawn(function()
             while task.wait() do
                 local success, errorMsg = pcall(function()
@@ -2039,7 +1959,7 @@ local task12 = task.spawn(function()
                     end
                 end)             
                 if not success then
-                    addError(errorMsg, 1510, "Switch Task 12", "task12", "Form")
+                    addError(errorMsg, debug.info(1, "l"), "Switch Task 12", "task12", "Form|Vip")
                 end
             end
         end)
@@ -2136,7 +2056,7 @@ local Datos = task.spawn(function()
                     end
                 end)            
                 if not success then
-                    addError(errorMsg, 807, "Stats System", "statsTask", "Datos(Sytema)")
+                    addError(errorMsg, debug.info(1, "l"), "Stats System", "statsTask", "Datos(Sytema)")
                 end
             end
         end)
@@ -2192,7 +2112,7 @@ addTask(Datos)
             end)
             
             if not success then
-                addError(errorMsg, 870, "Duck Transform", "transformToDuck", "Duck Switch")
+                addError(errorMsg, debug.info(1, "l"), "Duck Transform", "transformToDuck", "Duck Switch")
             end
         end
         
@@ -2235,7 +2155,7 @@ addTask(Datos)
             end)
             
             if not success then
-                addError(errorMsg, 913, "Duck Revert", "revertTransformation", "Duck Switch")
+                addError(errorMsg, debug.info(1, "l"), "Duck Revert", "revertTransformation", "Duck Switch")
             end
         end
         
@@ -2249,10 +2169,9 @@ addTask(Datos)
                             revertTransformation()
                         end
                     end
-                end)
-                
+                end)             
                 if not success then
-                    addError(errorMsg, 935, "Duck Controller", "duckTask", "Duck Switch")
+                    addError(errorMsg, debug.info(1, "l"), "Duck Controller", "duckTask", "Duck Switch")
                 end
             end
         end)
@@ -2266,10 +2185,11 @@ addTask(Datos)
                 game:GetService("Players").LocalPlayer.Idled:Connect(function()
                     vu:CaptureController()
                     vu:ClickButton2(Vector2.new())
+                    task.wait(2)
                 end)
             end)         
             if not success then
-                addError(errorMsg, 953, "Anti-AFK System", "antiAfkTask1", "Anti-AFK")
+                addError(errorMsg, debug.info(1, "l"), "Anti-AFK System", "antiAfkTask1", "Anti-AFK")
             end
         end)
         addTask(antiAfkTask1)
@@ -2284,7 +2204,7 @@ addTask(Datos)
                 end)
             end)          
             if not success then
-                addError(errorMsg, 971, "Anti-AFK Backup", "antiAfkTask2", "Anti-AFK")
+                addError(errorMsg, debug.info(1, "l"), "Anti-AFK Backup", "antiAfkTask2", "Anti-AFK")
             end
         end)
         addTask(antiAfkTask2)
@@ -2307,7 +2227,7 @@ addTask(Datos)
         end
     end)   
     if not success then
-        addError(errorMsg, 997, "Main Task", "mainTask", "Core System")
+        addError(errorMsg, debug.info(1, "l"), "Main Task", "mainTask", "Core System")
     end
     task.wait()
 end)
@@ -2627,8 +2547,8 @@ end)
 
 local gui = Instance.new("ScreenGui")
 gui.ResetOnSpawn = false
-gui.Name = "FormMsg"
-gui.Parent = game:GetService("CoreGui")
+gui.DisplayOrder = 999 
+gui.Parent = lplr:WaitForChild("PlayerGui")
 
 local txt = Instance.new("TextLabel")
 txt.Size = UDim2.new(0, 600, 0, 100)
@@ -2639,21 +2559,22 @@ txt.TextStrokeTransparency = 0
 txt.TextStrokeColor3 = Color3.fromRGB(0, 0, 255)
 txt.Font = Enum.Font.Arcade
 txt.TextSize = 45
-txt.Text = "Active [Form] or [F|Vip]"
+txt.Text = "Activar [Form|Normal] o [Form|Vip]"
 txt.Visible = false
 txt.Parent = gui
 
 task.spawn(function()
     while true do
-    pcall(function()
-        local s11, a11 = pcall(getIsActive11)
-        local s12, a12 = pcall(getIsActive12)
-        local s1, a1 = pcall(getIsActive1)
-        if s11 and s12 and s1 then
-            txt.Visible = (a11 == false and a12 == false and a1 == true)
-        else
-            txt.Visible = false
-        end
+        pcall(function()
+            local s11, a11 = pcall(getIsActive11)
+            local s12, a12 = pcall(getIsActive12)
+            local s1, a1 = pcall(getIsActive1)
+            local tieneForma = (lplr.Status.Transformation.Value == selectedForm and selectedForm ~= nil and selectedForm ~= "")
+            if s11 and s12 and s1 then
+                txt.Visible = (a11 == false and a12 == false and a1 == true and not tieneForma)
+            else
+                txt.Visible = false
+            end
         end)
         task.wait(.5)
     end
