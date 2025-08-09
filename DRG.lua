@@ -2277,10 +2277,10 @@ local Datos = task.spawn(function()
                 local success, errorMsg = pcall(function()
                     if player() then
                         local serverPing = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue() * 1.5)                       
-                        serverPingLabel.Text = "Serv: " .. serverPing .. " ms"
+                        serverPingLabel.Text = "Server: " .. serverPing .. " ms"
                         
                         local ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue())
-                        pingLabel.Text = "Ping: " .. (ping < 1000 and ping or math.floor(ping / 10) * 10) .. " ms"
+                        pingLabel.Text = "Wifi: " .. (ping < 1000 and ping or math.floor(ping / 10) * 10) .. " ms"
                         
                         local cpuUsage = math.floor(Stats.PerformanceStats.CPU:GetValue() * 100)
                         cpuLabel.Text = "CPU: " .. cpuUsage .. "%"
