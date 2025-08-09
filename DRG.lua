@@ -688,7 +688,7 @@ Fps.Parent = Barra1
 
 local VS = Instance.new("TextLabel")
 VS.Parent = Barra1
-VS.Text = "V [1.0]"
+VS.Text = "V [1.1]"
 VS.Size = UDim2.new(0, 100, 0, 10)
 VS.Position = UDim2.new(0.783, 0, 0.009, 0)
 VS.TextColor3 = Color3.fromRGB(255, 255, 255)
