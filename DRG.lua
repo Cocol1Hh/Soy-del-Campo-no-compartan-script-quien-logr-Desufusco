@@ -1524,23 +1524,6 @@ local task1 = task.spawn(function()
         end)
 addTask(task1)
         
-                              
-local task1 = task.spawn(function()
-            while task.wait() do
-                local success, errorMsg = pcall(function()
-                    if getIsActive1() then
-                        if player() then
-                               lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
-                       end --player() 
-                    end                    
-                end)               
-                if not success then
-                    addError(errorMsg, debug.info(1, "l"), "Switch Task 1", "task1", "lplr.Character.HumanoidRootPart.Velocity")
-                end
-            end
-        end)
-addTask(task1)         
-      
         
 local task1 = task.spawn(function()
             while task.wait() do
@@ -1637,6 +1620,7 @@ local task1 = task.spawn(function()
                                (bossInstance and bossInstance:FindFirstChild("Humanoid") and bossInstance.Humanoid.Health > 0) then
                               if getIsActive1() and player() and data.Quest.Value == "" then
                                    lplr.Character.HumanoidRootPart.CFrame = npcInstance.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4.4)  
+                                   lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
                                         local args = {
                                             [1] = npcInstance
                                         }
@@ -1978,46 +1962,6 @@ local task11 = task.spawn(function()
         end)
 addTask(task11)
 
-
-local task12 = task.spawn(function()
-            while task.wait() do
-                local success, errorMsg = pcall(function()
-                    if getIsActive12() then
-                       if getIsActive12() and not getIsActive11()  and player() and Congela() then
-					        local Forms = {                                                           
-					    'Blanco', 
-					    'SSJB4', 
-					    'True God of Creation', 
-					    'True God of Destruction', 
-					    'Super Broly', 
-					    'LSSJG', 
-					    'LSSJ4', 
-					    'SSJG4', 
-					    'LSSJ3', 
-					    'SSJ5', 
-					    'Mystic Kaioken', 
-					    'LSSJ Kaioken', 
-					    'SSJ2 Kaioken'}
-                             local status = lplr.Status    
-                           for _, form in ipairs(Forms) do 
-                   if Ex.equipskill:InvokeServer(form) then break end  
-             end
-		        if status and status.SelectedTransformation.Value ~= status.Transformation.Value then
-		        if game.PlaceId == 3311165597 then
-		            game.ReplicatedStorage.Package.Events.Higoober:InvokeServer()
-		            elseif game.PlaceId ~= 3311165597 then 
-		            game:GetService("ReplicatedStorage").Package.Events.a.Cece:InvokeServer()
-		                    end 
-		                 end                
-		               end      
-                    end
-                end)             
-                if not success then
-                    addError(errorMsg, debug.info(1, "l"), "Switch Task 12", "task12", "Form|Vip")
-                end
-            end
-        end)
-addTask(task12)
 
 local task12 = task.spawn(function()
             while task.wait() do
