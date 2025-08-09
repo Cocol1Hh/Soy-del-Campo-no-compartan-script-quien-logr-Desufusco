@@ -40,6 +40,12 @@ local data = game.ReplicatedStorage:WaitForChild("Datas"):WaitForChild(lplr.User
 local Ex = game:GetService("ReplicatedStorage").Package.Events
 local MarketplaceService = game:GetService("MarketplaceService")
 local Stats = game:GetService("Stats")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Gto = Players.LocalPlayer
+local dataFolder = ReplicatedStorage:WaitForChild("Datas")
+
+local cam = workspace.CurrentCamera
 
 local runningTasks = {}
 local errorHistory = {}
@@ -823,7 +829,7 @@ local textProperties = {
     {text = "Atackes2", position = UDim2.new(0.520, 0, 0.270, 0), color = Color3.fromRGB(255, 0, 255)},
     {text = "Jump", position = UDim2.new(0.1, 0, 0.320, 0), color = Color3.fromRGB(200, 200, 200)},
     {text = "Fly", position = UDim2.new(0.653, 0, 0.320, 0), color = Color3.fromRGB(180, 200, 100)},
-    {text = "Duck", position = UDim2.new(0.010, 0, 0.420, 0), color = Color3.fromRGB(200, 100, 200)},
+    {text = "Radar", position = UDim2.new(0.010, 0, 0.420, 0), color = Color3.fromRGB(200, 100, 200)},
     {text = "Security", position = UDim2.new(0.520, 0, 0.420, 0), color = Color3.fromRGB(200, 30, 70)},
     {text = "Requesito", position = UDim2.new(0.010, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100)},
     {text = "Tp|Planet", position = UDim2.new(0.520, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100)},
@@ -1256,6 +1262,7 @@ spawn(function()
     end
 end)
 
+
 local sts = {"Strength", "Speed", "Defense", "Energy"}
 function yo()
 	local min = nil
@@ -1316,6 +1323,46 @@ function getRebirthRequirement()
         return number * multipliers[suffix]
     end
     return number or 0
+end
+
+local function formatearStat(txt)
+    local etiqueta, base, extra = txt:match("^(.-:%s*)(%d+)%s*%((%+%d+)%)$")
+    if etiqueta and base and extra then
+        local baseForm = formatNumber(tonumber(base))
+        local extraForm = "+" .. formatNumber(tonumber(extra:match("%d+")))
+        return etiqueta .. baseForm .. " (" .. extraForm .. ")"
+    else
+        etiqueta, base = txt:match("^(.-:%s*)(%d+)$")
+        if etiqueta and base then
+            local baseForm = formatNumber(tonumber(base))
+            return etiqueta .. baseForm
+        else
+            return txt
+        end
+    end
+end
+
+local function getKiPercent(player)
+    local character = workspace.Living:FindFirstChild(player.Name)
+    if not character then return 0 end
+    local ki = character.Stats and character.Stats:FindFirstChild("Ki")
+    if not ki then return 0 end
+    local currentKi = ki.Value
+    local maxKi = ki.MaxValue or 0
+    if maxKi == 0 then return 0 end
+    return tonumber(string.format("%.2f", (currentKi / maxKi) * 100))
+end
+
+local function vidaPercent(player)
+    local character = workspace.Living:FindFirstChild(player.Name)
+    if not character then return 0 end
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if not humanoid then return 0 end    
+    local currentHealth = humanoid.Health
+    local maxHealth = humanoid.MaxHealth
+    if maxHealth == 0 then return 0 end
+    local percent = (currentHealth / maxHealth) * 100
+    return tonumber(string.format("%.2f", percent))
 end
 
 
@@ -1426,6 +1473,9 @@ end--FIN DE LA PROTECION SCRIPTS
 --Aki incio del regitro 
 local mainTask = task.spawn(function()
     local success, errorMsg = pcall(function()
+    
+    
+    
                
 local task1 = task.spawn(function()
             while task.wait() do
@@ -1480,20 +1530,16 @@ local task1 = task.spawn(function()
                 local success, errorMsg = pcall(function()
                     if getIsActive1() then
                         if player() then
-        if getIsActive1()  and data.Quest.Value ~= "" and Congela() then         
-           game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
-           game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
-                           end          
+                               lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
                        end --player() 
-                       lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
                     end                    
                 end)               
                 if not success then
-                    addError(errorMsg, debug.info(1, "l"), "Switch Task 1", "task1", "Puch")
+                    addError(errorMsg, debug.info(1, "l"), "Switch Task 1", "task1", "lplr.Character.HumanoidRootPart.Velocity")
                 end
             end
         end)
-addTask(task1)
+addTask(task1)         
       
         
 local task1 = task.spawn(function()
@@ -1568,7 +1614,7 @@ local task1 = task.spawn(function()
                 local success, errorMsg = pcall(function()
                     if getIsActive1() then
                         if Congela() then
-					if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then   
+					if game.PlaceId ~= 3311165597 or lplr.Status.Transformation.Value ~= "None" then   
 					if getIsActive1() and player()  then
                if data.Quest.Value ~= "" then
                         local currentQuest = data.Quest.Value
@@ -1671,7 +1717,7 @@ task.spawn(function()
                             if tool:IsA("Tool") then
                                 if not isInHabilidades(tool.Name) then
                                     tool:Destroy()
-                                elseif activados < 3 then
+                                elseif activados < 4 then
                                     activateToolModule(tool)
                                     activados += 1
                                 end
@@ -1688,10 +1734,10 @@ end)
 
 task.spawn(function()
     while true do
-        pcall(function()           
+        pcall(function()                      
             game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
         end)
-        task.wait()
+        task.wait(1)
     end
 end)
 
@@ -1708,7 +1754,7 @@ if player() and getIsActive5() and not getIsActive6() then
             end
             end
         end)
-        task.wait()
+        task.wait(.5)
     end
 end)
 --Meles [Atakes] --Fin
@@ -1719,6 +1765,7 @@ local Actakes2 = task.spawn(function()
             while task.wait() do
                 local success, errorMsg = pcall(function()
                  if player() and Congela() then          
+                 if lplr.Status.Transformation.Value ~= "None" then   
         if (yo() >= 5000 and data.Quest.Value ~= ""  and getIsActive6() and not getIsActive5()) then                                                     
                     local stats = yo()
                     local moves = {}
@@ -1756,6 +1803,7 @@ local Actakes2 = task.spawn(function()
                             canvolley = true
                         end)
                     end                                                
+                  end
                 end
              end
           end)
@@ -1779,9 +1827,13 @@ local task2 = task.spawn(function()
 							end
 						end
                     end
+                    if player() and data.Quest.Value ~= "" and getIsActive1() and Congela() then         
+		           game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
+		           game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
+                           end 
                 end)               
                 if not success then
-                    addError(errorMsg, debug.info(1, "l"), "Switch Task 2", "task2", "BasePart")
+                    addError(errorMsg, debug.info(1, "l"), "Switch Task 2", "task2", "Puch,NoTouch")
                 end
             end
         end)
@@ -1809,11 +1861,13 @@ addTask(task3)
         
         
 local task4 = task.spawn(function()
-            while task.wait() do
+            while task.wait(.5) do
                 local success, errorMsg = pcall(function()
-                    if getIsActive4() then
-                        game:GetService("ReplicatedStorage").Package.Events.Multireb:InvokeServer()
-                    end
+                    if getIsActive4() and MarketplaceService:UserOwnsGamePassAsync(lplr.UserId, 1167830866) then        
+                           game:GetService("ReplicatedStorage").Package.Events.Multireb:InvokeServer()      
+                      elseif getIsActive4() and data.Zeni.Value >= 400000 then
+                      game:GetService("ReplicatedStorage").Package.Events.Multireb:InvokeServer()
+                   end
                 end)             
                 if not success then
                     addError(errorMsg, debug.info(1, "l"), "Switch Task 4", "task4", "Milti|Rebirth")
@@ -1821,10 +1875,10 @@ local task4 = task.spawn(function()
             end
         end)
 addTask(task4)
-        
+                        
         
 local task10 = task.spawn(function()
-            while task.wait() do
+            while task.wait(.5) do
                 local success, errorMsg = pcall(function()
                     if getIsActive10() then
                         if getIsActive10() then
@@ -1964,20 +2018,265 @@ local task12 = task.spawn(function()
             end
         end)
 addTask(task12)
+
+local task12 = task.spawn(function()
+            while task.wait() do
+                local success, errorMsg = pcall(function()
+                    if getIsActive12() then
+                       if getIsActive12() and not getIsActive11()  and player() and Congela() then
+					        local Forms = {                                                           
+					    'Blanco', 
+					    'SSJB4', 
+					    'True God of Creation', 
+					    'True God of Destruction', 
+					    'Super Broly', 
+					    'LSSJG', 
+					    'LSSJ4', 
+					    'SSJG4', 
+					    'LSSJ3', 
+					    'SSJ5', 
+					    'Mystic Kaioken', 
+					    'LSSJ Kaioken', 
+					    'SSJ2 Kaioken'}
+                             local status = lplr.Status    
+                           for _, form in ipairs(Forms) do 
+                   if Ex.equipskill:InvokeServer(form) then break end  
+             end
+		        if status and status.SelectedTransformation.Value ~= status.Transformation.Value then
+		        if game.PlaceId == 3311165597 then
+		            game.ReplicatedStorage.Package.Events.Higoober:InvokeServer()
+		            elseif game.PlaceId ~= 3311165597 then 
+		            game:GetService("ReplicatedStorage").Package.Events.a.Cece:InvokeServer()
+		                    end 
+		                 end                
+		               end      
+                    end
+                end)             
+                if not success then
+                    addError(errorMsg, debug.info(1, "l"), "Switch Task 12", "task12", "Form|Vip")
+                end
+            end
+        end)
+addTask(task12)
+
+local Radar = task.spawn(function()
+            while task.wait() do
+                local success, errorMsg = pcall(function()
+                    if getIsActive7() then                   
+local function createBillboard(player)
+    if player == Gto then return end
+    local char = workspace.Living:FindFirstChild(player.Name)
+    if not char then return end
+    local head = char:FindFirstChild("Head")
+    if not head then return end
+
+    if head:FindFirstChild("StatsBillboard") then
+        head.StatsBillboard:Destroy()
+    end
+
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "StatsBillboard"
+    billboard.Adornee = head
+    billboard.Size = UDim2.new(0, 400, 0, 35)
+    billboard.StudsOffset = Vector3.new(0, 2.5, 0)
+    billboard.AlwaysOnTop = true
+    billboard.Parent = head
+
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.TextColor3 = Color3.new(1, 1, 1)
+    textLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
+    textLabel.TextStrokeTransparency = 0
+    textLabel.TextScaled = true
+    textLabel.TextXAlignment = Enum.TextXAlignment.Center
+    textLabel.Font = Enum.Font.SourceSansBold
+    textLabel.Parent = billboard
+
+    local data = dataFolder:FindFirstChild(tostring(player.UserId))
+    local strengthVal = 0
+    local rebirthVal = 0
+    if data then
+        local strength = data:FindFirstChild("Strength") or data:FindFirstChild("sts")
+        local rebirth = data:FindFirstChild("Rebirth")
+        strengthVal = strength and strength.Value or 0
+        rebirthVal = rebirth and rebirth.Value or 0
+    end
+
+    local function updateText()
+        local name = player.Name
+        local apodo = player.DisplayName or player.Name
+        local Ki = getKiPercent(player)
+        local Vida = vidaPercent(player)
+        textLabel.Text = string.format("%s (%s) / F:%s / R:%s / Ki:%d / Vida:%d", name, apodo, formatNumber(strengthVal), formatNumber(rebirthVal), Ki, Vida)
+    end
+
+local function getPlayerStatsString(player)
+    local data = dataFolder:FindFirstChild(tostring(player.UserId))
+    local strengthVal = 0
+    local rebirthVal = 0
+    if data then
+        local strength = data:FindFirstChild("Strength") or data:FindFirstChild("sts")
+        local rebirth = data:FindFirstChild("Rebirth")
+        strengthVal = strength and strength.Value or 0
+        rebirthVal = rebirth and rebirth.Value or 0
+    end
+
+    local name = player.Name
+    local apodo = player.DisplayName or player.Name
+    local Ki = getKiPercent(player)
+    local Vida = vidaPercent(player)
+    local statsText = string.format("%s (%s) / F:%s / R:%s / Ki:%d / Vida:%d", name, apodo, formatNumber(strengthVal), formatNumber(rebirthVal), Ki, Vida)
+    return statsText
+end
+
+local function setupClickDetectorsForCharacter(character)
+    if not character then return end
+    for _, part in pairs(character:GetChildren()) do
+        if part:IsA("BasePart") then
+            if not part:FindFirstChildOfClass("ClickDetector") then
+                local clickDetector = Instance.new("ClickDetector")
+                clickDetector.MaxActivationDistance = 40
+                clickDetector.Parent = part
+
+                clickDetector.MouseClick:Connect(function(clickingPlayer)
+                    if clickingPlayer == game.Players.LocalPlayer then
+                        local player = game.Players:GetPlayerFromCharacter(character)
+                        if player then
+                            local statsText = getPlayerStatsString(player)
+                            if setclipboard then
+                                setclipboard(statsText)
+                                print("Datos copiados:\n" .. statsText)
+                            else
+                                print("No se pudo copiar, aquí están los datos:\n" .. statsText)
+                            end
+                        end
+                    end
+                end)
+            end
+        end
+    end
+end
+
+for _, player in pairs(Players:GetPlayers()) do
+    if player.Character then
+        setupClickDetectorsForCharacter(player.Character)
+    end
+    player.CharacterAdded:Connect(function(char)
+        wait(1)
+        setupClickDetectorsForCharacter(char)
+    end)
+end
+
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(char)
+        wait(1)
+        setupClickDetectorsForCharacter(char)
+    end)
+end)
+
+
+    updateText()
+
+    spawn(function()
+        while billboard.Parent do
+            updateText()
+            local dist = (head.Position - cam.CFrame.Position).Magnitude
+            local scale = math.clamp(1.3 - (dist / 50), 0.7, 1.3)
+            textLabel.TextScaled = false
+            textLabel.TextSize = 14 * scale
+            local living = workspace:WaitForChild("Living") 
+				for _, character in pairs(living:GetChildren()) do
+				    local humanoid = character:FindFirstChildOfClass("Humanoid")
+				    if humanoid then
+				        humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+				    end
+				end
+            wait(0.1)
+        end
+    end)
+end
+
+for _, player in pairs(Players:GetPlayers()) do
+    player.CharacterAdded:Connect(function()
+        wait(1)
+        createBillboard(player)
+    end)
+    if player.Character then
+        createBillboard(player)
+    end
+end
+
+Players.PlayerRemoving:Connect(function(player)
+    local char = workspace.Living:FindFirstChild(player.Name)
+    if char then
+        local head = char:FindFirstChild("Head")
+        if head then
+            local bb = head:FindFirstChild("StatsBillboard")
+            if bb then
+                bb:Destroy()
+            end
+        end
+    end
+end)
+                    end
+                end)             
+                if not success then
+                    addError(errorMsg, debug.info(1, "l"), "Switch Lector", "Radar", "Lector/Radar")
+                end
+            end
+        end)
+addTask(Radar)
+
+
+local Formato = task.spawn(function()
+            while task.wait() do
+                local success, errorMsg = pcall(function()
+        local MainFrame = lplr.PlayerGui:WaitForChild("Main"):WaitForChild("MainFrame")
+        local ZeniLabel = MainFrame.Indicator:FindFirstChild("Zeni")
+        local Bars = MainFrame:WaitForChild("Bars")
+        local HPText = Bars.Health:FindFirstChild("TextLabel")
+        local EnergyText = Bars.Energy:FindFirstChild("TextLabel")
+        local statsFolder = lplr.PlayerGui.Main.MainFrame.Frames.Stats
+        local health = lplr.Character and lplr.Character:FindFirstChild("Humanoid") and lplr.Character.Humanoid.Health or 0
+        local maxHealth = lplr.Character and lplr.Character:FindFirstChild("Humanoid") and lplr.Character.Humanoid.MaxHealth or 0
+        local ki = lplr.Character and lplr.Character:FindFirstChild("Stats") and lplr.Character.Stats.Ki.Value or 0
+        local maxKi = lplr.Character and lplr.Character:FindFirstChild("Stats") and lplr.Character.Stats.Ki.MaxValue or 0
+        
+            HPText.Text = "SALUD: " .. formatNumber(health) .. " / " .. formatNumber(maxHealth)
+
+            EnergyText.Text = "ENERGÍA: " .. formatNumber(ki) .. " / " .. formatNumber(maxKi)
+        
+            ZeniLabel.Text = formatNumber(data.Zeni.Value) .. " Zeni"
+
+
+        local statsToFormat = {
+		    "Energy",
+		    "Speed",
+		    "Defense",
+		    "Strength" }
+        for _, statName in ipairs(statsToFormat) do
+            local statLabel = statsFolder:FindFirstChild(statName)
+            if statLabel and statLabel:IsA("TextLabel") then
+                local originalText = statLabel.Text
+                statLabel.Text = formatearStat(originalText)
+            end
+        end
+    end)             
+    if not success then
+        addError(errorMsg, debug.info(1, "l"), "Switch Formato", "Formato", "Formato/Frames")
+    end
+ end
+end)
+addTask(Formato)
+    
         
       
 local Datos = task.spawn(function()
             while wait(1) do
                 local success, errorMsg = pcall(function()
                     if player() then
-                        local serverPing = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue() * 1.5)
-                        if serverPing <= 250 then
-                            serverPingLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-                        elseif serverPing <= 450 then
-                            serverPingLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
-                        else
-                            serverPingLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-                        end
+                        local serverPing = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue() * 1.5)                       
                         serverPingLabel.Text = "Serv: " .. serverPing .. " ms"
                         
                         local ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue())
@@ -1985,13 +2284,7 @@ local Datos = task.spawn(function()
                         
                         local cpuUsage = math.floor(Stats.PerformanceStats.CPU:GetValue() * 100)
                         cpuLabel.Text = "CPU: " .. cpuUsage .. "%"
-                        if cpuUsage <= 50 then
-                            cpuLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-                        elseif cpuUsage <= 75 then
-                            cpuLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
-                        else
-                            cpuLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-                        end
+                        
                         
                         local fpsValue = math.floor(Stats.Workspace["Heartbeat"]:GetValue())
                         Fps.Text = "FPS: " .. tostring(fpsValue)
@@ -2021,8 +2314,7 @@ local Datos = task.spawn(function()
 				            formatNumber(nextRebirth),
 				            formatNumber(strengthValue),
 				            formatNumber(additionalStrength),
-				            formatNumber(rebirthValue))    
-				            
+				            formatNumber(rebirthValue))    				            
 				              local currentRebirthValue = data.Rebirth.Value
 				        if currentRebirthValue > previousRebirthValue then
 				            game.ReplicatedStorage.RebirthTimeValue.Value = tick()
@@ -2037,22 +2329,7 @@ local Datos = task.spawn(function()
 				        else
 				            hasReinitialized = false
 				          end
-				           saveRebirthData()           
-                        
-                        statusLabel.Text = "Stats Updated"
-                        
-                        if ping > 500 then
-                            error("High ping detected: " .. ping .. "ms")
-                        end
-                        if fpsValue < 10 then
-                            error("Low FPS warning: " .. fpsValue)
-                        end
-                        if serverPing > 600 then
-                            error("Critical server ping: " .. serverPing .. "ms")
-                        end
-                        if cpuUsage > 90 then
-                            error("High CPU usage detected: " .. cpuUsage .. "%")
-                        end
+				           saveRebirthData()                                                        
                     end
                 end)            
                 if not success then
@@ -2061,122 +2338,9 @@ local Datos = task.spawn(function()
             end
         end)
 addTask(Datos)
+
         
-  
-        
-        --Traflamr en pato
-        local isTransformed = false
-        local originalAccessories = {}
-        local originalTransparencies = {}
-        local duckMesh = nil
-        
-        local function transformToDuck()
-            if isTransformed or not lplr.Character then return end
-            
-            local success, errorMsg = pcall(function()
-                originalAccessories = {}
-                originalTransparencies = {}
-                
-                for _, v in pairs(lplr.Character:GetChildren()) do
-                    if v:IsA("Hat") or v:IsA("Accessory") or v.Name:lower():find("hair") then
-                        v.Parent = game.ReplicatedStorage
-                        table.insert(originalAccessories, v)
-                    elseif v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" then
-                        originalTransparencies[v] = v.Transparency
-                        v.Transparency = 1
-                    elseif v:IsA("MeshPart") then
-                        originalTransparencies[v] = v.Transparency
-                        v.Transparency = 1
-                    end
-                end
-                
-                if lplr.Character:FindFirstChild("Head") then
-                    originalTransparencies[lplr.Character.Head] = lplr.Character.Head.Transparency
-                    lplr.Character.Head.Transparency = 1
-                    
-                    local face = lplr.Character.Head:FindFirstChild("face")
-                    if face then
-                        face.Transparency = 1
-                    end
-                end
-                
-                duckMesh = Instance.new("SpecialMesh", lplr.Character.HumanoidRootPart)
-                duckMesh.MeshId = "http://www.roblox.com/asset/?id=9419831"
-                duckMesh.TextureId = "http://www.roblox.com/asset/?id=9419827"
-                duckMesh.Scale = Vector3.new(5, 5, 5)
-                duckMesh.Name = "DuckMesh"
-                
-                lplr.Character.HumanoidRootPart.Transparency = 0
-                
-                isTransformed = true
-            end)
-            
-            if not success then
-                addError(errorMsg, debug.info(1, "l"), "Duck Transform", "transformToDuck", "Duck Switch")
-            end
-        end
-        
-        local function revertTransformation()
-            if not isTransformed or not lplr.Character then return end
-            
-            local success, errorMsg = pcall(function()
-                local duckMeshToRemove = lplr.Character.HumanoidRootPart:FindFirstChild("DuckMesh")
-                if duckMeshToRemove then
-                    duckMeshToRemove:Destroy()
-                end
-                
-                for _, accessory in pairs(originalAccessories) do
-                    if accessory and accessory.Parent == game.ReplicatedStorage then
-                        accessory.Parent = lplr.Character
-                    end
-                end
-                
-                for part, transparency in pairs(originalTransparencies) do
-                    if part and part.Parent then
-                        part.Transparency = transparency
-                    end
-                end
-                
-                if lplr.Character:FindFirstChild("Head") then
-                    lplr.Character.Head.Transparency = 0
-                    local face = lplr.Character.Head:FindFirstChild("face")
-                    if face then
-                        face.Transparency = 0
-                    end
-                end
-                
-                if lplr.Character:FindFirstChild("HumanoidRootPart") then
-                    lplr.Character.HumanoidRootPart.Transparency = 1
-                end
-                
-                isTransformed = false
-                originalAccessories = {}
-                originalTransparencies = {}
-            end)
-            
-            if not success then
-                addError(errorMsg, debug.info(1, "l"), "Duck Revert", "revertTransformation", "Duck Switch")
-            end
-        end
-        
-        local duckTask = task.spawn(function()
-            while wait(0.4) do
-                local success, errorMsg = pcall(function()
-                    if player() then
-                        if getIsActive7() and not isTransformed then
-                            transformToDuck()
-                        elseif not getIsActive7() and isTransformed then
-                            revertTransformation()
-                        end
-                    end
-                end)             
-                if not success then
-                    addError(errorMsg, debug.info(1, "l"), "Duck Controller", "duckTask", "Duck Switch")
-                end
-            end
-        end)
-        addTask(duckTask)
-        
+          
        
         
         local antiAfkTask1 = task.spawn(function()
