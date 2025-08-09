@@ -934,9 +934,7 @@ Siguiente.MouseButton1Click:Connect(function()
 end)
 
 button.MouseButton1Click:Connect(function()
-    pcall(function()
         lplr.Character.Humanoid:ChangeState(15)
-    end)
 end)
 
 Mix.MouseButton1Click:Connect(function()
@@ -1187,7 +1185,6 @@ createBar(0.513, "Fly Speed", Color3.fromRGB(0, 255, 0), 0.37, 200, function(v)
         
         flyTask = task.spawn(function()
             while flying do
-                pcall(function()
                     local char = lplr.Character
                     local hum = char and char:FindFirstChild("HumanoidRootPart")
                     local humanoid = char and char:FindFirstChild("Humanoid")
@@ -1229,7 +1226,6 @@ createBar(0.513, "Fly Speed", Color3.fromRGB(0, 255, 0), 0.37, 200, function(v)
                             end
                         end
                     end
-                end)
                 task.wait()
             end
         end)       
@@ -1533,7 +1529,6 @@ local task1 = task.spawn(function()
             if game.Players.LocalPlayer.Status.Blocking.Value == false and getIsActive1() then
                     game.Players.LocalPlayer.Status.Blocking.Value = true               
              end                                                    
-            pcall(function()
             task.spawn(function()
             if player() and game.PlaceId == 3311165597 and getIsActive1() then
                  if data.Quest.Value ~= "X Fighter Trainer" and yo() <= 30000 then
@@ -1553,7 +1548,6 @@ local task1 = task.spawn(function()
                           end
                        end 
                     end--if fin if game.PlaceId == 3311165597 then                
-                 end)
               end)
            end
                     end
@@ -1958,7 +1952,6 @@ local task11 = task.spawn(function()
                     end
                     if not getIsActive11() and not getIsActive12()  and selectedForm and not transforming and lplr.Status.Transformation.Value ~= selectedForm  then
                   transforming = true
-                    pcall(function()
            if Ex.equipskill:InvokeServer(selectedForm) then
             if game.PlaceId == 3311165597 then
             game.ReplicatedStorage.Package.Events.Higoober:InvokeServer()
@@ -1966,7 +1959,6 @@ local task11 = task.spawn(function()
             game:GetService("ReplicatedStorage").Package.Events.a.Cece:InvokeServer()
                        end 
                     end
-                  end)
                 transforming = false
                     end
                 end)             
