@@ -1595,10 +1595,8 @@ local npcList = {
 local task1 = task.spawn(function()
             while task.wait() do
                 local success, errorMsg = pcall(function()
-                    if getIsActive1() then
-                        if Congela() then
+                    if player() and getIsActive1() and  Congela() then
 					if game.PlaceId ~= 3311165597 or lplr.Status.Transformation.Value ~= "None" then   
-					if getIsActive1() and player()  then
                if data.Quest.Value ~= "" then
                         local currentQuest = data.Quest.Value
                         local playerStats = yo()
@@ -1629,12 +1627,10 @@ local task1 = task.spawn(function()
                                 lplr.Character.HumanoidRootPart.CFrame = CFrame.new(Jefe.HumanoidRootPart.CFrame * CFrame.new(0,0,6.2).p, Jefe.HumanoidRootPart.Position)	           
                                 break
                          end
-                   end
-                 end
-                end 
-           end
-           end
-           end
+                           end
+                            end
+                          end 
+                       end
                     end
                 end)               
                 if not success then
