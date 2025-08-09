@@ -1662,7 +1662,9 @@ local equipadas = {}
 local function equipToolByName(toolName)
     task.spawn(function()
     pcall(function()
-        game:GetService("ReplicatedStorage"):WaitForChild("Package"):WaitForChild("Events"):WaitForChild("equipskill"):InvokeServer(toolName)
+          if player() and data.Quest.Value ~= "" and getIsActive5() and not getIsActive6() then
+         game:GetService("ReplicatedStorage"):WaitForChild("Package"):WaitForChild("Events"):WaitForChild("equipskill"):InvokeServer(toolName)
+           end
         end)
     end)
 end
@@ -1690,10 +1692,25 @@ local function isInHabilidades(toolName)
     return false
 end
 
+local function isToolEquipped(toolName)
+    for _, tool in ipairs(lplr.Character:GetChildren()) do
+        if tool:IsA("Tool") and tool.Name == toolName then
+            return true
+        end
+    end
+    for _, tool in ipairs(lplr.Backpack:GetChildren()) do
+        if tool:IsA("Tool") and tool.Name == toolName then
+            return true
+        end
+    end
+    return false
+end
+
+
 task.spawn(function()
     while true do
         pcall(function()
-            if data.Quest.Value ~= "" and player() and getIsActive5() and not getIsActive6() then
+            if player() and data.Quest.Value ~= "" and getIsActive5() and not getIsActive6() then
                 if lplr.Status.Transformation.Value ~= "None" then   
                     task.spawn(function()
                         local activados = 0
@@ -1727,15 +1744,17 @@ end)
 
 task.spawn(function()
     while true do
-        pcall(function()
-if player() and getIsActive5() and not getIsActive6() then 
-            local stats = yo()
-            for _, info in ipairs(habilidades) do
-                if stats >= info.requerimiento and not equipadas[info.name] then
-                    equipToolByName(info.name)
-                    equipadas[info.name] = true
+        pcall(function()                      
+            if player() and getIsActive5() and not getIsActive6() then 
+                local stats = yo()
+                for _, info in ipairs(habilidades) do
+                    if stats >= info.requerimiento and not equipadas[info.name] then
+                        if not isToolEquipped(info.name) then
+                            equipToolByName(info.name)
+                            equipadas[info.name] = true
+                        end
+                    end
                 end
-            end
             end
         end)
         task.wait(.5)
