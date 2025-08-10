@@ -1515,7 +1515,7 @@ local task1 = task.spawn(function()
             while task.wait() do
                 local success, errorMsg = pcall(function()
                     if getIsActive1() then
-                        if player() and Congela() and Boss() then           
+                        if player() and Congela() then           
             if game.Players.LocalPlayer.Status.Blocking.Value == false and getIsActive1() then
                     game.Players.LocalPlayer.Status.Blocking.Value = true               
              end                                                    
@@ -1773,11 +1773,7 @@ local task2 = task.spawn(function()
                     queue_on_teleport("")
                 end
                 queued = true
-            end
-            if player() and Boss() and data.Quest.Value ~= "" and getIsActive1() and Congela() then         
-                game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
-                game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
-            end
+            end            
         end)
         if not success then
             addError(errorMsg, debug.info(1, "l"), "Switch Task 2", "task2", "Puch,NoTouch")
@@ -1798,6 +1794,10 @@ local task3 = task.spawn(function()
 								end
 							end
                     end
+                    if player() and Boss() and data.Quest.Value ~= "" and getIsActive1() and Congela() then         
+                game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
+                game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
+                     end
                 end)             
                 if not success then
                     addError(errorMsg, debug.info(1, "l"), "Switch Task 3", "task3", "Rebirth Normal")
