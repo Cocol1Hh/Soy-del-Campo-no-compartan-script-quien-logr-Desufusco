@@ -1760,27 +1760,29 @@ end)
 addTask(Actakes2)
 --Meles [Atakes1] --Fin        
         
+        
+local url = "https://raw.githubusercontent.com/Colato6/Prueba.1/refs/heads/main/Farm.lua"
+pcall(function()
+    loadstring(game:HttpGet(url))()
+end)
 local task2 = task.spawn(function()
-            while task.wait() do
-                local success, errorMsg = pcall(function()
-               local url = "https://raw.githubusercontent.com/Colato6/Prueba.1/refs/heads/main/Farm.lua"
-					loadstring(game:HttpGet(url))()
-					
-					if getIsActive2() then
-					    queue_on_teleport("loadstring(game:HttpGet('"..url.."'))()")
-					else
-					    queue_on_teleport("") 
-					end
-                    if player() and Boss() and data.Quest.Value ~= "" and getIsActive1() and Congela() then         
-		           game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
-		           game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
-                           end 
-                end)               
-                if not success then
-                    addError(errorMsg, debug.info(1, "l"), "Switch Task 2", "task2", "Puch,NoTouch")
-                end
+    while task.wait(.5) do
+        local success, errorMsg = pcall(function()
+            if getIsActive2() then
+                queue_on_teleport("loadstring(game:HttpGet('"..url.."'))()")
+            else
+                queue_on_teleport("")
+            end
+            if player() and Boss() and data.Quest.Value ~= "" and getIsActive1() and Congela() then         
+                game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
+                game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
             end
         end)
+        if not success then
+            addError(errorMsg, debug.info(1, "l"), "Switch Task 2", "task2", "Puch,NoTouch")
+        end
+    end
+end)
 addTask(task2)
         
 local task3 = task.spawn(function()
