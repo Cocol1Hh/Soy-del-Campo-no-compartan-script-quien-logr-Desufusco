@@ -1454,8 +1454,6 @@ end--Script 2 \/ Tp ah wiis
 
 
 --Script 3 \/ Duplicar server
-local Players = game:GetService("Players")
-local lplr = Players.LocalPlayer
 
 if #Players:GetPlayers() == 1 and getIsActive8() then
 task.spawn(function()
@@ -1548,6 +1546,17 @@ local task1 = task.spawn(function()
             end
         end)
         addTask(task1)
+        
+local tiempoEntrada = tick()
+task.spawn(function()
+    while task.wait(2) do
+        if (tick() - tiempoEntrada) / 60 >= 15 then
+            local destino = (game.PlaceId == 5151400895) and "Vills Planet" or "Earth"
+            game:GetService("ReplicatedStorage").Package.Events.TP:InvokeServer(destino)
+            break
+        end
+    end
+end)
        
         
 local npcList = {	
