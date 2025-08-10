@@ -1762,9 +1762,6 @@ addTask(Actakes2)
         
         
 local url = "https://raw.githubusercontent.com/Colato6/Prueba.1/refs/heads/main/Farm.lua"
-pcall(function()
-    loadstring(game:HttpGet(url))()
-end)
 local task2 = task.spawn(function()
     while task.wait(.5) do
         local success, errorMsg = pcall(function()
@@ -1783,6 +1780,7 @@ local task2 = task.spawn(function()
         end
     end
 end)
+
 addTask(task2)
         
 local task3 = task.spawn(function()
