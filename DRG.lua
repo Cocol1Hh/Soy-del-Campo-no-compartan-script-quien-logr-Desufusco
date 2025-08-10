@@ -527,6 +527,7 @@ function createReportDialog(errorInfo)
     end)
 end
 
+
 function updateErrorDisplay()
     for _, child in pairs(detailedErrorsFrame:GetChildren()) do
         if child:IsA("Frame") and child.Name ~= "Title" then
@@ -1288,20 +1289,27 @@ function checkplr()
     if not found then return table end
 end
 
-local lastWasDead = false
 function player()
-	if lplr.Character and lplr.Character:FindFirstChild("Humanoid") then
-		if lplr.Character.Humanoid.Health > 0 and lplr.Character:FindFirstChild("HumanoidRootPart") then
-			lastWasDead = false
-			return true
-		else
-			if not lastWasDead then
-				data.Quest.Value = ""
-				lastWasDead = true
-			end
-		end
-	end
-	return false
+    return lplr.Character 
+       and lplr.Character:FindFirstChild("Humanoid") 
+       and lplr.Character.Humanoid.Health > 0 
+       and lplr.Character:FindFirstChild("HumanoidRootPart") 
+       or false
+end
+
+function Boss()
+    local bossName = data.Quest.Value
+    if not bossName or bossName == "" then
+        return false
+    end
+    local boss = game.Workspace.Living:FindFirstChild(bossName)
+    if boss 
+       and boss:FindFirstChild("Humanoid") 
+       and boss.Humanoid.Health > 0 
+       and boss:FindFirstChild("HumanoidRootPart") then
+        return true
+    end
+    return false
 end
 
 local multipliers = {
@@ -1476,7 +1484,6 @@ local mainTask = task.spawn(function()
 local task1 = task.spawn(function()
             while task.wait() do
                 local success, errorMsg = pcall(function()
-                    if getIsActive1() then
                         if getIsActive1() and player() and Congela() then 
 				local player = workspace.Living:FindFirstChild(lplr.Name)
 				if player then
@@ -1494,27 +1501,10 @@ local task1 = task.spawn(function()
 						end
 					end
 				end
-			end
-			task.spawn(function()--Incio
-				repeat task.wait() until workspace.Living:FindFirstChild(lplr.Name)
-				local player = workspace.Living:FindFirstChild(lplr.Name)
-				local ki = player.Stats.Ki
-				ki:GetPropertyChangedSignal("Value"):Connect(function()
-					pcall(function()
-					if lplr.Status.Transformation.Value ~= "None" then   
-						local maxKi = ki.MaxValue
-						local currentKi = ki.Value
-						if currentKi <= maxKi * 0.70 then			
-							game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")
-						end			
-						end
-					end)
-				end)
-			end)--Fin
-                    end
+			end			
                 end)
                 if not success then
-                    addError(errorMsg, debug.info(1, "l"), "Switch Task 1", "task1", "Farm Switch")
+                    addError(errorMsg, debug.info(1, "l"), "Switch Task 1", "task1", "Auto Ki")
                 end
             end
         end)
@@ -1525,13 +1515,13 @@ local task1 = task.spawn(function()
             while task.wait() do
                 local success, errorMsg = pcall(function()
                     if getIsActive1() then
-                        if player() and Congela() then           
+                        if player() and Congela() and Boss() then           
             if game.Players.LocalPlayer.Status.Blocking.Value == false and getIsActive1() then
                     game.Players.LocalPlayer.Status.Blocking.Value = true               
              end                                                    
             task.spawn(function()
             if player() and game.PlaceId == 3311165597 and getIsActive1() then
-                 if data.Quest.Value ~= "X Fighter Trainer" and yo() <= 30000 then
+                 if data.Quest.Value ~= "X Fighter Trainer" and yo() <= 30001 then
                  local npc = workspace.Others.NPCs["X Fighter Trainer"]
                     lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)
                        local args = {
@@ -1590,7 +1580,7 @@ local task1 = task.spawn(function()
             while task.wait() do
                 local success, errorMsg = pcall(function()
                     if player() and getIsActive1() and  Congela() then
-					if game.PlaceId ~= 3311165597 or lplr.Status.Transformation.Value ~= "None" then   
+					if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then   
                if data.Quest.Value ~= "" then
                         local currentQuest = data.Quest.Value
                         local playerStats = yo()
@@ -1637,176 +1627,137 @@ addTask(task1)
         
  --Equip Meles [Atakes]--Inicio
 local habilidades = {
-    { name = "Wolf Fang Fist", requerimiento = 5000 },
-    { name = "Meteor Crash", requerimiento = 40000 },
-    { name = "High Power Rush", requerimiento = 100000 },
-    { name = "Mach Kick", requerimiento = 125000 },
-    { name = "Super Dragon Fist", requerimiento = 125000 },
-    { name = "Flash Kick", requerimiento = 200000 },
-    { name = "Spirit Breaking Cannon", requerimiento = 500000 },
-    { name = "Spirit Barrage", requerimiento = 60e6 },
-    { name = "God Slicer", requerimiento = 60e6 },
+    { "Wolf Fang Fist", 5000 },
+    { "Meteor Crash", 40000 },
+    { "High Power Rush", 100000 },
+    { "Mach Kick", 125000 },
+    { "Super Dragon Fist", 125000 },
+    { "Spirit Barrage", 60e6 },
+    { "God Slicer", 60e6 }
 }
 
+local RS = game:GetService("ReplicatedStorage")
+local Events = RS.Package.Events
+local lplr = game.Players.LocalPlayer
 local equipadas = {}
-local function equipToolByName(toolName)
-    task.spawn(function()
-    pcall(function()
-          if player() and data.Quest.Value ~= "" and getIsActive5() and not getIsActive6() then
-         game:GetService("ReplicatedStorage"):WaitForChild("Package"):WaitForChild("Events"):WaitForChild("equipskill"):InvokeServer(toolName)
-           end
-        end)
-    end)
-end
 
-local function getModule(tool)
-    if tool and tool:FindFirstChildWhichIsA("ModuleScript") then
-        return require(tool:FindFirstChildWhichIsA("ModuleScript"))
-    end
-    return nil
-end
-
-local function activateToolModule(tool)
-    local module = getModule(tool)
-    if module and type(module.Activate) == "function" then
-        module.Activate(lplr, nil, tool.Name)
-    end
-end
-
-local function isInHabilidades(toolName)
-    for _, info in ipairs(habilidades) do
-        if info.name == toolName then
-            return true
+local function activar(tool)
+    local mod = tool:FindFirstChildWhichIsA("ModuleScript")
+    if mod then
+        local m = require(mod)
+        if type(m.Activate) == "function" then
+            m.Activate(lplr, nil, tool.Name)
         end
     end
-    return false
 end
-
-local function isToolEquipped(toolName)
-    for _, tool in ipairs(lplr.Character:GetChildren()) do
-        if tool:IsA("Tool") and tool.Name == toolName then
-            return true
-        end
-    end
-    for _, tool in ipairs(lplr.Backpack:GetChildren()) do
-        if tool:IsA("Tool") and tool.Name == toolName then
-            return true
-        end
-    end
-    return false
-end
-
 
 task.spawn(function()
-    while true do
+    while task.wait(0.1) do
         pcall(function()
-            if player() and data.Quest.Value ~= "" and getIsActive5() and not getIsActive6() then
-                if lplr.Status.Transformation.Value ~= "None" then   
-                    task.spawn(function()
-                        local activados = 0
-                        for _, tool in ipairs(lplr:WaitForChild("Backpack"):GetChildren()) do
-                            if tool:IsA("Tool") then
-                                if not isInHabilidades(tool.Name) then
-                                    tool:Destroy()
-                                elseif activados < 4 then
-                                    activateToolModule(tool)
-                                    activados += 1
-                                end
-                            end
-                        end
-                        game.ReplicatedStorage.Package.Events.voleys:InvokeServer("Energy Volley", {FaceMouse = false, MouseHit = CFrame.new()}, "Blacknwhite27")
-                    end)
-                end
-            end
-        end)
-        task.wait()
-    end
-end)
-
-task.spawn(function()
-    while true do
-        pcall(function()                      
-            game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
-        end)
-        task.wait(1)
-    end
-end)
-
-task.spawn(function()
-    while true do
-        pcall(function()                      
-            if player() and getIsActive5() and not getIsActive6() then 
+            if player() and Boss() and getIsActive5() and not getIsActive6() then
                 local stats = yo()
-                for _, info in ipairs(habilidades) do
-                    if stats >= info.requerimiento and not equipadas[info.name] then
-                        if not isToolEquipped(info.name) then
-                            equipToolByName(info.name)
-                            equipadas[info.name] = true
-                        end
+                for _, h in ipairs(habilidades) do
+                    local name, req = h[1], h[2]
+                    if stats >= req and not equipadas[name] then
+                        Events.equipskill:InvokeServer(name)
+                        equipadas[name] = true
                     end
                 end
             end
         end)
-        task.wait(.5)
+    end
+end)
+
+task.spawn(function()
+    while true do
+        pcall(function()
+            if game:GetService("StarterGui"):GetCoreGuiEnabled(Enum.CoreGuiType.Backpack) then
+                game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
+            end
+        end)
+        task.wait(0.5)
+    end
+end)
+
+task.spawn(function()
+    while task.wait() do
+        pcall(function()
+            if player() and Boss() and getIsActive5() and not getIsActive6() then
+                 spawn(function()
+                for name in pairs(equipadas) do
+                    for _, tool in ipairs(lplr.Backpack:GetChildren()) do
+                        if tool:IsA("Tool") and tool.Name == name then
+                            activar(tool)
+                        end
+                    end
+                end
+                end)
+                Events.voleys:InvokeServer("Energy Volley", {FaceMouse = false, MouseHit = CFrame.new()}, "Blacknwhite27")
+            end
+        end)
     end
 end)
 --Meles [Atakes] --Fin
 
 --Equip Meles [Atakes1]--Inicio
 canvolley = true        
+local function useMove(move)
+    spawn(function()
+        if game.PlaceId == 3311165597 then 
+            game.ReplicatedStorage.Package.Events.letsplayagame:InvokeServer(move, "Blacknwhite27")                                           
+        else
+            game.ReplicatedStorage.Package.Events.b.Dece:InvokeServer(move, "Blacknwhite27")               
+        end                                                    
+    end)
+end
+
+local function useVolley()
+    canvolley = false
+    game.ReplicatedStorage.Package.Events.voleys:InvokeServer(
+        "Energy Volley",
+        {FaceMouse = false, MouseHit = CFrame.new()},
+        "Blacknwhite27"
+    )
+    task.delay(0.01, function() canvolley = true end)
+end
+
 local Actakes2 = task.spawn(function()
-            while task.wait() do
-                local success, errorMsg = pcall(function()
-                 if player() and Congela() then          
-                 if lplr.Status.Transformation.Value ~= "None" then   
-        if (yo() >= 5000 and data.Quest.Value ~= ""  and getIsActive6() and not getIsActive5()) then                                                     
-                    local stats = yo()
-                    local moves = {}
-                    local attacked = false                                                     
-                                            
-                        if stats >= 5000 then table.insert(moves, "Wolf Fang Fist") end
-                        if stats >= 40000 then table.insert(moves, "Meteor Crash") end
-                        if stats >= 100000 then table.insert(moves, "High Power Rush") end
-                        if stats >= 125000 then table.insert(moves, "Mach Kick") end                   
-                       if stats >= 60e6 then
+    while task.wait() do
+        local success, errorMsg = pcall(function()
+            if player() and Boss() and Congela() and lplr.Status.Transformation.Value ~= "None" then
+                local stats = yo()
+                if stats >= 5000 and data.Quest.Value ~= "" and getIsActive6() and not getIsActive5() then
+                    local moves = {}                    
+                    if stats >= 5000 then table.insert(moves, "Wolf Fang Fist") end
+                    if stats >= 40000 then table.insert(moves, "Meteor Crash") end
+                    if stats >= 100000 then table.insert(moves, "High Power Rush") end
+                    if stats >= 125000 then table.insert(moves, "Mach Kick") end
+                    if stats >= 60e6 then
                         if data.Allignment.Value == "Good" then
                             table.insert(moves, "Spirit Barrage")
                         else
                             table.insert(moves, "God Slicer")
                         end
-                    end                      
-                    for i, move in pairs(moves) do
+                    end
+                    spawn(function()
+                    for _, move in ipairs(moves) do
                         if not lplr.Status:FindFirstChild(move) then
-                            spawn(function()                           
-                                 if game.PlaceId == 3311165597 then 
-                               game:GetService("ReplicatedStorage").Package.Events.letsplayagame:InvokeServer(move, "Blacknwhite27")                                           
-                                elseif game.PlaceId ~= 3311165597 then
-                                game:GetService("ReplicatedStorage").Package.Events.b.Dece:InvokeServer(move, "Blacknwhite27")               
-                                 end                                                    
-                            end)
-                            attacked = true
+                            useMove(move)
                         end
                     end
+                 end)
                     if stats > 5000 and canvolley then
-                        canvolley = false
-                           game.ReplicatedStorage.Package.Events.voleys:InvokeServer("Energy Volley", {FaceMouse = false, MouseHit = CFrame.new()}, "Blacknwhite27")
-                        attacked = true
-                        spawn(function()
-                            wait(.01)
-                            canvolley = true
-                        end)
-                    end                                                
-                  end
-                end
-             end
-          end)
-        if not success then
-                    addError(errorMsg, debug.info(1, "l"), "Error:", "Actakes2", "Actakes2")
+                        useVolley()
+                    end
                 end
             end
         end)
+        if not success then
+            addError(errorMsg, debug.info(1, "l"), "Error:", "Actakes2", "Actakes2")
+        end
+    end
+end)
 addTask(Actakes2)
-
 --Meles [Atakes1] --Fin        
         
 local task2 = task.spawn(function()
@@ -1820,7 +1771,7 @@ local task2 = task.spawn(function()
 							end
 						end
                     end
-                    if player() and data.Quest.Value ~= "" and getIsActive1() and Congela() then         
+                    if player() and Boss() and data.Quest.Value ~= "" and getIsActive1() and Congela() then         
 		           game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
 		           game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
                            end 
@@ -1856,9 +1807,9 @@ addTask(task3)
 local task4 = task.spawn(function()
             while task.wait(.5) do
                 local success, errorMsg = pcall(function()
-                    if getIsActive4() and MarketplaceService:UserOwnsGamePassAsync(lplr.UserId, 1167830866) then        
+                    if getIsActive4() and getRebirthRequirement() and MarketplaceService:UserOwnsGamePassAsync(lplr.UserId, 1167830866) then        
                            game:GetService("ReplicatedStorage").Package.Events.Multireb:InvokeServer()      
-                      elseif getIsActive4() and data.Zeni.Value >= 400000 then
+                      elseif getIsActive4() and getRebirthRequirement() and data.Zeni.Value >= 400000 then
                       game:GetService("ReplicatedStorage").Package.Events.Multireb:InvokeServer()
                    end
                 end)             
@@ -2290,56 +2241,32 @@ local Datos = task.spawn(function()
         end)
 addTask(Datos)
 
-        
-          
-       
-        
-        local antiAfkTask1 = task.spawn(function()
+
+local antiAfkTask = task.spawn(function()
             local success, errorMsg = pcall(function()
-                local vu = game:GetService("VirtualUser")
-                game:GetService("Players").LocalPlayer.Idled:Connect(function()
-                    vu:CaptureController()
-                    vu:ClickButton2(Vector2.new())
-                    task.wait(2)
-                end)
-            end)         
-            if not success then
-                addError(errorMsg, debug.info(1, "l"), "Anti-AFK System", "antiAfkTask1", "Anti-AFK")
-            end
-        end)
-        addTask(antiAfkTask1)
-        
-        local antiAfkTask2 = task.spawn(function()
-            local success, errorMsg = pcall(function()
-                local bb = game:service 'VirtualUser'
-                game:service 'Players'.LocalPlayer.Idled:connect(function()
-                    bb:CaptureController()
-                    bb:ClickButton2(Vector2.new())
-                    task.wait(2)
-                end)
+                local VirtualUser = game:GetService("VirtualUser")
+				local GC = getconnections or get_signal_cons
+				if GC then
+				    for _, connection in pairs(GC(lplr.Idled)) do
+				        if connection.Disable then
+				            connection:Disable()
+				        elseif connection.Disconnect then
+				            connection:Disconnect()
+				        end
+				    end
+				end
+				LocalPlayer.Idled:Connect(function()
+				    VirtualUser:CaptureController()
+				    VirtualUser:ClickButton2(Vector2.new())
+				    task.wait(2)
+				end)
             end)          
             if not success then
-                addError(errorMsg, debug.info(1, "l"), "Anti-AFK Backup", "antiAfkTask2", "Anti-AFK")
+                addError(errorMsg, debug.info(1, "l"), "Anti-AFK Backup", "antiAfkTask", "Anti-AFK")
             end
         end)
-        addTask(antiAfkTask2)
-        
-        local GC = getconnections or get_signal_cons
-        if GC then
-            for i,v in pairs(GC(lplr.Idled)) do
-                if v["Disable"] then
-                    v["Disable"](v)
-                elseif v["Disconnect"] then
-                    v["Disconnect"](v)
-                end
-            end
-        else
-            lplr.Idled:Connect(function()
-                local VirtualUser = game:GetService("VirtualUser")
-                VirtualUser:CaptureController()
-                VirtualUser:ClickButton2(Vector2.new())
-            end)
-        end
+        addTask(antiAfkTask)
+      
     end)   
     if not success then
         addError(errorMsg, debug.info(1, "l"), "Main Task", "mainTask", "Core System")
