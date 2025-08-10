@@ -1762,13 +1762,17 @@ addTask(Actakes2)
         
         
 local url = "https://raw.githubusercontent.com/Colato6/Prueba.1/refs/heads/main/Farm.lua"
+local queued = false
 local task2 = task.spawn(function()
     while task.wait(.5) do
         local success, errorMsg = pcall(function()
-            if getIsActive2() then
-                queue_on_teleport("loadstring(game:HttpGet('"..url.."'))()")
-            else
-                queue_on_teleport("")
+            if not queued then
+                if getIsActive2() then
+                    queue_on_teleport("loadstring(game:HttpGet('"..url.."'))()")
+                else
+                    queue_on_teleport("")
+                end
+                queued = true
             end
             if player() and Boss() and data.Quest.Value ~= "" and getIsActive1() and Congela() then         
                 game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
@@ -1780,7 +1784,6 @@ local task2 = task.spawn(function()
         end
     end
 end)
-
 addTask(task2)
         
 local task3 = task.spawn(function()
