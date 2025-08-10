@@ -33,6 +33,7 @@ local Borde1 = Instance.new("UIStroke")
 local Borde2 = Instance.new("UIStroke")
 local Borde3 = Instance.new("UIStroke")
 local HttpService = game:GetService("HttpService")
+local TeleportService = game:GetService("TeleportService")
 local Lighting = game:GetService("Lighting")
 local UserInputService = game:GetService("UserInputService")
 local lplr = game.Players.LocalPlayer
@@ -44,6 +45,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Gto = Players.LocalPlayer
 local dataFolder = ReplicatedStorage:WaitForChild("Datas")
+local GameName = "Dragón_Blox_Ultimate"
 
 local cam = workspace.CurrentCamera
 
@@ -870,23 +872,81 @@ for _, props in pairs(textProperties) do
     TextLabel.TextSize = 50
 end
 
-local HttpService = game:GetService("HttpService")
-local switchName = "PanelState"
+if not isfolder("GameScripts") then
+    makefolder("GameScripts")
+end
+
+local gameFolder = "GameScripts/" .. GameName
+if not isfolder(gameFolder) then
+    makefolder(gameFolder)
+end
+
+local NameGame = gameFolder .. "/interruptores.json"
+local function SaveSwitchState(isActive, switchName)
+    local states = {}
+    if isfile(NameGame) then
+        states = HttpService:JSONDecode(readfile(NameGame))
+    end
+    states[switchName] = {SwitchOn = isActive, LastModified = os.time()}
+    writefile(NameGame, HttpService:JSONEncode(states))
+end
+local function LoadSwitchState(switchName)
+    if not isfile(NameGame) then return false end
+    local states = HttpService:JSONDecode(readfile(NameGame))
+    return states[switchName] and states[switchName].SwitchOn or false
+end
+
+local saveFile = gameFolder .. "/Barras.json"
+local function saveValue(name, value)
+    local data = {}
+    if isfile(saveFile) then
+        data = HttpService:JSONDecode(readfile(saveFile))
+    end
+    data[name] = {v = value, t = os.time()}
+    writefile(saveFile, HttpService:JSONEncode(data))
+end
+local function loadValue(name)
+    if not isfile(saveFile) then
+        return 0
+    end
+    local data = HttpService:JSONDecode(readfile(saveFile))
+    return data[name] and data[name].v or 0
+end
+
 local currentPanel = 1
 local isMinimized = true
 local clickCount = 0
-
+local miniFile = gameFolder .. "/Max_Mini.json"
 local function SaveMinimizedState(state)
-    writefile(switchName.."_Minimized.json", HttpService:JSONEncode({Minimized = state, LastModified = os.time()}))
+    writefile(miniFile, HttpService:JSONEncode({
+        Minimized = state,
+        LastModified = os.time()
+    }))
 end
-
 local function LoadMinimizedState()
-    if isfile(switchName.."_Minimized.json") then
-        local data = HttpService:JSONDecode(readfile(switchName.."_Minimized.json"))
+    if isfile(miniFile) then
+        local data = HttpService:JSONDecode(readfile(miniFile))
+        isMinimized = data.Minimized
         return data.Minimized
     end
     return true
 end
+
+local formFile = gameFolder .. "/SelectedForm.json"
+local selectedForm, transforming = nil, false
+local function saveForm(form)
+    writefile(formFile, HttpService:JSONEncode({
+        form = form,
+        time = os.time()
+    }))
+end
+local function loadForm()
+    if isfile(formFile) then
+        return HttpService:JSONDecode(readfile(formFile)).form
+    end
+    return nil
+end
+
 
 isMinimized = LoadMinimizedState()
 
@@ -943,43 +1003,6 @@ Mix.MouseButton1Click:Connect(function()
     SaveMinimizedState(isMinimized)
     UpdateVisibility()
 end)
-
-
-local saveFileName = "Legends_Switches.json"
-local function SaveSwitchState(isActive, switchName)
-    local states = {}
-    if isfile(saveFileName) then
-        states = HttpService:JSONDecode(readfile(saveFileName))
-    end
-    states[switchName] = {SwitchOn = isActive, LastModified = os.time()}
-    writefile(saveFileName, HttpService:JSONEncode(states))
-end
-
-local function LoadSwitchState(switchName)
-    if not isfile(saveFileName) then return false end
-    local states = HttpService:JSONDecode(readfile(saveFileName))
-    return states[switchName] and states[switchName].SwitchOn or false
-end
-
-local activeBar, speed = nil, 0
-local flying = true
-local function saveValue(name, value)
-    writefile(name..".json", HttpService:JSONEncode({v=value,t=os.time()}))
-end
-
-local function loadValue(name)
-    return isfile(name..".json") and HttpService:JSONDecode(readfile(name..".json")).v or 0
-end
-
---[Formas]
-local selectedForm, transforming = nil, false
-local function saveForm(form)
-    writefile("SelectedForm.json", game:GetService("HttpService"):JSONEncode({form = form, time = os.time()}))
-end
-
-local function loadForm()
-    return isfile("SelectedForm.json") and game:GetService("HttpService"):JSONDecode(readfile("SelectedForm.json")).form or nil
-end
 
 local function createSwitch(parent, position, switchName, initialState)
     local switchButton = Instance.new("TextButton")
@@ -1819,11 +1842,13 @@ addTask(task3)
 local task4 = task.spawn(function()
             while task.wait(.5) do
                 local success, errorMsg = pcall(function()
-                    if getIsActive4() and getRebirthRequirement() and MarketplaceService:UserOwnsGamePassAsync(lplr.UserId, 1167830866) then        
-                           game:GetService("ReplicatedStorage").Package.Events.Multireb:InvokeServer()      
-                      elseif getIsActive4() and getRebirthRequirement() and data.Zeni.Value >= 400000 then
-                      game:GetService("ReplicatedStorage").Package.Events.Multireb:InvokeServer()
-                   end
+                    if getIsActive4() and yo() >= getRebirthRequirement() then
+					    if MarketplaceService:UserOwnsGamePassAsync(lplr.UserId, 1167830866) then
+					        game:GetService("ReplicatedStorage").Package.Events.Multireb:InvokeServer()
+					    elseif data.Zeni.Value >= 200000 then
+					        game:GetService("ReplicatedStorage").Package.Events.Multireb:InvokeServer()
+					    end
+					end
                 end)             
                 if not success then
                     addError(errorMsg, debug.info(1, "l"), "Switch Task 4", "task4", "Milti|Rebirth")
@@ -2316,17 +2341,12 @@ local npcList = {
     {"Vegetable (Ultra Ego)", 20.975e9, true},
 }
 
-
 local expLabel = lplr.PlayerGui.Main.MainFrame.Frames.Quest.Yas.Rewards.EXP
-   
-local saveFile = "frame_position.txt"
-local palabrasProhibidas = {"All Stats", "Stat", "Stats"}
+local saveFile = "Frame_Position.json"
 
-local function limpiarTexto(texto)
-    for _, palabra in ipairs(palabrasProhibidas) do
-        texto = texto:gsub(palabra, "")
-    end
-    return texto
+local function extraerNumeroExp(texto)
+    local numero = texto:match("%d[%d,%.]*")
+    return numero or "0"
 end
 
 local function savePosition(frame)
@@ -2352,7 +2372,6 @@ local function loadPosition()
     end
     return resetPosition()
 end
-
 
 local function getLastMissionByRebirthRequirement(rebirthReq)
     local lastMission = "Ninguna"
@@ -2402,111 +2421,93 @@ stroke.Parent = textLabel
 
 local lastState = getIsActive9()
 
-
 task.spawn(function()
     while task.wait() do
         pcall(function()
-local expLabel = lplr.PlayerGui.Main.MainFrame.Frames.Quest.Yas.Rewards.EXP
-    local currentState = getIsActive9()
-    if currentState ~= lastState then  
-        if not currentState then  
-            frame.Position = resetPosition()   
-        end  
-        lastState = currentState  
-    end  
-    frame.Visible = currentState  
-    if not currentState then return end  
-
-    local fuerzaActual = yo()  
-    local rebirthReq = getRebirthRequirement()  
-    local ultimaMision = getLastMissionByRebirthRequirement(rebirthReq)  
-
-    local siguienteMision = nil  
-    for i = 1, #npcList do  
-        if fuerzaActual < npcList[i][2] then  
-            siguienteMision = npcList[i]  
-            break  
-        end  
-    end  
-
-    local fuerzaUltimoJefe = npcList[#npcList][2]
-    local baseText = ""
-
-    if fuerzaActual >= rebirthReq then  
-        baseText = " REBIRTH COMPLETE \nRq: " .. formatNumber(rebirthReq) .. " | STATS: " .. formatNumber(fuerzaActual)  
-        textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)  
-    elseif fuerzaActual >= fuerzaUltimoJefe then  
-        baseText = " QUEST FINAL \nRq: " .. formatNumber(rebirthReq) .. " | STATS: " .. formatNumber(fuerzaActual)  
-        textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)  
-    elseif siguienteMision then  
-        local nombreMision = siguienteMision[1]  
-        local faltaFuerza = formatNumber(siguienteMision[2] - fuerzaActual)  
-        baseText = nombreMision .. " | " .. faltaFuerza .. "\nReq: " .. formatNumber(rebirthReq) .. " | " .. ultimaMision  
-        textLabel.TextColor3 = Color3.fromRGB(150, 250, 255)  
-    else  
-        baseText = " QUEST FINAL \nRq: " .. formatNumber(rebirthReq) .. " | STATS: " .. formatNumber(fuerzaActual)  
-        textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)  
+            local expLabel = lplr.PlayerGui.Main.MainFrame.Frames.Quest.Yas.Rewards.EXP
+            local currentState = getIsActive9()
+            if currentState ~= lastState then  
+                if not currentState then  
+                    frame.Position = resetPosition()   
+                end  
+                lastState = currentState  
+            end  
+            frame.Visible = currentState  
+            if not currentState then return end  
+            local fuerzaActual = yo()  
+            local rebirthReq = getRebirthRequirement()  
+            local ultimaMision = getLastMissionByRebirthRequirement(rebirthReq)  
+            local siguienteMision = nil  
+            for i = 1, #npcList do  
+                if fuerzaActual < npcList[i][2] then  
+                    siguienteMision = npcList[i]  
+                    break  
+                end  
+            end  
+            local fuerzaUltimoJefe = npcList[#npcList][2]
+            local baseText = ""
+            if fuerzaActual >= rebirthReq then  
+                baseText = " REBIRTH COMPLETE \nRq: " .. formatNumber(rebirthReq) .. " | STATS: " .. formatNumber(fuerzaActual)  
+                textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)  
+            elseif fuerzaActual >= fuerzaUltimoJefe then  
+                baseText = " QUEST FINAL \nRq: " .. formatNumber(rebirthReq) .. " | STATS: " .. formatNumber(fuerzaActual)  
+                textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)  
+            elseif siguienteMision then  
+                local nombreMision = siguienteMision[1]  
+                local faltaFuerza = formatNumber(siguienteMision[2] - fuerzaActual)  
+                baseText = nombreMision .. " | " .. faltaFuerza .. "\nReq: " .. formatNumber(rebirthReq) .. " | " .. ultimaMision  
+                textLabel.TextColor3 = Color3.fromRGB(150, 250, 255)  
+            else  
+                baseText = " QUEST FINAL \nRq: " .. formatNumber(rebirthReq) .. " | STATS: " .. formatNumber(fuerzaActual)  
+                textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)  
+            end
+            local expText = "0"
+            if data.Quest.Value ~= "" then
+                expText = extraerNumeroExp(expLabel.Text)
+            end
+            textLabel.Text = baseText .. "\nExp: " .. formatNumber(expText)
+        end)
     end
-
-    local expText = "Cargando..."
-    if data.Quest.Value ~= "" then
-        expText = limpiarTexto(expLabel.Text)
-    end
-    textLabel.Text = baseText .. "\nExp: " .. expText
-    end)
-        end
-     end)   
+end)
     
-local TeleportService = game:GetService("TeleportService")
-local HttpService = game:GetService("HttpService")
-local lplr = game.Players.LocalPlayer
-local timeFileName = "SavedTime_" .. lplr.Name .. ".json"
-local rebirthFileName = "SavedRebirth_" .. lplr.Name .. ".json"
-local lastRebirthTimeFileName = "LastRebirthTime_" .. lplr.Name .. ".json"
+ 
+if not isfolder("GameScripts") then makefolder("GameScripts") end
+local gameFolder = "GameScripts/" .. GameName
+if not isfolder(gameFolder) then makefolder(gameFolder) end
+
+local saveFile = gameFolder .. "/rebirth_data.json"
 local savedTimestamp = os.time()
 local savedRebirth = 0
+local lastRebirthTime = 0
 local elapsedTime = 0
 local isPaused = false
 local rebirthIncreased = false
-local lastRebirthTime = 0
 
-local function createOrUpdateFile(fileName, value)
-    writefile(fileName, HttpService:JSONEncode({v = value}))
+local function saveData()
+    local dataToSave = {
+        SavedTime = savedTimestamp,
+        SavedRebirth = savedRebirth,
+        LastRebirthTime = lastRebirthTime }
+    writefile(saveFile, HttpService:JSONEncode(dataToSave))
+end
+if isfile(saveFile) then
+    local loadedData = HttpService:JSONDecode(readfile(saveFile))
+    savedTimestamp = loadedData.SavedTime or os.time()
+    savedRebirth = loadedData.SavedRebirth or 0
+    lastRebirthTime = loadedData.LastRebirthTime or 0
+else
+    saveData()
 end
 
-if not isfile(timeFileName) then
-    createOrUpdateFile(timeFileName, os.time())
-end
-
-if not isfile(rebirthFileName) then
-    createOrUpdateFile(rebirthFileName, data.Rebirth.Value)
-end
-
-if not isfile(lastRebirthTimeFileName) then
-    createOrUpdateFile(lastRebirthTimeFileName, 0)
-end
-
-local function loadValue(fileName, default)
-    if isfile(fileName) then
-        local data = HttpService:JSONDecode(readfile(fileName))
-        return data.v
-    end
-    return default
-end
-
-savedTimestamp = loadValue(timeFileName, os.time())
-savedRebirth = loadValue(rebirthFileName, data.Rebirth.Value)
-lastRebirthTime = loadValue(lastRebirthTimeFileName, 0)
 elapsedTime = os.time() - savedTimestamp
 
 local function resetTimer()
     savedTimestamp = os.time()
     elapsedTime = 0
-    createOrUpdateFile(timeFileName, savedTimestamp)
     savedRebirth = data.Rebirth.Value
-    createOrUpdateFile(rebirthFileName, savedRebirth)
-    isPaused = false
     rebirthIncreased = false
+    isPaused = false
+    saveData()
 end
 
 local timerLabel = Instance.new("TextLabel")
@@ -2535,16 +2536,14 @@ lastRecordLabel.Parent = frame
 
 spawn(function()
     while true do
+    pcall(function()
         local playerStats = yo()
         local rebirthRequirement = getRebirthRequirement()
         if playerStats >= rebirthRequirement then
-            if not isPaused then
-                isPaused = true
-            end
+            isPaused = true
         else
             isPaused = false
         end
-
         if game.PlaceId == 3311165597 then
             if isPaused then
                 savedTimestamp = os.time() - elapsedTime
@@ -2561,34 +2560,36 @@ spawn(function()
                 elapsedTime = os.time() - savedTimestamp
             end
         end
-
         local minutes = math.floor(elapsedTime / 60)
         local seconds = elapsedTime % 60
-        timerLabel.Text = isPaused 
+        timerLabel.Text = isPaused
             and string.format("%02d:%02d (Stop)", minutes, seconds)
             or string.format("Time:|%02d:%02d", minutes, seconds)
-
         local lastMinutes = math.floor(lastRebirthTime / 60)
         local lastSeconds = lastRebirthTime % 60
         lastRecordLabel.Text = string.format("Ultimo record:| %02d:%02d", lastMinutes, lastSeconds)
+        saveData()
+           end)
         task.wait()
     end
 end)
 
 spawn(function()
     while true do
+    pcall(function()
         if data.Rebirth.Value > savedRebirth then
             if game.PlaceId == 5151400895 then
                 lastRebirthTime = elapsedTime
-                createOrUpdateFile(lastRebirthTimeFileName, lastRebirthTime)
+                saveData()
             end
             if game.PlaceId == 3311165597 then
                 resetTimer()
             else
                 rebirthIncreased = true
                 isPaused = true
-            end
-        end
+               end
+             end
+          end)
         task.wait()
     end
 end)
@@ -2598,6 +2599,7 @@ TeleportService.LocalPlayerArrivedFromTeleport:Connect(function()
         resetTimer()
     end
 end)
+
 
 local gui = Instance.new("ScreenGui")
 gui.ResetOnSpawn = false
