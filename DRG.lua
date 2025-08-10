@@ -823,7 +823,7 @@ addTask(borderTask)
 
 local textProperties = {
     {text = "Farm", position = UDim2.new(0.010, 0, 0.115, 0), color = Color3.fromRGB(255, 0, 0)},
-    {text = "NoTouch", position = UDim2.new(0.520, 0, 0.115, 0), color = Color3.fromRGB(0, 255, 0)},
+    {text = "AutoExecuter", position = UDim2.new(0.520, 0, 0.115, 0), color = Color3.fromRGB(0, 255, 0)},
     {text = "Reb|Stats", position = UDim2.new(0.010, 0, 0.195, 0), color = Color3.fromRGB(0, 255, 255)},
     {text = "MultiRebirth", position = UDim2.new(0.520, 0, 0.195, 0), color = Color3.fromRGB(0, 0, 255)},
     {text = "Atackes1", position = UDim2.new(0.010, 0, 0.270, 0), color = Color3.fromRGB(255, 255, 0)},
@@ -1763,14 +1763,14 @@ addTask(Actakes2)
 local task2 = task.spawn(function()
             while task.wait() do
                 local success, errorMsg = pcall(function()
-                    if getIsActive2() then
-                        local char = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
-						for _, v in pairs(char:GetDescendants()) do
-							if v:IsA("BasePart") then
-								v.CanCollide = false
-							end
-						end
-                    end
+               local url = "https://raw.githubusercontent.com/Colato6/Prueba.1/refs/heads/main/Farm.lua"
+					loadstring(game:HttpGet(url))()
+					
+					if getIsActive2() then
+					    queue_on_teleport("loadstring(game:HttpGet('"..url.."'))()")
+					else
+					    queue_on_teleport("") 
+					end
                     if player() and Boss() and data.Quest.Value ~= "" and getIsActive1() and Congela() then         
 		           game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 1)
 		           game:GetService("ReplicatedStorage").Package.Events.p:FireServer("Blacknwhite27", 2)
