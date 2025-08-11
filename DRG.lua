@@ -1668,6 +1668,10 @@ local task1 = task.spawn(function()
 addTask(task1)
 
 
+local AutoFarm2 = task.spawn(function()
+            while task.wait() do
+                local success, errorMsg = pcall(function()
+                    if getIsActive2() then
 local char = lplr.Character or lplr.CharacterAdded:Wait()
 local bossesFolder = workspace:WaitForChild("Living")
 local npcsFolder = workspace:WaitForChild("Others"):WaitForChild("NPCs")
@@ -1721,6 +1725,15 @@ task.spawn(function()
 		task.wait()
 	end
 end)
+                     end
+                end)             
+                if not success then
+                    addError(errorMsg, debug.info(1, "l"), "AutoFarm2")
+                end
+            end
+        end)
+addTask(AutoFarm2)
+       
         
         
  --Equip Meles [Atakes]--Inicio
@@ -1857,7 +1870,7 @@ local Actakes2 = task.spawn(function()
 end)
 addTask(Actakes2)
 --Meles [Atakes1] --Fin        
-        
+
         
 local url = "https://raw.githubusercontent.com/Colato6/Prueba.1/refs/heads/main/Farm.lua"
 local queued = false
@@ -1865,7 +1878,7 @@ local task2 = task.spawn(function()
     while task.wait(.5) do
         local success, errorMsg = pcall(function()
             if not queued then
-                if getIsActive13() then
+                if getIsActive5()  then
                     queue_on_teleport("loadstring(game:HttpGet('"..url.."'))()")
                 else
                     queue_on_teleport("")
@@ -1874,7 +1887,7 @@ local task2 = task.spawn(function()
             end            
         end)
         if not success then
-            addError(errorMsg, debug.info(1, "l"), "Switch Task 2", "task2", "Puch,NoTouch")
+            addError(errorMsg, debug.info(1, "l"), "AutoExecuter")
         end
     end
 end)
