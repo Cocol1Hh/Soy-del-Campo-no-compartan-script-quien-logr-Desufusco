@@ -1668,11 +1668,8 @@ local task1 = task.spawn(function()
 addTask(task1)
 
 
-local AutoFarm2 = task.spawn(function()
-            while task.wait() do
-                local success, errorMsg = pcall(function()
-                    if getIsActive2() then
-local char = lplr.Character or lplr.CharacterAdded:Wait()
+
+
 local bossesFolder = workspace:WaitForChild("Living")
 local npcsFolder = workspace:WaitForChild("Others"):WaitForChild("NPCs")
 
@@ -1702,10 +1699,12 @@ local function getBestAliveBoss()
 	end
 	return nil
 end
-
-task.spawn(function()
-	while true do
-	pcall(function()
+                
+       
+        local AutoFarm2 = task.spawn(function()
+            while task.wait() do
+                local success, errorMsg = pcall(function()
+                local char = lplr.Character or lplr.CharacterAdded:Wait()
 		if data.Quest.Value == "" and getIsActive2() and not getIsActive1() then
 			local bestBoss = getBestAliveBoss()
 			if bestBoss then
@@ -1720,21 +1719,14 @@ task.spawn(function()
 				char = lplr.Character or lplr.CharacterAdded:Wait()
 				char:WaitForChild("HumanoidRootPart").CFrame = activeBoss.HumanoidRootPart.CFrame * CFrame.new(0,0,6.2)
 			end
-		end
-		end)
-		task.wait()
-	end
-end)
-                     end
-                end)             
+		        end
+		end)             
                 if not success then
                     addError(errorMsg, debug.info(1, "l"), "AutoFarm2")
                 end
             end
         end)
 addTask(AutoFarm2)
-       
-        
         
  --Equip Meles [Atakes]--Inicio
 local habilidades = {
@@ -1815,9 +1807,9 @@ canvolley = true
 local function useMove(move)
     spawn(function()
         if game.PlaceId == 3311165597 then 
-            game.ReplicatedStorage.Package.Events.letsplayagame:InvokeServer(move, "Blacknwhite27")                                           
+            game:GetService("ReplicatedStorage").Package.Events.letsplayagame:InvokeServer(move, "Blacknwhite27")                                           
         else
-            game.ReplicatedStorage.Package.Events.b.Dece:InvokeServer(move, "Blacknwhite27")               
+            game:GetService("ReplicatedStorage").Package.Events.Haha:InvokeServer(move, "Blacknwhite27")               
         end                                                    
     end)
 end
