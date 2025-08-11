@@ -1507,22 +1507,21 @@ local mainTask = task.spawn(function()
 local task1 = task.spawn(function()
             while task.wait() do
                 local success, errorMsg = pcall(function()
-                        if getIsActive1() and player() and Congela() then 
+                        if getIsActive1() or getIsActive2() and player() and Congela() then 
 				local player = workspace.Living:FindFirstChild(lplr.Name)
 				if player then
 					local ki = player.Stats.Ki
 					local maxKi = ki.MaxValue
 					local currentKi = ki.Value
-					local transform = lplr.Status.Transformation.Value
-					if transform ~= "None" then
-						if currentKi <= maxKi * 0.70 then
+					task.spawn(function()
+						if currentKi <= maxKi * 0.90 then
 							game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")
 						end
+		  		end)
 					else
-						if currentKi <= maxKi * 0.15 then
+						if currentKi <= maxKi * 0.25 then
 							game:GetService("ReplicatedStorage").Package.Events.cha:InvokeServer("Blacknwhite27")
 						end
-					end
 				end
 			end			
                 end)
@@ -1537,7 +1536,7 @@ addTask(task1)
 local task1 = task.spawn(function()
             while task.wait() do
                 local success, errorMsg = pcall(function()
-                    if getIsActive1() then
+                    if getIsActive1() or getIsActive2()  then
                         if player() and Congela() then           
 				local blocking = game.Players.LocalPlayer.Status.Blocking
 				if not blocking.Value then
@@ -1551,7 +1550,7 @@ local task1 = task.spawn(function()
 				end                   
 				
             task.spawn(function()
-            if player() and game.PlaceId == 3311165597 and getIsActive1() then
+            if player() and game.PlaceId == 3311165597 and getIsActive1() or getIsActive2() then
                  if data.Quest.Value ~= "X Fighter Trainer" and yo() <= 30001 then
                  local npc = workspace.Others.NPCs["X Fighter Trainer"]
                     lplr.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame * CFrame.new(0, 0, 4)
@@ -1704,8 +1703,9 @@ end
         local AutoFarm2 = task.spawn(function()
             while task.wait() do
                 local success, errorMsg = pcall(function()
+                if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then   
                 local char = lplr.Character or lplr.CharacterAdded:Wait()
-		if data.Quest.Value == "" and getIsActive2() and not getIsActive1() then
+		if data.Quest.Value == "" and getIsActive2() and not getIsActive1() then		
 			local bestBoss = getBestAliveBoss()
 			if bestBoss then
 				local npc = npcsFolder:FindFirstChild(bestBoss.Name)
@@ -1713,13 +1713,14 @@ end
 					Ex.Qaction:InvokeServer(npc)
 				end
 			end
-		else
+		elseif game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" and getIsActive2() then   
 			local activeBoss = bossesFolder:FindFirstChild(data.Quest.Value)
-			if activeBoss and activeBoss:FindFirstChild("HumanoidRootPart") and activeBoss.Humanoid.Health > 0 then
+			if activeBoss and activeBoss:FindFirstChild("HumanoidRootPart") and activeBoss.Humanoid.Health > 0 and getIsActive2() then
 				char = lplr.Character or lplr.CharacterAdded:Wait()
 				char:WaitForChild("HumanoidRootPart").CFrame = activeBoss.HumanoidRootPart.CFrame * CFrame.new(0,0,6.2)
-			end
+		   	end
 		        end
+		      end
 		end)             
                 if not success then
                     addError(errorMsg, debug.info(1, "l"), "AutoFarm2")
@@ -1730,11 +1731,11 @@ addTask(AutoFarm2)
         
  --Equip Meles [Atakes]--Inicio
 local habilidades = {
-    { "Wolf Fang Fist", 5000 },
-    { "Meteor Crash", 40000 },
-    { "High Power Rush", 100000 },
-    { "Mach Kick", 125000 },
-    { "Super Dragon Fist", 125000 },
+    { "Wolf Fang Fist", 2000 },
+    { "Meteor Crash", 100000 },
+    { "High Power Rush", 120000 },
+    { "Mach Kick", 225000 },
+    { "Super Dragon Fist", 265000 },
     { "Spirit Barrage", 60e6 },
     { "God Slicer", 60e6 }
 }
@@ -1785,7 +1786,7 @@ end)
 task.spawn(function()
     while task.wait() do
         pcall(function()
-            if player() and Boss() and getIsActive5() and not getIsActive6() then
+            if player() and Boss() and getIsActive5() and not getIsActive6() then            
                  spawn(function()
                 for name in pairs(equipadas) do
                     for _, tool in ipairs(lplr.Backpack:GetChildren()) do
@@ -1795,7 +1796,9 @@ task.spawn(function()
                     end
                 end
                 end)
+                if yo() > 10000 then
                 Events.voleys:InvokeServer("Energy Volley", {FaceMouse = false, MouseHit = CFrame.new()}, "Blacknwhite27")
+                end
             end
         end)
     end
@@ -1827,14 +1830,15 @@ end
 local Actakes2 = task.spawn(function()
     while task.wait() do
         local success, errorMsg = pcall(function()
-            if player() and Boss() and Congela() and lplr.Status.Transformation.Value ~= "None" then
+            if player() and Boss() and Congela() then
+            if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then   
                 local stats = yo()
-                if stats >= 5000 and data.Quest.Value ~= "" and getIsActive6() and not getIsActive5() then
+                if stats >= 1000 and data.Quest.Value ~= "" and getIsActive6() and not getIsActive5() then
                     local moves = {}                    
-                    if stats >= 5000 then table.insert(moves, "Wolf Fang Fist") end
-                    if stats >= 40000 then table.insert(moves, "Meteor Crash") end
-                    if stats >= 100000 then table.insert(moves, "High Power Rush") end
-                    if stats >= 125000 then table.insert(moves, "Mach Kick") end
+                    if stats >= 1000 then table.insert(moves, "Wolf Fang Fist") end
+                    if stats >= 100000 then table.insert(moves, "Meteor Crash") end
+                    if stats >= 300000 then table.insert(moves, "High Power Rush") end
+                    if stats >= 525000 then table.insert(moves, "Mach Kick") end
                     if stats >= 60e6 then
                         if data.Allignment.Value == "Good" then
                             table.insert(moves, "Spirit Barrage")
@@ -1849,14 +1853,15 @@ local Actakes2 = task.spawn(function()
                         end
                     end
                  end)
-                    if stats > 5000 and canvolley then
+                    if stats > 10000 and canvolley then
                         useVolley()
                     end
                 end
             end
+            end
         end)
         if not success then
-            addError(errorMsg, debug.info(1, "l"), "Error:", "Actakes2", "Actakes2")
+            addError(errorMsg, debug.info(1, "l"), "Actakes2")
         end
     end
 end)
