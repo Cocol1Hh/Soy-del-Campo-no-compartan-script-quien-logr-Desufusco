@@ -824,8 +824,8 @@ end)
 addTask(borderTask)
 
 local textProperties = {
-    {text = "Farm", position = UDim2.new(0.010, 0, 0.115, 0), color = Color3.fromRGB(255, 0, 0)},
-    {text = "AutoExecuter", position = UDim2.new(0.520, 0, 0.115, 0), color = Color3.fromRGB(0, 255, 0)},
+    {text = "AutoFarm", position = UDim2.new(0.010, 0, 0.115, 0), color = Color3.fromRGB(255, 0, 0)},
+    {text = "AutoFarm2", position = UDim2.new(0.520, 0, 0.115, 0), color = Color3.fromRGB(0, 255, 0)},
     {text = "Reb|Stats", position = UDim2.new(0.010, 0, 0.195, 0), color = Color3.fromRGB(0, 255, 255)},
     {text = "MultiRebirth", position = UDim2.new(0.520, 0, 0.195, 0), color = Color3.fromRGB(0, 0, 255)},
     {text = "Atackes1", position = UDim2.new(0.010, 0, 0.270, 0), color = Color3.fromRGB(255, 255, 0)},
@@ -838,6 +838,7 @@ local textProperties = {
     {text = "Tp|Planet", position = UDim2.new(0.520, 0, 0.495, 0), color = Color3.fromRGB(100, 200, 100)},
     {text = "Formas|Normal", position = UDim2.new(0.010, 0, 0.570, 0), color = Color3.fromRGB(200, 200, 90)},
     {text = "Formas|Vip", position = UDim2.new(0.520, 0, 0.570, 0), color = Color3.fromRGB(100, 200, 100)},
+    {text = "AutoExecuter", position = UDim2.new(0.010, 0, 0.650, 0), color = Color3.fromRGB(180, 1200, 130)},
 }
 
 local uniformSize = UDim2.new(0, 75, 0, 36)
@@ -1143,6 +1144,7 @@ local getIsActive9  = createSwitch(Barra1, UDim2.new(0.2,   0, 0.495, 0), "Legen
 local getIsActive10 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.495, 0), "Legends10", LoadSwitchState("Legends10"))
 local getIsActive11 = createSwitch(Barra1, UDim2.new(0.2,   0, 0.570, 0), "Legends11", LoadSwitchState("Legends11"))
 local getIsActive12 = createSwitch(Barra1, UDim2.new(0.740, 0, 0.570, 0), "Legends12", LoadSwitchState("Legends12"))
+local getIsActive13 = createSwitch(Barra1, UDim2.new(0.2,   0, 0.650, 0), "Legends13", LoadSwitchState("Legends13"))
 
 local jumpInput = 0
 local originalJumpPower
@@ -1620,7 +1622,7 @@ local npcList = {
 local task1 = task.spawn(function()
             while task.wait() do
                 local success, errorMsg = pcall(function()
-                    if player() and getIsActive1() and  Congela() then
+                    if player() and getIsActive1() and not getIsActive2() and  Congela() then
 					if game.PlaceId == 3311165597 or lplr.Status.Transformation.Value ~= "None" then   
                if data.Quest.Value ~= "" then
                         local currentQuest = data.Quest.Value
@@ -1664,6 +1666,61 @@ local task1 = task.spawn(function()
             end
         end)
 addTask(task1)
+
+
+local char = lplr.Character or lplr.CharacterAdded:Wait()
+local bossesFolder = workspace:WaitForChild("Living")
+local npcsFolder = workspace:WaitForChild("Others"):WaitForChild("NPCs")
+
+local function getBossList()
+	local list = {}
+	for _, boss in ipairs(bossesFolder:GetChildren()) do
+		if boss:FindFirstChild("Stats") and boss.Stats:FindFirstChild("Strength") and npcsFolder:FindFirstChild(boss.Name) then
+			local s = boss.Stats.Strength.Value
+			if typeof(s) == "number" then
+				table.insert(list, {Name = boss.Name, Strength = s})
+			end
+		end
+	end
+	return list
+end
+
+local function getBestAliveBoss()
+	local bosses = getBossList()
+	table.sort(bosses, function(a,b) return a.Strength > b.Strength end)
+	for _, boss in ipairs(bosses) do
+		if data.Defense.Value >= boss.Strength then
+			local livingBoss = bossesFolder:FindFirstChild(boss.Name)
+			if livingBoss and livingBoss:FindFirstChild("Humanoid") and livingBoss.Humanoid.Health > 0 then
+				return boss
+			end
+		end
+	end
+	return nil
+end
+
+task.spawn(function()
+	while true do
+	pcall(function()
+		if data.Quest.Value == "" and getIsActive2() and not getIsActive1() then
+			local bestBoss = getBestAliveBoss()
+			if bestBoss then
+				local npc = npcsFolder:FindFirstChild(bestBoss.Name)
+				if npc then
+					Ex.Qaction:InvokeServer(npc)
+				end
+			end
+		else
+			local activeBoss = bossesFolder:FindFirstChild(data.Quest.Value)
+			if activeBoss and activeBoss:FindFirstChild("HumanoidRootPart") and activeBoss.Humanoid.Health > 0 then
+				char = lplr.Character or lplr.CharacterAdded:Wait()
+				char:WaitForChild("HumanoidRootPart").CFrame = activeBoss.HumanoidRootPart.CFrame * CFrame.new(0,0,6.2)
+			end
+		end
+		end)
+		task.wait()
+	end
+end)
         
         
  --Equip Meles [Atakes]--Inicio
@@ -1808,7 +1865,7 @@ local task2 = task.spawn(function()
     while task.wait(.5) do
         local success, errorMsg = pcall(function()
             if not queued then
-                if getIsActive2() then
+                if getIsActive13() then
                     queue_on_teleport("loadstring(game:HttpGet('"..url.."'))()")
                 else
                     queue_on_teleport("")
