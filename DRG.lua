@@ -778,7 +778,7 @@ Selct.ScrollBarThickness = 5
 Selct.ScrollingDirection = Enum.ScrollingDirection.Y  
 Selct.CanvasSize = UDim2.new(0, 0, 0, 0)  -- lo actualizaremos después
 
-local forms = {'Beast', 'SSJBUI', 'Ultra Ego', 'LBSSJ4', 'SSJR3', 'SSJB3', 'God Of Destruction', 'God Of Creation', 'Jiren Ultra Instinct', 'Mastered Ultra Instinct', 'Godly SSJ2', 'Ultra Instinct Omen', 'Evil SSJ', 'Blue Evolution', 'Dark Rose', 'Kefla SSJ2', 'SSJ Berserker', 'True Rose', 'SSJB Kaioken', 'SSJ Rose', 'SSJ Blue', 'Corrupt SSJ', 'SSJ Rage', 'SSJG', 'SSJ4', 'Mystic', 'LSSJ', 'SSJ3', 'Spirit SSJ', 'SSJ2 Majin', 'SSJ2', 'SSJ', 'FSSJ', 'Kaioken'}
+local forms = {'Pure Astral', 'Corrupt Astral', 'Beast', 'SSJBUI', 'Ultra Ego', 'LBSSJ4', 'SSJR3', 'SSJB3', 'God Of Destruction', 'God Of Creation', 'Jiren Ultra Instinct', 'Mastered Ultra Instinct', 'Godly SSJ2', 'Ultra Instinct Omen', 'Evil SSJ', 'Blue Evolution', 'Dark Rose', 'Kefla SSJ2', 'SSJ Berserker', 'True Rose', 'SSJB Kaioken', 'SSJ Rose', 'SSJ Blue', 'Corrupt SSJ', 'SSJ Rage', 'SSJG', 'SSJ4', 'Mystic', 'LSSJ', 'SSJ3', 'Spirit SSJ', 'SSJ2 Majin', 'SSJ2', 'SSJ', 'FSSJ', 'Kaioken'}
 
 local frame = Instance.new("Frame", Selct)  
 frame.Size = UDim2.new(1, 0, 0, 0)  -- ancho igual al ScrollingFrame, altura dinámica  
@@ -1537,9 +1537,17 @@ local task1 = task.spawn(function()
                 local success, errorMsg = pcall(function()
                     if getIsActive1() then
                         if player() and Congela() then           
-            if game.Players.LocalPlayer.Status.Blocking.Value == false and getIsActive1() then
-                    game.Players.LocalPlayer.Status.Blocking.Value = true               
-             end                                                    
+				local blocking = game.Players.LocalPlayer.Status.Blocking
+				if not blocking.Value then
+				    for i = 1, 10 do
+				        if getIsActive1() then
+				            blocking.Value = not blocking.Value
+				        end
+				        task.wait(0.2) 
+				    end
+				    blocking.Value = true
+				end                   
+				
             task.spawn(function()
             if player() and game.PlaceId == 3311165597 and getIsActive1() then
                  if data.Quest.Value ~= "X Fighter Trainer" and yo() <= 30001 then
@@ -1561,6 +1569,7 @@ local task1 = task.spawn(function()
                     end--if fin if game.PlaceId == 3311165597 then                
               end)
            end
+           else
                     end
                 end)               
                 if not success then
@@ -1964,19 +1973,26 @@ local task12 = task.spawn(function()
                     if getIsActive12() then
                        if getIsActive12() and not getIsActive11()  and player() and Congela() then
 					        local Forms = {                                                           
-					    'Blanco', 
-					    'SSJB4', 
-					    'True God of Creation', 
-					    'True God of Destruction', 
-					    'Super Broly', 
-					    'LSSJG', 
-					    'LSSJ4', 
-					    'SSJG4', 
-					    'LSSJ3', 
-					    'SSJ5', 
-					    'Mystic Kaioken', 
-					    'LSSJ Kaioken', 
-					    'SSJ2 Kaioken'}
+				"Time Breaker",
+				"True SSJG",
+				"CSSJB3",
+				"CSSJB2",
+				"CSSJB",
+				"Blanco",
+				"SSJB4",
+				"True God of Creation",
+				"True God of Destruction",
+				"Godly SSJ3",
+				"Super Broly",
+				"LSSJG",
+				"Godly SSJ",
+				"LSSJ4",
+				"SSJG4",
+				"LSSJ3",
+				"SSJ5",
+				"Mystic Kaioken",
+				"LSSJ Kaioken",
+				"SSJ2 Kaioken"}
                              local status = lplr.Status    
                            for _, form in ipairs(Forms) do 
                    if Ex.equipskill:InvokeServer(form) then break end  
@@ -2474,7 +2490,6 @@ end)
 if not isfolder("GameScripts") then makefolder("GameScripts") end
 local gameFolder = "GameScripts/" .. GameName
 if not isfolder(gameFolder) then makefolder(gameFolder) end
-
 local saveFile = gameFolder .. "/rebirth_data.json"
 local savedTimestamp = os.time()
 local savedRebirth = 0
@@ -2482,14 +2497,17 @@ local lastRebirthTime = 0
 local elapsedTime = 0
 local isPaused = false
 local rebirthIncreased = false
+local HttpService = game:GetService("HttpService")
 
 local function saveData()
     local dataToSave = {
         SavedTime = savedTimestamp,
         SavedRebirth = savedRebirth,
-        LastRebirthTime = lastRebirthTime }
+        LastRebirthTime = lastRebirthTime
+    }
     writefile(saveFile, HttpService:JSONEncode(dataToSave))
 end
+
 if isfile(saveFile) then
     local loadedData = HttpService:JSONDecode(readfile(saveFile))
     savedTimestamp = loadedData.SavedTime or os.time()
@@ -2514,94 +2532,107 @@ local timerLabel = Instance.new("TextLabel")
 timerLabel.Size = UDim2.new(0, 200, 0, 50)
 timerLabel.Position = UDim2.new(0.200, 0, -0.7, 0)
 timerLabel.Text = "Cargando..."
-timerLabel.BackgroundTransparency = 1  
+timerLabel.BackgroundTransparency = 1
 timerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-timerLabel.TextStrokeTransparency = 0  
-timerLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0) 
+timerLabel.TextStrokeTransparency = 0
+timerLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
 timerLabel.Font = Enum.Font.SourceSansBold
 timerLabel.TextSize = 30
 timerLabel.Parent = frame
 
 local lastRecordLabel = Instance.new("TextLabel")
-lastRecordLabel.Size = UDim2.new(0, 200, 0, 50)
+lastRecordLabel.Size = UDim2.new(0, 400, 0, 50)
 lastRecordLabel.Position = UDim2.new(0.200, 0, -0.4, 0)
 lastRecordLabel.Text = "Ultimo record:| 00:00"
-lastRecordLabel.BackgroundTransparency = 1  
+lastRecordLabel.BackgroundTransparency = 1
 lastRecordLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-lastRecordLabel.TextStrokeTransparency = 0  
-lastRecordLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0) 
+lastRecordLabel.TextStrokeTransparency = 0
+lastRecordLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
 lastRecordLabel.Font = Enum.Font.SourceSansBold
 lastRecordLabel.TextSize = 24
 lastRecordLabel.Parent = frame
 
 spawn(function()
     while true do
-    pcall(function()
-        local playerStats = yo()
-        local rebirthRequirement = getRebirthRequirement()
-        if playerStats >= rebirthRequirement then
-            isPaused = true
-        else
-            isPaused = false
-        end
-        if game.PlaceId == 3311165597 then
-            if isPaused then
-                savedTimestamp = os.time() - elapsedTime
-            else
-                elapsedTime = os.time() - savedTimestamp
-            end
-        elseif rebirthIncreased then
-            if not isPaused then
-                elapsedTime = os.time() - savedTimestamp
+        pcall(function()
+            local playerStats = yo()
+            local rebirthRequirement = getRebirthRequirement()
+            if playerStats >= rebirthRequirement then
                 isPaused = true
+            else
+                isPaused = false
             end
-        else
-            if not isPaused then
-                elapsedTime = os.time() - savedTimestamp
+            if game.PlaceId == 3311165597 then
+                if isPaused then
+                    savedTimestamp = os.time() - elapsedTime
+                else
+                    elapsedTime = os.time() - savedTimestamp
+                end
+            elseif rebirthIncreased then
+                if not isPaused then
+                    elapsedTime = os.time() - savedTimestamp
+                    isPaused = true
+                end
+            else
+                if not isPaused then
+                    elapsedTime = os.time() - savedTimestamp
+                end
             end
-        end
-        local minutes = math.floor(elapsedTime / 60)
-        local seconds = elapsedTime % 60
-        timerLabel.Text = isPaused
-            and string.format("%02d:%02d (Stop)", minutes, seconds)
-            or string.format("Time:|%02d:%02d", minutes, seconds)
-        local lastMinutes = math.floor(lastRebirthTime / 60)
-        local lastSeconds = lastRebirthTime % 60
-        lastRecordLabel.Text = string.format("Ultimo record:| %02d:%02d", lastMinutes, lastSeconds)
-        saveData()
-           end)
+            if elapsedTime >= 3600 then
+                resetTimer()
+            end
+            local minutes = math.floor(elapsedTime / 60)
+            local seconds = elapsedTime % 60
+            timerLabel.Text = isPaused and string.format("%02d:%02d (Stop)", minutes, seconds) or string.format("Time:|%02d:%02d", minutes, seconds)
+            local lastMinutes = math.floor(lastRebirthTime / 60)
+            local lastSeconds = lastRebirthTime % 60
+            local extraText = ""
+            if lastRebirthTime > 0 and not rebirthIncreased then
+                if elapsedTime >= lastRebirthTime - 10 and elapsedTime < lastRebirthTime then
+                    extraText = "   ⚠ Apúrate"
+                elseif elapsedTime == lastRebirthTime then
+                    extraText = "   ⏱ Igual"
+                elseif elapsedTime > lastRebirthTime then
+                    extraText = "   🐌 Más lento"
+                elseif elapsedTime < lastRebirthTime then
+                    extraText = "   ⚡ Más rápido"
+                end
+            end
+            lastRecordLabel.Text = string.format("Ultimo record:| %02d:%02d%s", lastMinutes, lastSeconds, extraText)
+            saveData()
+        end)
         task.wait()
     end
 end)
 
 spawn(function()
     while true do
-    pcall(function()
-        if data.Rebirth.Value > savedRebirth then
-            if game.PlaceId == 5151400895 then
-                lastRebirthTime = elapsedTime
-                saveData()
+        pcall(function()
+            if data.Rebirth.Value > savedRebirth then
+                if game.PlaceId == 5151400895 then
+                    lastRebirthTime = elapsedTime
+                    saveData()
+                end
+                if game.PlaceId == 3311165597 then
+                    resetTimer()
+                else
+                    rebirthIncreased = true
+                    isPaused = true
+                end
             end
-            if game.PlaceId == 3311165597 then
-                resetTimer()
-            else
-                rebirthIncreased = true
-                isPaused = true
-               end
-             end
-          end)
+        end)
         task.wait()
     end
 end)
 
-TeleportService.LocalPlayerArrivedFromTeleport:Connect(function()
+game:GetService("TeleportService").LocalPlayerArrivedFromTeleport:Connect(function()
     if game.PlaceId == 3311165597 and rebirthIncreased then
         resetTimer()
     end
 end)
 
-
 local gui = Instance.new("ScreenGui")
+gui.Name = "HUD_" .. lplr.Name
 gui.ResetOnSpawn = false
 gui.DisplayOrder = 999 
 gui.Parent = lplr:WaitForChild("PlayerGui")
@@ -2615,24 +2646,35 @@ txt.TextStrokeTransparency = 0
 txt.TextStrokeColor3 = Color3.fromRGB(0, 0, 255)
 txt.Font = Enum.Font.Arcade
 txt.TextSize = 45
-txt.Text = "Activar [Form|Normal] o [Form|Vip]"
+txt.Text = ""
 txt.Visible = false
 txt.Parent = gui
 
 task.spawn(function()
     while true do
         pcall(function()
+            local s1, a1 = pcall(getIsActive1)
             local s11, a11 = pcall(getIsActive11)
             local s12, a12 = pcall(getIsActive12)
-            local s1, a1 = pcall(getIsActive1)
+            local s5, a5 = pcall(getIsActive5)
+            local s6, a6 = pcall(getIsActive6)
             local tieneForma = (lplr.Status.Transformation.Value == selectedForm and selectedForm ~= nil and selectedForm ~= "")
-            if s11 and s12 and s1 then
-                txt.Visible = (a11 == false and a12 == false and a1 == true and not tieneForma)
-            else
-                txt.Visible = false
+            txt.Visible = false
+            txt.Text = ""
+            txt.TextColor3 = Color3.fromRGB(255, 0, 0)
+            if s1 and a1 == true then
+                if s5 and s6 and a5 == true and a6 == true then
+                    txt.Text = "⚠ Desactive Attackes1 o Attackes2 ⚠"
+                    txt.TextColor3 = Color3.fromRGB(255, 255, 0)
+                    txt.Visible = true
+                elseif s11 and s12 and a11 == false and a12 == false and not tieneForma then
+                    txt.Text = "Activar [Form|Normal] o [Form|Vip]"
+                    txt.TextColor3 = Color3.fromRGB(255, 0, 0)
+                    txt.Visible = true
+                end
             end
         end)
-        task.wait(.5)
+        task.wait(0.5)
     end
 end)
 
