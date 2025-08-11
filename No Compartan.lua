@@ -72,8 +72,6 @@ local function estaEnJuegoPermitido()
     return false
 end
 
-
- 
 local function ejecutarScriptPremium()
     local id = game.PlaceId
     local player = game.Players.LocalPlayer
@@ -90,15 +88,17 @@ local function ejecutarScriptPremium()
 
     local StarterGui = game:GetService("StarterGui")
 
-    local function notificar(juego)
-        pcall(function()
-            StarterGui:SetCore("SendNotification", {
-                Title = "🎮 " .. juego,
-                Text = "👤 " .. name .. " está listo. ¡Disfruta el script!",
-                Duration = 6
-            })
-        end)
-    end
+local function notificar(juego)
+    local thumbUrl = "rbxthumb://type=Asset&id=" .. game.PlaceId .. "&w=420&h=420"
+    pcall(function()
+        StarterGui:SetCore("SendNotification", {
+            Title = "🎮 " .. juego,
+            Text = "👤 " .. name .. " está listo. ¡Disfruta el script!",
+            Duration = 6,
+            Icon = thumbUrl
+        })
+    end)
+end
 
     task.spawn(function()
         if table.find(DBU_IDS, id) then
