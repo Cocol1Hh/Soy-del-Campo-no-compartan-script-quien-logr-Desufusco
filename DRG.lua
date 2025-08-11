@@ -1875,7 +1875,7 @@ local task2 = task.spawn(function()
     while task.wait(.5) do
         local success, errorMsg = pcall(function()
             if not queued then
-                if getIsActive5()  then
+                if getIsActive13()  then
                     queue_on_teleport("loadstring(game:HttpGet('"..url.."'))()")
                 else
                     queue_on_teleport("")
